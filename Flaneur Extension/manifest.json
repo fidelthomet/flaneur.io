@@ -4,13 +4,20 @@
   "description": "This extensions allows you to collect your online research and send it to the flaneur.io app",
   "browser_action": {
     "default_title": "Send message to other apps",
-    "default_icon": "icon_16.png",
-    "default_popup": "index.html"
+    "default_icon": "icon_128.png"
   },
   "background": {
     "scripts": ["eventPage.js"],
-    "persistent": true
+    "persistent": false
   },
-  "permissions": ["notifications"],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["jquery.js"]
+    }
+  ],
+  "permissions": [ "tabs", "http://*/*", "https://*/*"],
   "manifest_version": 2
 }
