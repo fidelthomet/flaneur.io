@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "flaneur.io",
+  "description": "Flaneur.io allows you to collect, organize and explore your online research.",
+  "version": "1",
+  "minimum_chrome_version": "40",
+  "icons": {
+    "16": "icon_16.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["main.js"]
+    }
+  }
+}
