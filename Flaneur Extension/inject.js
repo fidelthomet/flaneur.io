@@ -1,23 +1,24 @@
 var selection = window.getSelection();
 var selectedText = selection.toString();
 
-console.log(selection)
+if (selection.anchorNode.parentElement==selection.focusNode.parentElement){
 
-var inner = selection.anchorNode.parentElement.innerHTML
+	var inner = selection.anchorNode.parentElement.innerHTML
 
-if(selection.anchorOffset<selection.focusOffset){
-	var selectionBegin = selection.anchorOffset
-	var selectionEnd = selection.focusOffset
+	if(selection.anchorOffset<selection.focusOffset){
+		var selectionBegin = selection.anchorOffset
+		var selectionEnd = selection.focusOffset
+	} else {
+		var selectionBegin = selection.focusOffset
+		var selectionEnd = selection.anchorOffset
+	}
+
+	selection.anchorNode.parentElement.innerHTML=inner.split(selectedText)[0]+"<span class='flaneurio_highlight'>"+selectedText+"</span>"+inner.split(selectedText)[1]
 } else {
-	var selectionBegin = selection.focusOffset
-	var selectionEnd = selection.anchorOffset
+	// TO BE HANDLED SOMEHOW
 }
 
-if(!previousSibling){
-	selection.anchorNode.parentElement.innerHTML=inner.slice(0,selectionBegin)+"<span class='flaneurio_highlight'>"+inner.slice(selectionBegin,selectionEnd)+"</span>"+inner.slice(selectionEnd)
-} else {
-	
-}
+
 
 
 selectedText
