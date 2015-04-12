@@ -1,3 +1,4 @@
+// MESSAGES
 var blacklistedIds = ["none"];
 
 chrome.runtime.onMessageExternal.addListener(
@@ -14,15 +15,34 @@ chrome.runtime.onMessageExternal.addListener(
   }
 });
 
+// ICON-CLICK
 chrome.browserAction.onClicked.addListener(function(tab) { 
-	chrome.tabs.executeScript({
-		file: "inject.js" 
-	}, 
-	function(selection) {
-		alert(selection);
-	})
 
+	//console.log($)
+
+	chrome.tabs.executeScript({ file: "jquery.js" }, function() {
+    	chrome.tabs.executeScript({
+			file: "inject.js" 
+		}, 
+		function(selection) {
+			console.log(JSON.stringify(selection));
+		})
+	});
 	chrome.tabs.insertCSS({
 		file: "inject.css" 
 	})
 });
+
+// SETUP
+// Database
+const dbName = "flaneurIO";
+
+$(function() {
+	var request = indexedDB.open(dbName, 1);
+
+	request.onerror = function(event) {
+  		alert("Database error: " + event.target.errorCode);
+	};
+
+});
+

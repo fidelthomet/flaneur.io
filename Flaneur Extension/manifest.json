@@ -7,17 +7,10 @@
     "default_icon": "icon_128.png"
   },
   "background": {
-    "scripts": ["eventPage.js"],
+    "scripts": ["jquery.js","eventPage.js"],
     "persistent": false
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": ["jquery.js"]
-    }
-  ],
-  "permissions": [ "tabs", "http://*/*", "https://*/*"],
+ 
+  "permissions": [ "tabs", "http://*/*", "https://*/*", "unlimitedStorage"],
   "manifest_version": 2
 }
