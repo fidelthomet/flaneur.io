@@ -7,7 +7,7 @@
     "default_icon": "icon_128.png"
   },
   "background": {
-    "scripts": ["jquery.js","eventPage.js"],
+    "page": "background.html",
     "persistent": false
   },
  

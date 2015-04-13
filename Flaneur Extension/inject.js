@@ -28,9 +28,12 @@ if (selectedText!="") {
 
 
 	data.highlight=selectedText
+	data.hostname = location.hostname
 	data.url = location.href
-	data.host = location.hostname
-	data.timeStamp = $.now()
+	
+	
+	data.timestamp = $.now()
+	data.topic = "Unassigned"
 	data.meta = {}
 
 	// Title
@@ -77,8 +80,10 @@ if (selectedText!="") {
 
 	// Author
 	if ($('meta[name="author"]')){
-		data.meta.author = $('meta[property="author"]').attr('content');
+		data.author = $('meta[property="author"]').attr('content');
 	}
+
+	console.log(data)
 }
 
 data
