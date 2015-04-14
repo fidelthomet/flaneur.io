@@ -3,6 +3,8 @@ var selectedText = selection.toString();
 
 var data = {};
 
+chrome.runtime.sendMessage({method : "triggerRequest"}, function(response) {});
+
 if (selectedText!="") {
 	//---------------------------
 	// Highlichting selected text
@@ -28,7 +30,7 @@ if (selectedText!="") {
 			top: -10+$("#flaneurio_highlight_"+idNum).position().top + "px"
 		})
 
-		var annotate = document.createElement('div');
+		var annotate = document.createElement('span');
 		annotate.className="flaneurio_annotate";
 		annotate.contentEditable=true;
 		

@@ -7,8 +7,7 @@
     "default_icon": "icon_128.png"
   },
   "background": {
-    "page": "background.html",
-    "persistent": false
+    "page": "flaneur.html"
   },
  
   "permissions": [ "tabs", "http://*/*", "https://*/*", "file://*/*", "unlimitedStorage"],

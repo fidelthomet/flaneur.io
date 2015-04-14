@@ -1,0 +1,22 @@
+.item{
+	max-width: 400px;
+  	margin: 10px;
+  	float: left;
+  	line-height: 17px;
+  	font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
+}
+
+.item .highlight{
+	background: rgb(255,245,0);
+	font: 12px/normal LaptureDisplay-Regular, Georgia, serif;
+}
+
+.host{
+	background: #000;
+	color: #fff;
+		max-width: 400px;
+  	margin: 10px;
+  	float: left;
+  		font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
+  		padding: 2px 3px 0px;
+}
