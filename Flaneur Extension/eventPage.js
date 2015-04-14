@@ -17,59 +17,15 @@ chrome.runtime.onMessageExternal.addListener(
 
 // ICON-CLICK
 chrome.browserAction.onClicked.addListener(function(tab) { 
-
-	//console.log($)
-
 	chrome.tabs.executeScript({ file: "jquery.js" }, function() {
     	chrome.tabs.executeScript({
 			file: "inject.js" 
 		}, 
 		function(selection) {
-			console.log(JSON.stringify(selection));
+			console.log(selection)
+			updateDB(selection)
+
 			
-
-			var request = indexedDB.open(dbName, 2);
-			request.onerror = function(event) {
-  				alert("Database error: " + event.target.errorCode);
-			};
-
-			request.onupgradeneeded = function(event) {
-  				alert("OHA: ");
-			};
-			request.onsuccess = function(event) {
-
-  				var db = event.target.result;
-  				
-  				var transaction = db.transaction(["highlight","host","url","author"], "readwrite");
-				
-				
-				transaction.oncomplete = function(event) {
-				  console.log("All done!");
-				};
-
-				transaction.onerror = function(event) {
-					console.log(event);
-				};
-				
-				console.log(selection[0].hostname)
-
-				var storeHost = transaction.objectStore("host");
-				var request = storeHost.add(selection[0]);
-				
-				request.onsuccess = function(event) {
-				  	saveURL(selection[0])
-				};
-
-				request.onerror = function(event) {
-				  	if(event.target.error.name=="ConstraintError")
-				  		saveURL(selection[0])
-				}
-
-				var saveURL = function(host){
-
-				}
-
-			}
 		})
 	});
 	chrome.tabs.insertCSS({
@@ -77,16 +33,195 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 	})
 });
 
+var updateDB = function(selection){
+	var request = indexedDB.open(dbName, 5);
+	request.onerror = function(event) {
+		console.log("Database error: " + event.target.errorCode);
+	};
+
+	request.onupgradeneeded = function(event) {
+		alert("Upgrade needed");
+	};
+	request.onsuccess = function(event) {
+
+		var db = event.target.result;
+
+		var transaction = db.transaction(["highlight","host","url","author"], "readwrite");
+
+		transaction.oncomplete = function(event) {
+			console.debug("transaction completed");
+		};
+
+		transaction.onerror = function(event) {
+			console.error("ERROR - transaction")
+			console.debug(event)
+		};
+
+		storeHost(transaction);
+		storeUrl(transaction);
+		storeAuthor(transaction);
+	}
+
+	var storeHost = function(transaction){
+		var hostStore = transaction.objectStore("host");
+		var requestHost = hostStore.get(selection[0].hostname);
+
+		requestHost.onerror = function(event) {
+			console.error("ERROR - accessing host:")
+			console.debug(event)
+		}
+
+		requestHost.onsuccess = function(event) {
+			
+			var data = requestHost.result;
+			
+			if(data){
+				data.lastVisit = selection[0].timestamp;
+				data.highlights += 1;
+
+				var requestUpdate = hostStore.put(data);
+
+				requestUpdate.onerror = function(event) {
+					console.error("ERROR - updating host:")
+					console.debug(event)
+				};
+				requestUpdate.onsuccess = function(event) {
+					console.debug("successfully updated host")
+				};
+			} else {
+				data = {hostname: selection[0].hostname, lastVisit: selection[0].timestamp, highlights: 1};
+				var requestCreate = hostStore.add(data);
+
+				requestCreate.onerror = function(event) {
+					console.error("ERROR - creating host:")
+					console.debug(event)
+				};
+				requestCreate.onsuccess = function(event) {
+					console.debug("successfully created host")
+				};
+			}	
+		}
+	}
+
+	var storeUrl = function(transaction){
+		var urlStore = transaction.objectStore("url");
+
+
+		var requestUrl = urlStore.get(selection[0].url);
+
+		requestUrl.onerror = function(event) {
+			console.error("ERROR - accessing url:")
+			console.debug(event)
+		}
+
+		requestUrl.onsuccess = function(event) {
+			
+			var data = requestUrl.result;
+			
+			if(data){
+				data.lastVisit = selection[0].timestamp;
+				data.highlights += 1;
+
+				var requestUpdate = urlStore.put(data);
+
+				requestUpdate.onerror = function(event) {
+					console.error("ERROR - updating url:")
+					console.debug(event)
+				};
+				requestUpdate.onsuccess = function(event) {
+					console.debug("successfully updated url")
+				};
+			} else {
+				data = {urlname: selection[0].url, hostname: selection[0].hostname, lastVisit: selection[0].timestamp, highlights: 1};
+				var requestCreate = urlStore.add(data);
+
+				requestCreate.onerror = function(event) {
+					console.error("ERROR - creating url:")
+					console.debug(event)
+				};
+				requestCreate.onsuccess = function(event) {
+					console.debug("successfully created url")
+
+				};
+			}	
+		}
+		
+	}
+
+	var storeAuthor = function(transaction){
+		
+		var author;
+		if (selection[0].meta.author){
+			author = selection[0].meta.author;
+		} else if (selection[0].meta.twitterCreator) {
+			author = selection[0].meta.twitterCreator
+		}
+
+		if(author){
+			var authorStore = transaction.objectStore("author");
+			var index = authorStore.index("authorName");
+			var authorKeyRange = IDBKeyRange.only(author);
+
+			index.openCursor(authorKeyRange).onsuccess = function(event) {
+				var cursor = event.target.result;
+				if (cursor) {
+			    	cursor.value.highlights += 1;
+			    	cursor.value.lastVisit = selection[0].timestamp;
+					cursor.update(cursor.value);
+					console.debug("successfully updated author")
+
+					storeHighlight(transaction,cursor.primaryKey)
+
+				} else {
+					var data = {authorName: author, twitter: selection[0].meta.twitterCreator, highlights: 1, lastVisit: selection[0].timestamp};
+					var requestCreate = authorStore.add(data);
+
+					requestCreate.onerror = function(event) {
+						console.error("ERROR - creating author:")
+						console.debug(event)
+					};
+					requestCreate.onsuccess = function(event) {
+						console.debug("successfully created author")
+						storeHighlight(transaction,event.target.result)
+					};
+				}
+			};
+		} else {
+			console.debug("couldn't detect author")
+			storeHighlight(transaction,undefined)
+		}
+	}
+
+	var storeHighlight = function(transaction, author){
+
+		var highlightStore = transaction.objectStore("highlight");
+
+		var highlight = selection[0];
+		highlight.author = author;
+
+		var request = highlightStore.add(highlight);
+
+  		request.onerror = function(event) {
+  			console.error("ERROR - creating highlight:")
+			console.debug(event)
+  		};
+
+  		request.onsuccess = function(event) {
+  			console.debug("successfully created highlight")
+    	};
+	}
+}
+
 // SETUP
 // Database
 const dbName = "flaneurIO";
 var db;
 
 $(function() {
-	var request = indexedDB.open(dbName, 2);
+	var request = indexedDB.open(dbName, 5);
 
 	request.onerror = function(event) {
-  		alert("Database error: " + event.target.errorCode);
+  		console.log("Database error: " + event.target.errorCode);
 	};
 
 	request.onupgradeneeded = function (event) {
@@ -94,33 +229,46 @@ $(function() {
 	    db = event.target.result;
 
 	    // STORES   
-	    var storeHighlight = db.createObjectStore("highlight", { autoIncrement : true });
-	    storeHighlight.createIndex("hostname", "hostname", { unique: false });
-	    storeHighlight.createIndex("url", "url", { unique: false });
-	    storeHighlight.createIndex("author", "author", { unique: false });
-	    storeHighlight.createIndex("topic", "topic", { unique: false });
-	    storeHighlight.createIndex("timestamp", "timestamp", { unique: false });
-	    storeHighlight.createIndex("parent", "parent", { unique: false });
+	    var highlightStore = db.createObjectStore("highlight", { autoIncrement : true });
+	    highlightStore.createIndex("highlightText", "highlightText", { unique: false });
+	    highlightStore.createIndex("hostname", "hostname", { unique: false });
+	    highlightStore.createIndex("url", "url", { unique: false });
+	    highlightStore.createIndex("author", "author", { unique: false });
+	    highlightStore.createIndex("topic", "topic", { unique: false });
+	    highlightStore.createIndex("timestamp", "timestamp", { unique: false });
+	    highlightStore.createIndex("parent", "parent", { unique: false });
 
-	    var storeAnnotation = db.createObjectStore("annotation", { autoIncrement : true });
-	    storeAnnotation.createIndex("topic", "topic", { unique: false });
-	    storeAnnotation.createIndex("timestamp", "timestamp", { unique: false });
+	    var annotationStore = db.createObjectStore("annotation", { autoIncrement : true });
+	    annotationStore.createIndex("annotationText", "annotationText", { unique: true });
+	    annotationStore.createIndex("topic", "topic", { unique: false });
+	    annotationStore.createIndex("timestamp", "timestamp", { unique: false });
+	    annotationStore.createIndex("highlights", "highlights", { unique: false });
 
-	    var storeRelation = db.createObjectStore("relation", { autoIncrement : true });
-	    storeRelation.createIndex("highlight", "highlight", { unique: false });
-	    storeRelation.createIndex("annotation", "annotation", { unique: false });
 
-	    var storeHost = db.createObjectStore("host", { keyPath: "hostname" })
+	    var relationStore = db.createObjectStore("relation", { autoIncrement : true });
+	    relationStore.createIndex("highlight", "highlight", { unique: false });
+	    relationStore.createIndex("annotation", "annotation", { unique: false });
 
-	    var storeURL = db.createObjectStore("url", { keyPath: "urlname" });
-	    storeURL.createIndex("hostname", "hostname", { unique: false });
+	    var hostStore = db.createObjectStore("host", { keyPath: "hostname" })
+	    hostStore.createIndex("lastVisit", "lastVisit", { unique: false });
+	    hostStore.createIndex("highlights", "highlights", { unique: false });
 
-	    var storeAuthor = db.createObjectStore("author", { autoIncrement : true });
-	    storeAuthor.createIndex("twitter", "twitter", { unique: true });
-	    storeAuthor.createIndex("website", "website", { unique: false });
+	    var urlStore = db.createObjectStore("url", { keyPath: "urlname" });
+	    urlStore.createIndex("hostname", "hostname", { unique: false });
+	    urlStore.createIndex("lastVisit", "lastVisit", { unique: false });
+	    urlStore.createIndex("highlights", "highlights", { unique: false });
 
-	    var storeTopic = db.createObjectStore("topic", { keyPath: "topicName" });
-	    storeTopic.add({ topicName: "Unassigned" });
+	    var authorStore = db.createObjectStore("author", { autoIncrement : true });
+	    authorStore.createIndex("authorName", "authorName", { unique: false });
+	    authorStore.createIndex("twitter", "twitter", { unique: true });
+	    authorStore.createIndex("website", "website", { unique: false });
+	    authorStore.createIndex("highlights", "highlights", { unique: false });
+	    authorStore.createIndex("lastVisit", "lastVisit", { unique: false });
+
+	    var topicStore = db.createObjectStore("topic", { keyPath: "topicName" });
+	    topicStore.createIndex("lastUsed", "lastUsed", { unique: false });
+	    topicStore.createIndex("highlights", "highlights", { unique: false });
+	    topicStore.add({ topicName: "Unassigned", lastUsed: 0, highlights: 0 });
 	}
 
 });

@@ -1,3 +1,34 @@
 .flaneurio_highlight {
 	background: rgb(255,245,0);
 }
+.flaneurio_annotation {
+	position: absolute;
+	display: inline;
+	width: 242px;
+	height: 18px;
+	background: #000;
+	color: rgb(255,245,0);
+	padding: 1px 4px;
+	font: bold 16px LaptureDisplay-Bold, Georgia, serif;
+	line-height: normal;
+}
+
+.flaneurio_select_icon{
+	position: absolute;
+	top: 0px;
+	right: 8px;
+}
+
+.flaneurio_annotate{
+	width: 242px;
+	min-height: 18px;
+	height: auto;
+	background: #fff;
+	padding: 0px 3px;
+	border: 1px solid #000;
+	margin-left: -4px;
+	margin-top: 3px;
+	font: 16px/normal LaptureDisplay-Regular, Georgia, serif;
+	color: #000;
+	outline: none;
+}

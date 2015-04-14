@@ -11,6 +11,6 @@
     "persistent": false
   },
  
-  "permissions": [ "tabs", "http://*/*", "https://*/*", "unlimitedStorage"],
+  "permissions": [ "tabs", "http://*/*", "https://*/*", "file://*/*", "unlimitedStorage"],
   "manifest_version": 2
 }
