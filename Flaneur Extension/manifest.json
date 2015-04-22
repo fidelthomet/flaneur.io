@@ -9,7 +9,10 @@
   "background": {
     "page": "flaneur.html"
   },
+  
  
-  "permissions": [ "tabs", "http://*/*", "https://*/*", "file://*/*", "unlimitedStorage"],
+  "permissions": [ "tabs", "http://*/*", "https://*/*", "file://*/*", "unlimitedStorage", 
+  "*://use.typekit.net/*","webRequest", "webRequestBlocking"],
+  "content_security_policy": "script-src 'self' https://use.typekit.net; object-src 'self'",
   "manifest_version": 2
 }

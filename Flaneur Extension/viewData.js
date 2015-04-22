@@ -42,7 +42,7 @@ $(function() {
 				if (cursor) {
 					// console.log(cursor.value)
 					var id = cursor.value.hostname.replace(/\./g, '-')
-					$("body").append(el[0]+id+el[1]+cursor.value.hostname+el[2])
+					$("#container").append(el[0]+id+el[1]+cursor.value.hostname+el[2])
 					$("#"+id).mouseover(function(e){
 						drawConnections(this)
 					})
@@ -62,16 +62,29 @@ $(function() {
 		var getHighlights = function(transaction){
 			var objectStore = transaction.objectStore("highlight");
 
-			var el = ["<div class='item "," '><div class='header'>","</div><span class='highlight'>","</span></div>"]
-
+			var el = ["<div id='","' class='item "," '><div class='header'>","</div><span class='highlight'>","</span></div>"]
+			var i = 0;
 			objectStore.openCursor().onsuccess = function(event) {
 				var cursor = event.target.result;
 				
 				if (cursor) {
-					// console.log(cursor.value)
-					var host = "host_"+cursor.value.hostname.replace(/\./g, '-');
-					$("body").append(el[0]+host+el[1]+cursor.value.meta.title+el[2]+cursor.value.highlightText+el[3])
+
 					
+					for (var j = 0; j < 20; j++) {
+						i++;
+					
+						// console.log(cursor.primaryKey)
+						var host = "host_"+cursor.value.hostname.replace(/\./g, '-');
+						var itemID = "i_"+i
+
+						$("#container").append(el[0]+itemID+el[1]+host+el[2]+cursor.value.meta.title+el[3]+cursor.value.highlightText+el[4])
+						$("#"+itemID).css({
+							transform: "translate3d("+(20+(200*(i%5)))+"px,"+(20+(60*(Math.floor(i/5))))+"px,"+0+")"
+						})
+
+						// for (var i=0; i<$(".item").length;i++){$($(".item")[i]).css({transform: "translate3d("+(20+(200*(i%7)))+"px,"+(20+(60*(Math.floor(i/7))))+"px,"+0+")"})}
+					};
+
 					cursor.continue();
 				}
 				else {

@@ -4,6 +4,8 @@
   	float: left;
   	line-height: 17px;
   	font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
+  	position: absolute;
+  	transition: transform .5s;
 }
 
 .item .highlight{
@@ -19,4 +21,9 @@
   	float: left;
   		font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
   		padding: 2px 3px 0px;
+	transition: transform .5s;
+}
+
+#container{
+	transition: transform .5s;
 }
