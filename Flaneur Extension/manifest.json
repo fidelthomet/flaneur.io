@@ -1,10 +1,11 @@
 {
   "name": "flaneur.io extension",
   "version": "1.0.0",
-  "description": "This extensions allows you to collect your online research and send it to the flaneur.io app",
+  "description": "Flaneur.io let's you search and explore your online-research",
   "browser_action": {
-    "default_title": "Send message to other apps",
-    "default_icon": "icon_128.png"
+    "default_title": "Flaneur.io",
+    "default_icon": "icon_128.png",
+    "default_popup": "popup.html"
   },
   "background": {
     "page": "flaneur.html"
