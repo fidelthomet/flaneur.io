@@ -11,6 +11,7 @@ $(function(){
 			file: "inject.js" 
 		}, 
 		function(data) {
+			data[0].popupOpened=true;
 			url=data[0].url
 			handleData(data[0])
 		})
@@ -76,44 +77,54 @@ function handleData(data){
 
 		var db = event.target.result;
 
-		var transaction = db.transaction(["urls","projects"], "readonly")
-		var store = transaction.objectStore("urls");
+		//===
+		// prepare data if popup just openend
+		//===
+		if(data.popupOpened){
 
-		var requestUrl = store.get(data.url)
+			var transaction = db.transaction(["urls","projects"], "readonly")
+			var store = transaction.objectStore("urls");
 
-		requestUrl.onerror = function(event) {
-			console.error("error requesting urls")
-			console.log(event)
-		};
-		requestUrl.onsuccess = function(event) {
-			if(data.highlight){
-				store = transaction.objectStore("projects");
-				
-				var index = store.index("used");
+			var requestUrl = store.get(data.url)
 
-				index.openCursor().onsuccess = function(event) {
-					var cursor = event.target.result;
-					data.project = "Unassigned"
-					if (cursor) {
-						data.project = cursor.value.project
+			requestUrl.onerror = function(event) {
+				console.error("error requesting urls")
+				console.log(event)
+			};
+			requestUrl.onsuccess = function(event) {
+				if(data.highlight){
+					store = transaction.objectStore("projects");
+
+					var index = store.index("used");
+
+					index.openCursor().onsuccess = function(event) {
+						var cursor = event.target.result;
+						data.project = "Unassigned"
+						if (cursor) {
+							data.project = cursor.value.project
+						}
+
+						if(requestUrl.result){
+							data.author=requestUrl.result.author
+							data.title=requestUrl.result.title
+						}
+						data.used=data.created
+						storeHighlight(db)
+
 					}
-
-					if(requestUrl.result){
-						data.author=requestUrl.result.author
-						data.title=requestUrl.result.title
-					}
-					data.used=data.created
-					storeHighlight(db)
-					
+				} else if (requestUrl.result){
+					retrieveHighlights(db)
 				}
-			} else if (requestUrl.result){
-				retrieveHighlights(db)
 			}
+		} else if (data.write){
+			storeHighlight(db)
+		} else if (data.read){
+
 		}
 	}
 
 	function storeHighlight(db){
-		var transaction = db.transaction(["highlights","hosts","urls","authors","projects"], "readwrite")
+		var transaction = db.transaction(["highlights","hosts","urls","authors","projects","annotations","relations"], "readwrite")
 		transaction.oncomplete = function(event) {
 			console.debug("transaction completed");
 		};
@@ -126,16 +137,48 @@ function handleData(data){
 		//---
 		// HIGHLIGHT
 		//---
-		var store = transaction.objectStore("highlights")
-		var requestStoreHighlight = store.add(data);
-		requestStoreHighlight.onerror = function(event) {
-			console.error("ERROR - storing highlight:")
+
+		function getHighlight(data) {
+			if(data.hl_id)
+		}
+		function createHighlight() {
+
+		}
+		function updateHighlight() {
+
+		}
+
+
+		var highlightStore = transaction.objectStore("highlights")
+		var requestGetHighlight = highlightStore.get(data.hl_id)
+		requestGetHighlight.onerror = function(event) {
+			console.error("ERROR - requesting highlight:")
 			console.debug(event)
 		};
-		requestStoreHighlight.onsuccess = function(event) {
-			console.debug("successfully stored highlight")
-
-			retrieveHighlights(db)
+		requestGetHighlight.onsuccess = function(event) {
+			if(requestGetHighlight.result){
+				requestGetHighlight.result.used = data.used;
+				var requestStoreHighlight = highlightStore.put(requestGetHighlight.result)
+				requestStoreHighlight.onerror = function(event) {
+					console.error("ERROR - updating highlight:")
+					console.debug(event)
+				};
+				requestStoreHighlight.onsuccess = function(event) {
+					console.debug("successfully updated highlight")
+				};
+			} else {
+				var requestStoreHighlight = highlightStore.add(data)
+				requestStoreHighlight.onerror = function(event) {
+					console.error("ERROR - storing highlight:")
+					console.debug(event)
+				};
+				requestStoreHighlight.onsuccess = function(event) {
+					console.debug("successfully stored highlight")
+					if(data.popupOpened){
+						retrieveHighlights(db)
+					}
+				};
+			}
 		};
 
 		//---
@@ -253,7 +296,14 @@ function handleData(data){
 					console.debug("successfully updated project")
 				};
 			} else {
-				console.error("project not found! THIS SHOULD NEVER HAPPEN")
+				var requestStoreProject = projectStore.add({"project":data.author, "created":data.created, "used":data.created})
+				requestStoreProject.onerror = function(event) {
+					console.error("ERROR - storing author:")
+					console.debug(event)
+				};
+				requestStoreProject.onsuccess = function(event) {
+					console.debug("successfully stored author")
+				};
 			}
 		};
 
@@ -326,77 +376,6 @@ function handleData(data){
 			}
 		}
 
-	}
-}
-
-function updateTitle(data){
-	var request = indexedDB.open(dbName, 1);
-	request.onerror = function(event) {
-		console.error("Database error: ")
-		console.log(event.target);
-	}
-
-	request.onupgradeneeded = function (event){
-		console.debug("upgrade needed!")
-	}
-
-	request.onsuccess = function(event) {
-		var db = event.target.result;
-		var transaction = db.transaction(["urls","highlights"], "readwrite")
-
-		transaction.oncomplete = function(event) {
-			console.debug("transaction completed");
-		};
-
-		transaction.onerror = function(event) {
-			console.error("ERROR - transaction")
-			console.debug(event)
-		};
-
-		//---
-		// URL
-		//---
-		var urlStore = transaction.objectStore("urls");
-		var requestGetUrl = urlStore.get(data.url)
-		requestGetUrl.onerror = function(event) {
-			console.error("ERROR - requesting url:")
-			console.debug(event)
-		};
-		requestGetUrl.onsuccess = function(event) {
-			requestGetUrl.result.used = $.now()
-			requestGetUrl.result.title = data.title;
-			var requestStoreUrl = urlStore.put(requestGetUrl.result)
-			requestStoreUrl.onerror = function(event) {
-				console.error("ERROR - updating url:")
-				console.debug(event)
-			};
-			requestStoreUrl.onsuccess = function(event) {
-				console.debug("successfully updated url")
-			};
-		}
-
-		//---
-		// HIGHLIGHT
-		//---
-		var highlightStore = transaction.objectStore("highlights");
-		var index = highlightStore.index("url");
-		var singleKeyRange = IDBKeyRange.only(data.url);
-		index.openCursor(singleKeyRange).onsuccess = function(event) {
-			var cursor = event.target.result;
-			if (cursor) {
-				var retrievedData = cursor.value
-				retrievedData.title = data.title
-				var requestStoreHighlight = highlightStore.put(retrievedData)
-				requestStoreHighlight.onerror = function(event) {
-				console.error("ERROR - updating url:")
-				console.debug(event)
-				};
-				requestStoreHighlight.onsuccess = function(event) {
-					console.debug("successfully updated url")
-				};
-				cursor.continue();
-			}
-		}
 	}
 }
 
