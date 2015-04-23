@@ -2,8 +2,8 @@ var data = {};
 data.highlight = window.getSelection().toString();
 data.host = location.hostname
 data.url = location.href
-data.timestamp = new Date().getTime()
-data.uid = data.timestamp+"-"+Math.floor((Math.random()*.9+.1)*1000000)
+data.created = new Date().getTime()
+data.hl_id = data.created+"-"+Math.floor((Math.random()*.9+.1)*1000000)
 
 	// Title
 if ($('meta[property="og:title"]').attr('content')) {
@@ -12,6 +12,8 @@ if ($('meta[property="og:title"]').attr('content')) {
 	data.title = $('meta[name="twitter:title"],meta[property="twitter:title"]').attr('content');
 } else if($('title').text()){
 	data.title = $('title').text()
+} else {
+	data.title = "Untitled"
 }
 
 // Description
@@ -31,10 +33,12 @@ if ($('meta[property="og:image"]').attr('content')) {
 }
 
 // Author
-if ($('meta[name="author"]')){
+if ($('meta[name="author"]').attr('content')){
 	data.author = $('meta[name="author"]').attr('content');
 } else if($('meta[name="twitter:creator"],meta[property="twitter:creator"]').attr('content')){
 	data.author = $('meta[name="twitter:creator"],meta[property="twitter:creator"]').attr('content');
+} else {
+	data.author = "Unknown"
 }
 
 data
