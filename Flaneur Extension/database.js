@@ -85,3 +85,47 @@ db.open( {
 	// server.close();
 } );
 
+function updateTitle(data){
+	server.urls.get( data.url ).then(function(result) {
+		if(result){
+			result.updated=$.now()
+			result.title=data.title
+			server.urls.update(result)
+		} else {
+			console.error("Error updating title, url not found")
+		}
+	})
+	server.highlights.query("url").only(data.url).modify({title: data.title}).execute()
+}
+
+function updateAuthor(data){
+	server.urls.get( data.url ).then(function(result) {
+		if(result){
+			result.updated=$.now()
+			var oldAuthor = result.author
+			result.author=data.author
+			
+			server.urls.update(result).then(function(result){
+				server.urls.query("author").only(oldAuthor).execute().then(function(results){
+					if(!results[0]){
+						server.authors.remove( oldAuthor ).then( function ( key ) {
+    						console.log(key)
+						} );
+					}
+				})
+			})
+		} else {
+			console.error("Error updating author, url not found")
+		}
+	})
+	server.authors.get( data.author ).then(function(result) {
+		if(result){
+			result.updated=$.now()
+			server.authors.update(result)
+		}else{
+			server.authors.add({"author":data.author, "created":$.now(), "updated":$.now()})
+		}
+	})
+
+	server.highlights.query("url").only(data.url).modify({author: data.author}).execute()
+}

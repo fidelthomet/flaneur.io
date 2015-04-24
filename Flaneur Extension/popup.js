@@ -16,11 +16,21 @@ $(function(){
 	})
 
 	$("#title .content").on("blur", function(){
-		//updateTitle({"url":url, "title": $(this).text()})
+		if(!$(this).text()){
+			$(this).text("Untitled")
+		}
+		updateTitle({url:url, title:$(this).text()})
+	})
+	$("#author .content").on("blur", function(){
+		if(!$(this).text()){
+			$(this).text("Unknown")
+		}
+		updateAuthor({url:url, author:$(this).text()})
 	})
 })
 
 function handleData(data){
+	url = data.url
 	data.updated = data.created
 	server.urls.get( data.url ).then( function(result) {
 		if(data.highlight){
@@ -41,7 +51,6 @@ function handleData(data){
 	})
 
 	function storeHighlight(){
-
 
 		server.highlights.add(data).then( function(){
 			getPopupData(data)
@@ -145,6 +154,6 @@ function selectElementContents(el) {
 }
 
 // DOM
-var hlDOM = ['<div id="hl-','" class="highlight"><div class="hl_content"><span>','</span></div><div class="hl_tags">','</div></div>']
+var hlDOM = ['<div id="hl-','" class="highlight"><div class="hl_content"><span>','</span></div><div class="hl_tags">','</div><div class="project">Unassigned</div></div>']
 var tagDOM = ['<span id="an-','" contentEditable="plaintext-only">','</span>']
 var newTagDOM = '<span class="addtag" contentEditable="plaintext-only">Add Tags & Annotaions</span>'
