@@ -102,7 +102,6 @@ function handleData(data){
 
 		server.highlights.query( 'url' ).only( urlData.url ).execute().then( function ( results ) {
 			for (var i = 0; i < results.length; i++) {
-
 				$("#highlights").append(hlDOM[0]+results[i].hl_id+hlDOM[1]+results[i].highlight+hlDOM[2]+newTagDOM+hlDOM[3])
 				$("#hl-"+results[i].hl_id+" .addtag").on("focus",function(){
 					var hl_id = $(this).parent().parent()[0].id.split("-")[1];
@@ -128,20 +127,31 @@ function handleData(data){
 							$(this).text(' ')
 						};
 					});
-					$("#an-"+an_id).on("focus", function(){
-						selectElementContents(this)
-					});
 					$("#an-"+an_id).on("blur", function(){
-
 						if ($(this).text()==" "||!$(this).text()) {
 							$(this).remove()
-						};
+						} else {
+							addAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('id').split("an-")[1], annotation: $(this).text()})
+							$(this).attr("contentEditable","false")
+							$(this).click(function(){
+								removeAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('id').split("an-")[1]})
+								$(this).remove()
+							})
+						}
 					});
 
 				})
+				server.relations.query( "hl_id" ).only(results[i].hl_id).execute().then(function( results ){
+					for (var i = 0; i < results.length; i++) {
+						console.log(results)
+						getAnnotationsForHighlight(results[i])
+					};
+				})
+
 			};
+
 		} );
-}
+	}
 }
 
 // HELPER FUNCTIONS
@@ -154,6 +164,7 @@ function selectElementContents(el) {
 }
 
 // DOM
-var hlDOM = ['<div id="hl-','" class="highlight"><div class="hl_content"><span>','</span></div><div class="hl_tags">','</div><div class="project">Unassigned</div></div>']
+var hlDOM = ['<div id="hl-','" class="highlight"><div class="hl_content"><span>','</span></div><div class="project"><span class="project_name">Unassigned</span><div class="project_select"></div></div><div class="hl_tags">','</div></div>']
 var tagDOM = ['<span id="an-','" contentEditable="plaintext-only">','</span>']
+var tagNoEditDOM = ['<span id="an-','">','</span>']
 var newTagDOM = '<span class="addtag" contentEditable="plaintext-only">Add Tags & Annotaions</span>'

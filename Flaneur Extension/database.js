@@ -108,9 +108,7 @@ function updateAuthor(data){
 			server.urls.update(result).then(function(result){
 				server.urls.query("author").only(oldAuthor).execute().then(function(results){
 					if(!results[0]){
-						server.authors.remove( oldAuthor ).then( function ( key ) {
-    						console.log(key)
-						} );
+						server.authors.remove( oldAuthor )
 					}
 				})
 			})
@@ -128,4 +126,53 @@ function updateAuthor(data){
 	})
 
 	server.highlights.query("url").only(data.url).modify({author: data.author}).execute()
+}
+
+function addAnnotation(data){
+	server.annotations.query("annotation").only( data.annotation ).execute().then(function(results) {
+		if (results[0]) {
+			results[0].updated=$.now()
+			server.annotations.update(results[0])
+
+			data.an_id=results[0].an_id
+			console.log(results[0].an_id)
+			$("#an-"+data.an_id).attr('id',"an-"+results[0].an_id)
+			server.relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
+
+		} else {
+			server.annotations.add({"an_id": data.an_id, "annotation": data.annotation, "created":$.now(), "updated":$.now()}).then(function(){
+				server.relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
+			})
+		}
+	})
+	
+}
+
+function removeAnnotation(data){
+
+	server.relations.query("an_id").only(data.an_id).execute().then(function(results) {
+		if(results){
+			for (var i = 0; i < results.length; i++) {
+				if(results[i].hl_id==data.hl_id){
+					server.relations.remove( results[i].id )
+				}
+			};
+			if(results.length==1){
+				server.annotations.remove( data.an_id )
+			}
+		}
+	})
+}
+
+function getAnnotationsForHighlight(data){
+
+	server.annotations.get( data.an_id ).then(function(result) {
+		if(result){
+			$("#hl-"+data.hl_id+" .addtag").before(tagNoEditDOM[0]+result.an_id+tagNoEditDOM[1]+result.annotation+tagNoEditDOM[2])
+			$("#an-"+result.an_id).click(function(){
+				removeAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('id').split("an-")[1]})
+				$(this).remove()
+			})
+		}
+	})
 }

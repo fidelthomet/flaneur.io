@@ -30,7 +30,7 @@
 
 .hl_content span{
 	line-height: 20px;
-  	outline: 4px solid #FFF500;
+	outline: 4px solid #FFF500;
 	background: #FFF500;
 	font-size: 16px;
 	padding: 3px 0px 1px 0px;
@@ -44,33 +44,33 @@
 .hl_tags span{
 	cursor: pointer;
 	color: #A6A6A6;
-  font-size: 12px;
-  padding: 1px 0px 0px 0px;
-  margin-right: 20px;
-  font-style: italic;
-  white-space: pre-wrap;
-  /*word-break: break-all;*/
-  display: inline-block;
-  margin: 1px 4px 1px 0px;
+	font-size: 12px;
+	padding: 1px 0px 0px 0px;
+	margin-right: 20px;
+	font-style: italic;
+	white-space: pre-wrap;
+	/*word-break: break-all;*/
+	display: inline-block;
+	margin: 1px 4px 1px 0px;
 }
 
 .hl_tags span:hover{
 	color: #404040;
 }
 
- .hl_tags span:before{
+.hl_tags span:before{
 	content: "";
-  display: block;
-  background: url("tag.png") center center no-repeat;
-  background-size: auto 9px;
-  width: 7px;
-  height: 10px;
-  float: left;
-  margin: 0 1px 0 0;
+	display: block;
+	background: url("tag.png") center center no-repeat;
+	background-size: 13px 11px;
+	width: 13px;
+	height: 11px;
+	float: left;
+	margin: 0 1px 0 0;
 }
 
 .hl_tags span:hover:before{
-  background-image: url("tag_dark.png")
+	background-image: url("tag_dark.png")
 }
 
 .highlight.passive:nth-child(n){
@@ -79,7 +79,7 @@
 }
 
 .hl_tags{
-	margin-top: 6px;
+	margin-top: 7px;
 	margin-bottom: 4px;
 	display: none;
 }
