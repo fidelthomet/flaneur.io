@@ -48,23 +48,6 @@ body{
 	background: #F2F2F2;
 	margin-bottom: 1px;
 }
-.caption{
-	color: #A6A6A6;
-	margin-bottom: -4px;
-}
-.content{
-	font-size: 16px;
-	/*background: #fff;*/
-	margin: 0px -4px 0px;
-	padding: 2px 0 0 4px;
-	border-bottom: 1px solid #F2F2F2;
-	cursor: text;
-	outline: none;
-}
-.content:focus{
-	background-color: #fff;
-	border-bottom: 1px solid #404040;
-}
 
 .hl_tags span:focus{
 	outline: none;
@@ -115,10 +98,6 @@ body{
 	background-image: url("tag_dark.png")
 }
 
-.project{
-	float: right;
-	padding-top: 5px; 
-}
 
 .deleting{
 	/*display: none;*/
@@ -160,28 +139,6 @@ body{
 	background-size: auto 16px;
 }
 
-.project .project_name{
-	height: 18px;
-	font-size: 12px;
-	text-align: right;
-	margin: 0px 4px 0 0;
-	float: left;
-	max-width: 96px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.project .project_select{
-	display: block;
-	background: url("select_arrows.png") center center no-repeat;
-	background-size: 6px 8px;
-	width: 6px;
-	float: right;
-	height: 11px;
-	margin: 0 0 0 2px;
-}
-
 #highlights {
 	display: none;
 	margin-bottom: 33px;
@@ -195,4 +152,8 @@ body{
 	padding: 12px 62px 11px;
 	-webkit-user-select: none;
 	margin-bottom: 32px;
+}
+
+.project{
+	display: block;
 }
