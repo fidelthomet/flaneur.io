@@ -1,4 +1,5 @@
 var url
+var removeHighlightTimeout = {}
 
 $(function(){
 	$("#open").click(function(){
@@ -103,6 +104,17 @@ function handleData(data){
 		server.highlights.query( 'url' ).only( urlData.url ).execute().then( function ( results ) {
 			for (var i = 0; i < results.length; i++) {
 				$("#highlights").append(hlDOM[0]+results[i].hl_id+hlDOM[1]+results[i].highlight+hlDOM[2]+newTagDOM+hlDOM[3])
+				$("#hl-"+results[i].hl_id+" .delete_highlight").click(function(event){
+					event.stopPropagation() 
+					$(this).closest(".highlight").children(".deleting").addClass("now")
+					removeHighlightTimeout[$(this).closest(".highlight").attr('id')]=(window.setTimeout(finishRemovingHighlight, 3000, $(this).closest(".highlight").attr('id').split("hl-")[1]));
+					$(this).closest(".highlight").click(function(){
+						console.log("huhu")
+						window.clearTimeout(removeHighlightTimeout[$(this).attr("id")])
+						$(this).children(".deleting").removeClass("now")
+					})
+					
+				})
 				$("#hl-"+results[i].hl_id+" .addtag").on("focus",function(){
 					var hl_id = $(this).parent().parent()[0].id.split("-")[1];
 					var an_id = $.now()+"-"+Math.floor((Math.random()*.9+.1)*1000000)
@@ -146,11 +158,22 @@ function handleData(data){
 						console.log(results)
 						getAnnotationsForHighlight(results[i])
 					};
+
 				})
 
 			};
+		});
+	}
+}
 
-		} );
+function finishRemovingHighlight(data){
+	console.log("wulf")
+	console.log(data)
+	removeHighlight(data)
+	$("#hl-"+data).remove()
+	if(!$(".highlight").length){
+		$("#nothing_selected").show()
+		$("#highlights").hide()
 	}
 }
 
@@ -164,7 +187,7 @@ function selectElementContents(el) {
 }
 
 // DOM
-var hlDOM = ['<div id="hl-','" class="highlight"><div class="hl_content"><span>','</span></div><div class="project"><span class="project_name">Unassigned</span><div class="project_select"></div></div><div class="hl_tags">','</div></div>']
+var hlDOM = ['<div id="hl-','" class="highlight"><div class="delete_highlight"></div><div class="hl_content"><span>','</span></div><div class="project"><span class="project_name">Unassigned</span><div class="project_select"></div></div><div class="hl_tags">','</div><div class="deleting"></div></div>']
 var tagDOM = ['<span id="an-','" contentEditable="plaintext-only">','</span>']
 var tagNoEditDOM = ['<span id="an-','">','</span>']
 var newTagDOM = '<span class="addtag" contentEditable="plaintext-only">Add Tags & Annotaions</span>'

@@ -164,6 +164,44 @@ function removeAnnotation(data){
 	})
 }
 
+function removeHighlight(data){
+	server.highlights.get(data).then(function(result){
+		server.highlights.query("url").only(result.url).execute().then(function(results){
+			if(results.length==1){
+				removeUrl(results[0].url)
+			}
+			server.highlights.remove(data)
+		})	
+	})
+
+	server.relations.query("an_id").only(data).execute().then(function(results) {
+		
+		for (var i = 0; i < results.length; i++) {
+			if(results[i].hl_id==data){
+				server.relations.remove( results[i].id )
+			}
+		};
+	})
+}
+
+function removeUrl(data){
+	server.urls.get(data).then(function(result){
+		server.urls.remove(data).then(function(){
+			server.hosts.query("host").only(result.host).execute().then(function(results){
+				if(results.length==1){
+					server.hosts.remove(result.host)
+				}
+			})
+			server.authors.query("author").only(result.author).execute().then(function(results){
+				if(results.length==1){
+					server.authors.remove(result.author)
+				}
+			})
+		})
+	})
+
+}
+
 function getAnnotationsForHighlight(data){
 
 	server.annotations.get( data.an_id ).then(function(result) {

@@ -117,19 +117,59 @@ body{
 
 .project{
 	float: right;
-	 padding-top: 5px; 
+	padding-top: 5px; 
+}
+
+.deleting{
+	/*display: none;*/
+	position: absolute;
+  height: 100%;
+  right: 0px;
+  width: 100%;
+  background: rgba(209,2,30,0.6);
+  top: 0px;
+  transform: scaleX(0); 
+  transform-origin: right;
+  transition: transform .3s; 
+}
+
+.deleting.now{
+	transition: transform 3s linear; 
+	display: block;
+	transform: scaleX(1); 
+}
+
+.delete_highlight{
+	display: none;
+	position: absolute;
+	height: 24px;
+	width: 24px;
+	right: 0px;
+	margin-top: -4px;
+	
+	background: url("delete_highlight.png") right top no-repeat;
+	background-size: auto 16px;
+}
+
+.highlight:hover .delete_highlight{
+	display: block;
+}
+
+.highlight .delete_highlight:hover{
+	background: url("delete_highlight_red.png") right top no-repeat;
+	background-size: auto 16px;
 }
 
 .project .project_name{
-  height: 18px;
-  font-size: 12px;
-  text-align: right;
-  margin: 0px 4px 0 0;
-  float: left;
-  max-width: 96px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	height: 18px;
+	font-size: 12px;
+	text-align: right;
+	margin: 0px 4px 0 0;
+	float: left;
+	max-width: 96px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .project .project_select{
