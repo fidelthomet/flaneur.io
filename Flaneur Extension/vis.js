@@ -176,6 +176,7 @@ function getAnnotationsBy_hl_id(hl_id){
 		};
 		Promise.all(annotationPromises).then(function(values) {
 			buildHighlightDom(hl_id);
+			drawWeb()
 		});
 	})
 }
@@ -211,11 +212,12 @@ function buildHighlightDom(hl_id){
 	// highlights[hl_id].el.css({"transform":createMatrix([1,0,0,1,articles[highlights[hl_id].url].index*(marginLR+itemWidth)+marginLR/2,articles[highlights[hl_id].url].offsetY])})
 	
 
-	// $("#container_inner").append(highlights[hl_id].el)
+	$("#container_inner").append(highlights[hl_id].el)
 
-	$(".article[article_url='"+highlights[hl_id].url+"']").append(highlights[hl_id].el)
-	
-	articles[highlights[hl_id].url].offsetY+=highlights[hl_id].el.height()+8+marginLR/2
+	// $(".article[article_url='"+highlights[hl_id].url+"']").append(highlights[hl_id].el)
+	highlights[hl_id].height=highlights[hl_id].el.height()
+
+	articles[highlights[hl_id].url].offsetY+=highlights[hl_id].height+8+marginLR/2
 }
 
 
@@ -226,4 +228,15 @@ function createMatrix(values){
 	return "matrix("+values[0]+", "+values[1]+", "+values[2]+", "+values[3]+", "+values[4]+", "+values[5]+")"
 }
 
+//VISUALISATIONS
+
+function drawWeb(){
+	var graph = {nodes:[],links:[]}
+	$.each(highlights, function(index, value) {
+		value.index=index
+    	graph.nodes.push({name:value.hl_id})
+	}); 
+	
+	drawForceGraph(graph)
+}
 

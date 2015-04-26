@@ -5,7 +5,7 @@ body {
 .highlight{
 	left: 0px;
 	top: 0px;
-	/*position: absolute;*/
+	position: absolute;
 	width: 328px;
 	height: auto;
 	background: #F2F2F2;
@@ -19,7 +19,8 @@ body {
 	padding: 4px;
 	cursor:pointer;
 
-	transition: transform .4s, opacity .1s;
+	transition: opacity .1s;
+	/*transition: transform .4s, opacity .1s;*/
 }
 
 .hl_title{
