@@ -208,10 +208,13 @@ function buildHighlightDom(hl_id){
 	};
 
 	
-	highlights[hl_id].el.css({"transform":createMatrix([1,0,0,1,articles[highlights[hl_id].url].index*(marginLR+itemWidth)+marginLR/2,articles[highlights[hl_id].url].offsetY])})
+	// highlights[hl_id].el.css({"transform":createMatrix([1,0,0,1,articles[highlights[hl_id].url].index*(marginLR+itemWidth)+marginLR/2,articles[highlights[hl_id].url].offsetY])})
 	
 
-	$("#container_inner").append(highlights[hl_id].el)
+	// $("#container_inner").append(highlights[hl_id].el)
+
+	$(".article[article_url='"+highlights[hl_id].url+"']").append(highlights[hl_id].el)
+	
 	articles[highlights[hl_id].url].offsetY+=highlights[hl_id].el.height()+8+marginLR/2
 }
 

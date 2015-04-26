@@ -5,11 +5,12 @@ body {
 .highlight{
 	left: 0px;
 	top: 0px;
-	position: absolute;
+	/*position: absolute;*/
 	width: 328px;
 	height: auto;
 	background: #F2F2F2;
 	font-size: 12px;
+	margin-bottom: 4px;
 
 
 	font-family: "jaf-lapture-display", serif;
@@ -148,5 +149,5 @@ body {
 .article_author{
 	padding: 2px 4px 2px 4px;
 	background: #F2F2F2;
-	margin-bottom: 1px;
+	margin-bottom: 4px;
 }
