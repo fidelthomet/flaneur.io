@@ -29,6 +29,10 @@ body{
 	pointer-events: auto;
 }
 
+#container_inner .transition{
+	transition: transform .4s;
+}
+
 #header {
 	background: #F2F2F2;
 	position: absolute;
@@ -73,6 +77,25 @@ body{
 #drag_options .dragover{
 	transform: scale(1.5);
 }
+
+.g_network .highlight .hl_title{
+	display: block;
+}
+.highlight.focus{
+	z-index: 10
+}
+
+.highlight.focus .hl_tags{
+	display: block;
+}
+
+.highlight.focus .hl_description{
+	display: block;
+}
+
+.highlight:hover{
+	z-index: 15;
+	}
 
 .tag{
 	background: none;

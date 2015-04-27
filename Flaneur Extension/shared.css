@@ -19,13 +19,13 @@ body {
 	padding: 4px;
 	cursor:pointer;
 
-	transition: opacity .1s;
+	transition: opacity .4s, background .4s;
 	/*transition: transform .4s, opacity .1s;*/
 }
+.highlight *{
+	transition: opacity .4s;
+}
 
-.highlight:hover{
-	z-index: 10;
-	}
 
 .hl_title{
 	font-style: italic;
@@ -84,9 +84,13 @@ body {
 	background-image: url("tag_dark.png")
 }
 
-.highlight.passive:nth-child(n){
-	opacity: .3;
+.highlight.passive *{
+	opacity: .5;
 	transition: opacity .4s;
+}
+
+.highlight.passive {
+	background: #FCFCFC
 }
 
 .hl_tags{

@@ -7,6 +7,7 @@ var emptyHlTag;
 var emptyTag;
 var emptyArticle;
 var getDataPromise = []
+var getRelationsPromise = []
 
 var itemWidth=336
 var marginLR = 32
@@ -17,6 +18,11 @@ $(function() {
 	var zoomLevel = 1000;
 	var mousePressed = 0;
 	var matrix;
+
+	$("#relations").click(function(){
+		$(".focus").removeClass("focus")
+		$(".passive").removeClass("passive")
+	})
 
 	emptyHighlight = $('<div class="highlight" draggable="true"><div class="hl_title"></div><div class="hl_description"></div><div class="hl_content"><span></span></div><div class="project"><span class="project_name"></span><div class="project_select"></div></div><div class="hl_tags"></div></div>');
 	emptyHighlight.on( "dragstart", function(e){
@@ -43,7 +49,22 @@ $(function() {
 
 	emptyHighlight.on( "click", function(e){
 		console.log($(this).attr("id").split("hl-"))
-		$(this).children(".hl_tags").toggle()
+		$(".highlight").addClass("passive")
+		$(this).removeClass("passive")
+		$(".focus").removeClass("focus")
+		$(this).addClass("focus")
+	
+		$("#container_inner").css("transition","transform .4s")
+		$("#container_inner").on("transitionend", function(){
+			$("#container_inner").css("transition","none")
+			$("#container_inner").off("transitionend")
+		})
+
+		var x = window.innerWidth/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[5])+itemWidth/2)
+		var y = window.innerHeight/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[6])+$(this).height()/2)
+		$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
+		zoomLevel=1000;
+
 	})
 
 	emptyHlTag = $('<span></span>')
@@ -91,7 +112,7 @@ $(function() {
   		if (zoomLevel<200) {
   			zoomLevel=200
   		}
-
+  		$("#container_inner").removeClass("transition")
   		matrix = $("#container_inner").css("transform").split(/, |\(|\)/)
 
   		if (matrix.length<7) {
@@ -128,6 +149,7 @@ $(function() {
 			var newX = parseInt(matrix[5])+e.clientX-mousePressed.x;
 			var newY = parseInt(matrix[6])+e.clientY-mousePressed.y;
 
+			$("#container_inner").removeClass("transition")
 
 			$("#container_inner").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
 
@@ -152,27 +174,26 @@ function retrieveAllArticles(timestamp){
 			articles[results[i].url]=results[i]
 			buildArticleDom(results[i].url)
 		};
-		retrieveAllHighlights(timestamp)
+		retrieveData(timestamp)
 	})
 }
 
-function retrieveAllHighlights(timestamp){
+function retrieveData(timestamp){
 
 	lastRefresh=$.now()
 
 	
 
-	getDataPromise.push(server.highlights.query("created").lowerBound(timestamp).execute().then(function(results) {
-		for (var i = 0; i < results.length; i++) {
-			highlights[results[i].hl_id]=results[i]
-			getAnnotationsBy_hl_id(results[i].hl_id)
-		};  
-	}))
+	getDataPromise.push(retrieveAllHighlights(timestamp))
+
+	
 
 
 
 	Promise.all(getDataPromise).then(function(values) {
 		
+
+
 		$.each(highlights, function(index, value) {
 			buildHighlightDom(value.hl_id);
 		})
@@ -181,6 +202,22 @@ function retrieveAllHighlights(timestamp){
 		getAllAnnotations()
 		
 	});
+}
+
+function retrieveAllHighlights(timestamp){
+	return new Promise(function(resolve, reject) {
+		server.highlights.query("created").lowerBound(timestamp).execute().then(function(results) {
+			var getAnnotationsBy_hl_id_Promises = []
+			for (var i = 0; i < results.length; i++) {
+				highlights[results[i].hl_id]=results[i]
+				getAnnotationsBy_hl_id_Promises.push(getAnnotationsBy_hl_id(results[i].hl_id))
+			};
+			Promise.all(getAnnotationsBy_hl_id_Promises).then(function(){
+				resolve()
+			})
+
+		})
+	})
 }
 
 function getAllAnnotations(){
@@ -197,14 +234,23 @@ function getAllAnnotations(){
 }
 
 function getAnnotationsBy_hl_id(hl_id){
-	highlights[hl_id].annotations=[]
-	getDataPromise.push(server.relations.query("hl_id").only(hl_id).execute().then(function(results){
-		for (var i = 0; i < results.length; i++) {
-			getDataPromise.push(server.annotations.get(results[i].an_id).then(function(result){
-				highlights[hl_id].annotations.push(result)
-			}))			
-		};
-	}))
+	return new Promise(function(resolve, reject) {
+		highlights[hl_id].annotations=[]
+
+		server.relations.query("hl_id").only(hl_id).execute().then(function(results){
+			var getAnnotationsPromises = []
+
+			for (var i = 0; i < results.length; i++) {
+				getAnnotationsPromises.push(server.annotations.get(results[i].an_id).then(function(result){
+					highlights[hl_id].annotations.push(result)
+				}))
+			};
+
+			Promise.all(getAnnotationsPromises).then(function(){
+				resolve()
+			})
+		})
+	})
 }
 
 function buildArticleDom(url){
@@ -230,6 +276,7 @@ function buildHighlightDom(hl_id){
 	highlights[hl_id].el.children(".hl_content").children("span").text(highlights[hl_id].highlight)
 	highlights[hl_id].el.children(".project").children(".project_name").text(highlights[hl_id].project)
 
+	console.log(highlights[hl_id].annotations)
 	for (var i = 0; i < highlights[hl_id].annotations.length; i++) {
 		highlights[hl_id].el.children(".hl_tags").append(emptyHlTag.clone(true).text(highlights[hl_id].annotations[i].annotation))
 	};
@@ -271,30 +318,31 @@ function createMatrix(values){
 //VISUALISATIONS
 
 function drawWeb(){
+	$("#container_inner").addClass("g_network")
 	var graph = {nodes:[],links:[]}
 	var graph_id = 0
 
 	$.each(annotations, function(index, value) {
 		value.index=index
-    	graph.nodes.push({name:value.an_id, type:"an"})
-    	value.graph_id = graph_id;
-    	graph_id++;
+		graph.nodes.push({name:value.an_id, type:"an"})
+		value.graph_id = graph_id;
+		graph_id++;
 	});
 
 	$.each(highlights, function(index, value) {
 		value.index=index
-    	graph.nodes.push({name:value.hl_id, type:"hl"})
-    	value.graph_id = graph_id;
-    	graph_id++;
+		graph.nodes.push({name:value.hl_id, type:"hl"})
+		value.graph_id = graph_id;
+		graph_id++;
 
-    	for (var i = 0; i < value.annotations.length; i++) {
+		for (var i = 0; i < value.annotations.length; i++) {
     		// graph.nodes.push({name:value.an_id, type:"an"})
     		// console.log(annotations[value.annotations[i].an_id])
     		graph.links.push({source: value.graph_id, target: annotations[value.annotations[i].an_id].graph_id})
     		// graph_id++;
     	};
     	
-	});
+    });
 
 
 	

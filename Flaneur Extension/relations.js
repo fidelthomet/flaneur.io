@@ -1,4 +1,4 @@
-
+var force
 
 function drawForceGraph(graph){
 	$("#relations").empty()
@@ -10,8 +10,8 @@ var svg = d3.select("#relations")
 
 	var color = d3.scale.category20();
 
-	var force = d3.layout.force()
-	.charge(-4000)
+	force = d3.layout.force()
+	.charge(-5000)
 	.linkDistance(252)
 	.size([width, height]);
 
