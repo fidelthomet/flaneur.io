@@ -12,7 +12,7 @@ var svg = d3.select("#relations")
 
 	var force = d3.layout.force()
 	.charge(-4000)
-	.linkDistance(1000)
+	.linkDistance(252)
 	.size([width, height]);
 
 	
@@ -44,8 +44,15 @@ var svg = d3.select("#relations")
 		.attr("x2", function(d) { return d.target.x; })
 		.attr("y2", function(d) { return d.target.y; });
 
-		node.attr("cx", function(d) {$("#hl-"+d.name).css({"transform":createMatrix([1,0,0,1,d.x-itemWidth/2,d.y-highlights[d.name].height/2])}); return d.x;})
-		.attr("cy", function(d) { return d.y; });
+		node.attr("cx", function(d) {return d.x;})
+		.attr("cy", function(d) { 
+			if(d.type=="hl"){
+				$("#hl-"+d.name).css({"transform":createMatrix([1,0,0,1,d.x-itemWidth/2,d.y+44-highlights[d.name].height/2])});
+			} else if (d.type=="an"){
+				$("#an-"+d.name).css({"transform":createMatrix([1,0,0,1,d.x-annotations[d.name].width/2,d.y+44-annotations[d.name].height/2])});
+			}
+			return d.y; 
+		});
 
 
 

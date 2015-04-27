@@ -1,9 +1,12 @@
 var highlights = {}
 var articles = {}
+var annotations = {}
 var lastRefresh = 0
 var emptyHighlight;
+var emptyHlTag;
 var emptyTag;
 var emptyArticle;
+var getDataPromise = []
 
 var itemWidth=336
 var marginLR = 32
@@ -43,7 +46,9 @@ $(function() {
 		$(this).children(".hl_tags").toggle()
 	})
 
-	emptyTag = $('<span></span>')
+	emptyHlTag = $('<span></span>')
+
+	emptyTag = $('<div class="tag"><span></span></div>');
 
 	emptyArticle = $('<div class="article"><div class="article_title"><div class="caption">title</div><div class="content" contentEditable="plaintext-only"></div></div><div class="article_author"><div class="caption">author</div><div class="content" contentEditable="plaintext-only"></div></div></div>')
 
@@ -157,28 +162,49 @@ function retrieveAllHighlights(timestamp){
 
 	
 
-	server.highlights.query("created").lowerBound(timestamp).execute().then(function(results) {
+	getDataPromise.push(server.highlights.query("created").lowerBound(timestamp).execute().then(function(results) {
 		for (var i = 0; i < results.length; i++) {
 			highlights[results[i].hl_id]=results[i]
 			getAnnotationsBy_hl_id(results[i].hl_id)
 		};  
+	}))
+
+
+
+	Promise.all(getDataPromise).then(function(values) {
+		
+		$.each(highlights, function(index, value) {
+			buildHighlightDom(value.hl_id);
+		})
+		
+
+		getAllAnnotations()
+		
+	});
+}
+
+function getAllAnnotations(){
+	server.annotations.query().all().execute().then( function(results){
+		for (var i = 0; i < results.length; i++) {
+			annotations[results[i].an_id]=results[i]
+			buildAnnotationDom(results[i].an_id)
+		}
+
+
+		
+		drawWeb()
 	})
 }
 
 function getAnnotationsBy_hl_id(hl_id){
 	highlights[hl_id].annotations=[]
-	server.relations.query("hl_id").only(hl_id).execute().then(function(results){
-		var annotationPromises = []
+	getDataPromise.push(server.relations.query("hl_id").only(hl_id).execute().then(function(results){
 		for (var i = 0; i < results.length; i++) {
-			annotationPromises.push(server.annotations.get(results[i].an_id).then(function(result){
+			getDataPromise.push(server.annotations.get(results[i].an_id).then(function(result){
 				highlights[hl_id].annotations.push(result)
 			}))			
 		};
-		Promise.all(annotationPromises).then(function(values) {
-			buildHighlightDom(hl_id);
-			drawWeb()
-		});
-	})
+	}))
 }
 
 function buildArticleDom(url){
@@ -205,7 +231,7 @@ function buildHighlightDom(hl_id){
 	highlights[hl_id].el.children(".project").children(".project_name").text(highlights[hl_id].project)
 
 	for (var i = 0; i < highlights[hl_id].annotations.length; i++) {
-		highlights[hl_id].el.children(".hl_tags").append(emptyTag.clone(true).text(highlights[hl_id].annotations[i].annotation))
+		highlights[hl_id].el.children(".hl_tags").append(emptyHlTag.clone(true).text(highlights[hl_id].annotations[i].annotation))
 	};
 
 	
@@ -220,6 +246,20 @@ function buildHighlightDom(hl_id){
 	articles[highlights[hl_id].url].offsetY+=highlights[hl_id].height+8+marginLR/2
 }
 
+function buildAnnotationDom(an_id){
+
+	annotations[an_id].el = emptyTag.clone(true)
+	.attr("id","an-"+an_id)
+
+	annotations[an_id].el.children("span").text(annotations[an_id].annotation)
+	
+
+	$("#container_inner").append(annotations[an_id].el)
+
+	annotations[an_id].height=annotations[an_id].el.height()
+	annotations[an_id].width=annotations[an_id].el.width()
+}
+
 
 //---
 // HELPER
@@ -232,10 +272,31 @@ function createMatrix(values){
 
 function drawWeb(){
 	var graph = {nodes:[],links:[]}
+	var graph_id = 0
+
+	$.each(annotations, function(index, value) {
+		value.index=index
+    	graph.nodes.push({name:value.an_id, type:"an"})
+    	value.graph_id = graph_id;
+    	graph_id++;
+	});
+
 	$.each(highlights, function(index, value) {
 		value.index=index
-    	graph.nodes.push({name:value.hl_id})
-	}); 
+    	graph.nodes.push({name:value.hl_id, type:"hl"})
+    	value.graph_id = graph_id;
+    	graph_id++;
+
+    	for (var i = 0; i < value.annotations.length; i++) {
+    		// graph.nodes.push({name:value.an_id, type:"an"})
+    		// console.log(annotations[value.annotations[i].an_id])
+    		graph.links.push({source: value.graph_id, target: annotations[value.annotations[i].an_id].graph_id})
+    		// graph_id++;
+    	};
+    	
+	});
+
+
 	
 	drawForceGraph(graph)
 }

@@ -23,6 +23,10 @@ body {
 	/*transition: transform .4s, opacity .1s;*/
 }
 
+.highlight:hover{
+	z-index: 10;
+	}
+
 .hl_title{
 	font-style: italic;
 	cursor: pointer;
