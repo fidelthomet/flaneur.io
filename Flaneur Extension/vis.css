@@ -98,10 +98,11 @@ body{
 	}
 
 .tag{
-	background: none;
+	background: #404040;
 	width: auto;
 	max-width: 328px;
-	padding: 4px;
+	/*padding: 4px 8px;*/
+	padding: 4px 8px 2px 6px;
 	left: 0px;
 	top: 0px;
 	position: absolute;
@@ -117,11 +118,11 @@ body{
 .tag span{
 	background: #404040;
   color: #F2F2F2;
-  outline: 4px solid #404040;
+  /*outline: 4px solid #404040;*/
 
   line-height: 20px;
   font-size: 16px;
-  padding: 3px 0px 1px 0px;
+  /*padding: 3px 0px 1px 0px;*/
 }
 
 
