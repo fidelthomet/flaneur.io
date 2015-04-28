@@ -21,7 +21,7 @@ $(function() {
 
 	$("#container").click(function(e){
 		if(e.target.id=="container"){
-		
+
 			$(".focus").removeClass("focus")
 			$(".passive").removeClass("passive")
 			// alert("huh")
@@ -44,13 +44,15 @@ $(function() {
 		if ($(this).text()=="") {
 			$(this).text("anything")
 			$("#search_in_chosen").hide()
-		}
-	})
 
-	$("#sentence_search").on("keyup", function(){
-		var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
-		switch($("#search_in").val()){
-			case "everywhere" :
+			$.each(highlights, function(index, value) {
+				reAddNode(value)
+			})
+		} else {
+
+			var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
+			switch($("#search_in").val()){
+				case "everywhere" :
 				$(".highlights").show()
 				$.each(highlights, function(index, value) {
 					var found = 2;
@@ -62,14 +64,78 @@ $(function() {
 					};
 
 					if (!found) {
-						value.el.hide()
+						if(graph.hasNode(value.hl_id)){
+							graph.removeNode(value.hl_id)
+							value.el.hide()
+
+							for (var i = 0; i < value.annotations.length; i++) {
+								var linked = 0
+								for (var j = 0; j < graph.getForce().links().length; j++) {
+									if (value.annotations[i].an_id==graph.getForce().links()[j].target.id) {
+										linked++
+									};
+								};
+								if (linked<=1&&graph.hasNode(value.annotations[i].an_id)) {
+									graph.removeNode(value.annotations[i].an_id)
+									annotations[value.annotations[i].an_id].el.hide()
+								}
+							}
+						}
 					} else {
-						value.el.show()
+						reAddNode(value)	
 					}
 				})
+				break;
+				case "in highlights" :
+
+				break;
+				case "in annotations" :
+				break;
+				case "in titles" :
+				break;
+			}
+
+		}
+	})
+
+	function reAddNode(value){
+		if(!graph.hasNode(value.hl_id)){
+			graph.addNode(value.hl_id,"hl")
+			value.el.show()
+			for (var i = 0; i < value.annotations.length; i++) {
+				if(!graph.hasNode(value.annotations[i].an_id)){
+					annotations[value.annotations[i].an_id].el.show()
+					graph.addNode(value.annotations[i].an_id,"an")
+				}
+				graph.addLink(value.hl_id,value.annotations[i].an_id,1)
+			};
+		}
+	}
+
+	
+	$("#sentence_search").on("keyup", function(){
+		var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
+		switch($("#search_in").val()){
+			case "everywhere" :
+			$(".highlights").show()
+			$.each(highlights, function(index, value) {
+				var found = 2;
+				found += value.highlight.toLowerCase().indexOf(searchTerm);
+				found += value.title.toLowerCase().indexOf(searchTerm);
+				for (var i = 0; i < value.annotations.length; i++) {
+					found ++;
+					found += value.annotations[i].annotation.toLowerCase().indexOf(searchTerm);
+				};
+
+				if (!found) {
+					value.el.addClass("passive")
+				} else {
+					value.el.removeClass("passive")
+				}
+			})
 			break;
 			case "in highlights" :
-	
+
 			break;
 			case "in annotations" :
 			break;
@@ -102,169 +168,169 @@ $(function() {
 	})
 
 	emptyHighlight.on( "click", function(e){
-	
+
 		$(".highlight").addClass("passive")
 		$(this).removeClass("passive")
 		$(".focus").removeClass("focus")
 		$(this).addClass("focus")
-	
+
 		$("#container_inner").css("transition","transform .4s")
 		$("#container_inner").on("transitionend", function(){
 			$("#container_inner").css("transition","none")
 			$("#container_inner").off("transitionend")
 		})
 
-		$("#relations g").css("transition","transform .4s")
-		$("#relations g").on("transitionend", function(){
-			$("#relations g").css("transition","none")
-			$("#relations g").off("transitionend")
+		$($("#relations g")[0]).css("transition","transform .4s")
+		$($("#relations g")[0]).on("transitionend", function(){
+			$($("#relations g")[0]).css("transition","none")
+			$($("#relations g")[0]).off("transitionend")
 		})
 		// var sx=$("#container_inner").css("transform").split(/, |\(|\)/)[1]
 		// var sy=$("#container_inner").css("transform").split(/, |\(|\)/)[4]
 
 		matrix = $(this).css("transform").split(/, |\(|\)/)
 
-  		if (matrix.length<7) {
-  			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
-  		};
-  		
+		if (matrix.length<7) {
+			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
+		};
+
 
 		var x = window.innerWidth/2-(parseInt(matrix[5])+itemWidth/2);
 		var y = window.innerHeight/2-(parseInt(matrix[6])+itemWidth/2);
 		$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
-		$("#relations g").css("transform",createMatrix([1,0,0,1,x,y]))
+		$($("#relations g")[0]).css("transform",createMatrix([1,0,0,1,x,y]))
 		zoomLevel=1000;
 
 	})
 
-	emptyHlTag = $('<span></span>')
+emptyHlTag = $('<span></span>')
 
-	emptyTag = $('<div class="tag"><span></span></div>');
+emptyTag = $('<div class="tag"><span></span></div>');
 
-	emptyArticle = $('<div class="article"><div class="article_title"><div class="caption">title</div><div class="content" contentEditable="plaintext-only"></div></div><div class="article_author"><div class="caption">author</div><div class="content" contentEditable="plaintext-only"></div></div></div>')
+emptyArticle = $('<div class="article"><div class="article_title"><div class="caption">title</div><div class="content" contentEditable="plaintext-only"></div></div><div class="article_author"><div class="caption">author</div><div class="content" contentEditable="plaintext-only"></div></div></div>')
 
-	retrieveAllArticles()
+retrieveAllArticles()
 
+
+
+$("#drag_options").children().on("dragenter", function(e){
+	e.preventDefault()
+	$(this).addClass("dragover")
+})
+
+$("#drag_options").children().on("dragover", function(e){
+	e.preventDefault()
+})
+
+$("#drag_options").children().on("dragleave", function(e){
+	$(this).removeClass("dragover")
+})
+
+$("#drag_options").children().on("drop", function(e){
 	
-	
-	$("#drag_options").children().on("dragenter", function(e){
-		e.preventDefault()
-		$(this).addClass("dragover")
-	})
-
-	$("#drag_options").children().on("dragover", function(e){
-		e.preventDefault()
-	})
-
-	$("#drag_options").children().on("dragleave", function(e){
-		$(this).removeClass("dragover")
-	})
-
-	$("#drag_options").children().on("drop", function(e){
-	
-		$(dragObject).hide();
-		$(this).removeClass("dragover")
-	})
+	$(dragObject).hide();
+	$(this).removeClass("dragover")
+})
 
 	//setupThree()
 
 	$("#container").on("mousedown",function(e){
 
-})
+	})
 
 	$('body').bind('mousewheel', function(e){
 		e.preventDefault()
-  		
-  		zoomLevel+=(e.originalEvent.wheelDelta/2);
-  		if(zoomLevel>1000){
-  			zoomLevel=1000;
-  		}
-  		if (zoomLevel<200) {
-  			zoomLevel=200
-  		}
-  		$("#container_inner").removeClass("transition")
-  		matrix = $("#container_inner").css("transform").split(/, |\(|\)/)
 
-  		if (matrix.length<7) {
-  			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
-  		};
-  		
-
-
-  		var xRel = (parseInt(matrix[5])-e.clientX)/matrix[1]
-  		var yRel = (parseInt(matrix[6])-(e.clientY-44))/matrix[1]
-
-  		var xRelN = (parseInt(matrix[5])-e.clientX)/(zoomLevel*.001)
-  		var yRelN = (parseInt(matrix[6])-(e.clientY-44))/(zoomLevel*.001)
-
-  		
-
-  		var xRelD = (xRel-xRelN)*((zoomLevel*.001))
-  		var yRelD = (yRel-yRelN)*((zoomLevel*.001))
-
-  		matrix[5] = parseInt(matrix[5])+xRelD;
-  		matrix[6] = parseInt(matrix[6])+yRelD;
-
-  		
-  		
-
-  		var offsetX=(xRel+e.clientX/matrix[1])
-  		var offsetY=(yRel+(e.clientY-44)/matrix[1])	
-		
-		
-
-
-
-  		$("#container_inner").css({
-  			"transform-origin":"0px 0px",
-  			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
-  		})
-  		$("#relations g").css({
-  			"transform-origin":"0px 0px",
-  			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
-  		})
-
-
-
-
-  	})
-
-
-
-	$("#container").on("mousedown", function(e){
-		mousePressed = {x: e.clientX, y: e.clientY};
-
+		zoomLevel+=(e.originalEvent.wheelDelta/2);
+		if(zoomLevel>1000){
+			zoomLevel=1000;
+		}
+		if (zoomLevel<200) {
+			zoomLevel=200
+		}
+		$("#container_inner").removeClass("transition")
 		matrix = $("#container_inner").css("transform").split(/, |\(|\)/)
 
 		if (matrix.length<7) {
-			matrix=["matrix", "1", "0", "0", "1", "0", "0", ""]
+			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
 		};
+
+
+
+		var xRel = (parseInt(matrix[5])-e.clientX)/matrix[1]
+		var yRel = (parseInt(matrix[6])-(e.clientY-44))/matrix[1]
+
+		var xRelN = (parseInt(matrix[5])-e.clientX)/(zoomLevel*.001)
+		var yRelN = (parseInt(matrix[6])-(e.clientY-44))/(zoomLevel*.001)
+
+
+
+		var xRelD = (xRel-xRelN)*((zoomLevel*.001))
+		var yRelD = (yRel-yRelN)*((zoomLevel*.001))
+
+		matrix[5] = parseInt(matrix[5])+xRelD;
+		matrix[6] = parseInt(matrix[6])+yRelD;
+
+
+
+
+		var offsetX=(xRel+e.clientX/matrix[1])
+		var offsetY=(yRel+(e.clientY-44)/matrix[1])	
+		
+		
+
+
+
+		$("#container_inner").css({
+			"transform-origin":"0px 0px",
+			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
+		})
+		$($("#relations g")[0]).css({
+			"transform-origin":"0px 0px",
+			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
+		})
+
+
+
+
 	})
 
-	$(window).on("contextmenu", function(e){
+
+
+$("#container").on("mousedown", function(e){
+	mousePressed = {x: e.clientX, y: e.clientY};
+
+	matrix = $("#container_inner").css("transform").split(/, |\(|\)/)
+
+	if (matrix.length<7) {
+		matrix=["matrix", "1", "0", "0", "1", "0", "0", ""]
+	};
+})
+
+$(window).on("contextmenu", function(e){
 		// e.preventDefault();
 	})
 
-	$("#container").on("mousemove", function(e){
-		if(mousePressed){
-			
+$("#container").on("mousemove", function(e){
+	if(mousePressed){
 
-			var newX = parseInt(matrix[5])+e.clientX-mousePressed.x;
-			var newY = parseInt(matrix[6])+e.clientY-mousePressed.y;
 
-			$("#container_inner").removeClass("transition")
+		var newX = parseInt(matrix[5])+e.clientX-mousePressed.x;
+		var newY = parseInt(matrix[6])+e.clientY-mousePressed.y;
 
-			$("#container_inner").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
-			$("#relations g").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
+		$("#container_inner").removeClass("transition")
+
+		$("#container_inner").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
+		$($("#relations g")[0]).css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
 
 			// mousePressed = {x: e.clientX, y: e.clientY};
 		}
 		
 	})
 
-	$(document).on("mouseup", function(){
-		mousePressed = undefined;
-	})
+$(document).on("mouseup", function(){
+	mousePressed = undefined;
+})
 
 })
 
@@ -435,8 +501,8 @@ function drawWeb(){
 
 		for (var i = 0; i < value.annotations.length; i++) {
 			graph.addLink(value.hl_id,value.annotations[i].an_id,1)
-    	};
-    	
-    });
+		};
+
+	});
 }
 

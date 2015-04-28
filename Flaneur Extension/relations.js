@@ -63,56 +63,70 @@
 var graph;
 function myGraph(el) {
 
-// Add and remove elements on the graph object
-this.addNode = function (id,type) {
-	nodes.push({"id":id, "type":type});
-	update();
-};
 
-this.removeNode = function (id) {
-	var i = 0;
-	var n = findNode(id);
-	while (i < links.length) {
-		if ((links[i]['source'] == n)||(links[i]['target'] == n))
-		{
-			links.splice(i,1);
+	this.addNode = function (id,type) {
+		nodes.push({"id":id, "type":type});
+		update();
+	};
+
+	this.removeNode = function (id) {
+		var i = 0;
+		var n = findNode(id);
+		while (i < links.length) {
+			if ((links[i]['source'] == n)||(links[i]['target'] == n))
+			{
+				links.splice(i,1);
+			}
+			else i++;
 		}
-		else i++;
-	}
-	nodes.splice(findNodeIndex(id),1);
-	update();
-};
+		nodes.splice(findNodeIndex(id),1);
+		update();
+	};
 
-this.removeLink = function (source,target){
-	for(var i=0;i<links.length;i++)
-	{
-		if(links[i].source.id == source && links[i].target.id == target)
-		{
-			links.splice(i,1);
-			break;
+	this.hasNode = function (id){
+		for (var i in nodes) {
+			if (nodes[i]["id"] === id) return true;
 		}
+		return false;
 	}
-	update();
-};
 
-this.removeallLinks = function(){
-	links.splice(0,links.length);
-	update();
-};
 
-this.removeAllNodes = function(){
-	nodes.splice(0,links.length);
-	update();
-};
+	this.removeLink = function (source,target){
+		for(var i=0;i<links.length;i++)
+		{
+			if(links[i].source.id == source && links[i].target.id == target)
+			{
+				links.splice(i,1);
+				break;
+			}
+		}
+		update();
+	};
 
-this.addLink = function (source, target, value) {
-	links.push({"source":findNode(source),"target":findNode(target),"value":value});
-	update();
-};
 
-var findNode = function(id) {
-	for (var i in nodes) {
-		if (nodes[i]["id"] === id) return nodes[i];};
+	this.removeallLinks = function(){
+		links.splice(0,links.length);
+		update();
+	};
+
+	this.removeAllNodes = function(){
+		nodes.splice(0,links.length);
+		update();
+	};
+
+	this.addLink = function (source, target, value) {
+		links.push({"source":findNode(source),"target":findNode(target),"value":value});
+		update();
+	}
+
+	this.getForce = function(){
+		return force
+	}
+
+	var findNode = function(id) {
+		for (var i in nodes) {
+			if (nodes[i]["id"] === id) return nodes[i];
+		};
 	};
 
 	var findNodeIndex = function(id) {
@@ -131,7 +145,6 @@ var findNode = function(id) {
 	.attr("width", w)
 	.attr("height", h)
 	.attr("pointer-events", "all")
-	// .attr("viewBox","0 0 "+w+" "+h)
 	.attr("perserveAspectRatio","xMinYMid")
 	.append('svg:g');
 
