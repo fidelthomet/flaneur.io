@@ -2,6 +2,10 @@ body {
 	font-family: "jaf-lapture-display", serif;
 }
 
+input, textarea, keygen, select, button{
+	font-family: "jaf-lapture-display", serif;	
+}
+
 .highlight{
 	left: 0px;
 	top: 0px;

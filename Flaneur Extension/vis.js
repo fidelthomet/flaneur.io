@@ -24,6 +24,55 @@ $(function() {
 		$(".passive").removeClass("passive")
 	})
 
+	$(".chosen").chosen({disable_search_threshold: 5})
+	// $(".chosen").chosen()
+
+	$("#sentence_search").on("focus", function(){
+		if ($(this).text()=="anything") {
+			$(this).text("")
+		}
+
+		$("#search_in_chosen").css("display","inline-block")
+	})
+
+	$("#sentence_search").on("blur", function(){
+		if ($(this).text()=="") {
+			$(this).text("anything")
+			$("#search_in_chosen").hide()
+		}
+	})
+
+	$("#sentence_search").on("keyup", function(){
+		var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
+		switch($("#search_in").val()){
+			case "everywhere" :
+				$(".highlights").show()
+				$.each(highlights, function(index, value) {
+					var found = 2;
+					found += value.highlight.toLowerCase().indexOf(searchTerm);
+					found += value.title.toLowerCase().indexOf(searchTerm);
+					for (var i = 0; i < value.annotations.length; i++) {
+						found ++;
+						found += value.annotations[i].annotation.toLowerCase().indexOf(searchTerm);
+					};
+
+					if (!found) {
+						value.el.hide()
+					} else {
+						value.el.show()
+					}
+				})
+			break;
+			case "in highlights" :
+	
+			break;
+			case "in annotations" :
+			break;
+			case "in titles" :
+			break;
+		}
+	})
+
 	emptyHighlight = $('<div class="highlight" draggable="true"><div class="hl_title"></div><div class="hl_description"></div><div class="hl_content"><span></span></div><div class="project"><span class="project_name"></span><div class="project_select"></div></div><div class="hl_tags"></div></div>');
 	emptyHighlight.on( "dragstart", function(e){
 		$(".highlight").addClass("passive")
@@ -48,7 +97,7 @@ $(function() {
 	})
 
 	emptyHighlight.on( "click", function(e){
-		console.log($(this).attr("id").split("hl-"))
+	
 		$(".highlight").addClass("passive")
 		$(this).removeClass("passive")
 		$(".focus").removeClass("focus")
@@ -59,13 +108,27 @@ $(function() {
 			$("#container_inner").css("transition","none")
 			$("#container_inner").off("transitionend")
 		})
+
+		$("#relations g").css("transition","transform .4s")
+		$("#relations g").on("transitionend", function(){
+			$("#relations g").css("transition","none")
+			$("#relations g").off("transitionend")
+		})
 		// var sx=$("#container_inner").css("transform").split(/, |\(|\)/)[1]
 		// var sy=$("#container_inner").css("transform").split(/, |\(|\)/)[4]
+
+		matrix = $(this).css("transform").split(/, |\(|\)/)
+
+  		if (matrix.length<7) {
+  			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
+  		};
+  		console.log(matrix[5]+"  //   "+matrix[6])
 	
 
-		var x = window.innerWidth/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[5])+itemWidth/2)
-		var y = window.innerHeight/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[6])+$(this).height()/2)
-	$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
+		var x = window.innerWidth/2-(parseInt(matrix[5])+itemWidth/2);
+		var y = window.innerHeight/2-(parseInt(matrix[6])+itemWidth/2);
+		$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
+		$("#relations g").css("transform",createMatrix([1,0,0,1,x,y]))
 		zoomLevel=1000;
 
 	})
@@ -94,7 +157,7 @@ $(function() {
 	})
 
 	$("#drag_options").children().on("drop", function(e){
-		console.log(e)
+	
 		$(dragObject).hide();
 		$(this).removeClass("dragover")
 	})
@@ -102,12 +165,12 @@ $(function() {
 	//setupThree()
 
 	$("#container").on("mousedown",function(e){
-	// 	console.log(e)
+
 })
 
 	$('body').bind('mousewheel', function(e){
 		e.preventDefault()
-  		// console.log(e.clientX)
+  		
   		zoomLevel+=(e.originalEvent.wheelDelta/2);
   		if(zoomLevel>1000){
   			zoomLevel=1000;
@@ -130,7 +193,7 @@ $(function() {
   		var xRelN = (parseInt(matrix[5])-e.clientX)/(zoomLevel*.001)
   		var yRelN = (parseInt(matrix[6])-(e.clientY-44))/(zoomLevel*.001)
 
-  		console.log((xRel)+" - "+(yRel))
+  		
 
   		var xRelD = (xRel-xRelN)*((zoomLevel*.001))
   		var yRelD = (yRel-yRelN)*((zoomLevel*.001))
@@ -138,21 +201,21 @@ $(function() {
   		matrix[5] = parseInt(matrix[5])+xRelD;
   		matrix[6] = parseInt(matrix[6])+yRelD;
 
-  		console.log(("m: "+e.clientX)+" - "+(e.clientY))
+  		
   		
 
   		var offsetX=(xRel+e.clientX/matrix[1])
   		var offsetY=(yRel+(e.clientY-44)/matrix[1])	
 		
-		// console.log(offsetX+" - "+offsetY)
-
-  		// console.log(((parseInt(matrix[5])-e.clientX)/matrix[1])+"px "+ ((parseInt(matrix[6])-(e.clientY-44))/matrix[1])+"px")
-
-
+		
 
 
 
   		$("#container_inner").css({
+  			"transform-origin":"0px 0px",
+  			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
+  		})
+  		$("#relations g").css({
   			"transform-origin":"0px 0px",
   			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
   		})
@@ -175,20 +238,20 @@ $(function() {
 	})
 
 	$(window).on("contextmenu", function(e){
-		e.preventDefault();
+		// e.preventDefault();
 	})
 
 	$("#container").on("mousemove", function(e){
 		if(mousePressed){
 			
 
-			// console.log(e.clientX-mousePressed.x)
 			var newX = parseInt(matrix[5])+e.clientX-mousePressed.x;
 			var newY = parseInt(matrix[6])+e.clientY-mousePressed.y;
 
 			$("#container_inner").removeClass("transition")
 
 			$("#container_inner").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
+			$("#relations g").css("transform","matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+newX+", "+newY+")")
 
 			// mousePressed = {x: e.clientX, y: e.clientY};
 		}
@@ -313,7 +376,7 @@ function buildHighlightDom(hl_id){
 	highlights[hl_id].el.children(".hl_content").children("span").text(highlights[hl_id].highlight)
 	highlights[hl_id].el.children(".project").children(".project_name").text(highlights[hl_id].project)
 
-	console.log(highlights[hl_id].annotations)
+
 	for (var i = 0; i < highlights[hl_id].annotations.length; i++) {
 		highlights[hl_id].el.children(".hl_tags").append(emptyHlTag.clone(true).text(highlights[hl_id].annotations[i].annotation))
 	};
@@ -356,33 +419,20 @@ function createMatrix(values){
 
 function drawWeb(){
 	$("#container_inner").addClass("g_network")
-	var graph = {nodes:[],links:[]}
+	graph = new myGraph("#relations");
 	var graph_id = 0
 
 	$.each(annotations, function(index, value) {
-		value.index=index
-		graph.nodes.push({name:value.an_id, type:"an"})
-		value.graph_id = graph_id;
-		graph_id++;
+		graph.addNode(value.an_id,"an")
 	});
 
 	$.each(highlights, function(index, value) {
-		value.index=index
-		graph.nodes.push({name:value.hl_id, type:"hl"})
-		value.graph_id = graph_id;
-		graph_id++;
+		graph.addNode(value.hl_id,"hl")
 
 		for (var i = 0; i < value.annotations.length; i++) {
-    		// graph.nodes.push({name:value.an_id, type:"an"})
-    		// console.log(annotations[value.annotations[i].an_id])
-    		graph.links.push({source: value.graph_id, target: annotations[value.annotations[i].an_id].graph_id})
-    		// graph_id++;
+			graph.addLink(value.hl_id,value.annotations[i].an_id,1)
     	};
     	
     });
-
-
-	
-	drawForceGraph(graph)
 }
 
