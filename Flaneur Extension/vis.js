@@ -59,10 +59,13 @@ $(function() {
 			$("#container_inner").css("transition","none")
 			$("#container_inner").off("transitionend")
 		})
+		// var sx=$("#container_inner").css("transform").split(/, |\(|\)/)[1]
+		// var sy=$("#container_inner").css("transform").split(/, |\(|\)/)[4]
+	
 
 		var x = window.innerWidth/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[5])+itemWidth/2)
 		var y = window.innerHeight/2-(parseInt($(this).css("transform").split(/, |\(|\)/)[6])+$(this).height()/2)
-		$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
+	$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
 		zoomLevel=1000;
 
 	})
@@ -116,16 +119,50 @@ $(function() {
   		matrix = $("#container_inner").css("transform").split(/, |\(|\)/)
 
   		if (matrix.length<7) {
-  			matrix=["matrix", "1", "0", "0", "1", "0", "0", ""]
+  			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
   		};
+  		
+
+
+  		var xRel = (parseInt(matrix[5])-e.clientX)/matrix[1]
+  		var yRel = (parseInt(matrix[6])-(e.clientY-44))/matrix[1]
+
+  		var xRelN = (parseInt(matrix[5])-e.clientX)/(zoomLevel*.001)
+  		var yRelN = (parseInt(matrix[6])-(e.clientY-44))/(zoomLevel*.001)
+
+  		console.log((xRel)+" - "+(yRel))
+
+  		var xRelD = (xRel-xRelN)*((zoomLevel*.001))
+  		var yRelD = (yRel-yRelN)*((zoomLevel*.001))
+
+  		matrix[5] = parseInt(matrix[5])+xRelD;
+  		matrix[6] = parseInt(matrix[6])+yRelD;
+
+  		console.log(("m: "+e.clientX)+" - "+(e.clientY))
+  		
+
+  		var offsetX=(xRel+e.clientX/matrix[1])
+  		var offsetY=(yRel+(e.clientY-44)/matrix[1])	
+		
+		// console.log(offsetX+" - "+offsetY)
+
+  		// console.log(((parseInt(matrix[5])-e.clientX)/matrix[1])+"px "+ ((parseInt(matrix[6])-(e.clientY-44))/matrix[1])+"px")
+
+
+
+
 
   		$("#container_inner").css({
-  			// "transform-origin": e.clientX+"px "+ e.clientY+"px",
-  			"transform":"matrix("+(zoomLevel*.001)+", "+matrix[2]+", "+matrix[3]+", "+(zoomLevel*.001)+", "+matrix[5]+", "+matrix[6]+")"	
+  			"transform-origin":"0px 0px",
+  			"transform":createMatrix([(zoomLevel*.001),matrix[2],matrix[3],(zoomLevel*.001),matrix[5],matrix[6]])
   		})
 
 
+
+
   	})
+
+
 
 	$("#container").on("mousedown", function(e){
 		mousePressed = {x: e.clientX, y: e.clientY};
