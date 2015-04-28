@@ -26,7 +26,7 @@
 	<div id="container">
 	<svg id="relations"></svg>
 		<div id="container_inner">
-		
+
 			
 		</div>
 	</div>
@@ -35,9 +35,37 @@
 		<div id="header">
 			<div id="flaneur">flaneur.io</div>
 			<div id="sentence">I am looking for 
-			<div id="sentence_search" contenteditable="plaintext-only" class="sentence_option">anything</div>
+			<div id="sentence_search" contenteditable="plaintext-only" class="sentence_option">all highlights</div>
 			<select class="chosen" id="search_in">
 				<option selected>everywhere</option>
+				<option>in highlights</option>
+				<option>in annotations</option>
+				<option>in titles</option>
+			</select>
+			annotated as
+			<select class="chosen" id="filter_annotation">
+				<option selected>anything</option>
+				<option>in highlights</option>
+				<option>in annotations</option>
+				<option>in titles</option>
+			</select>
+			written by
+			<select class="chosen" id="filter_author">
+				<option selected>anyone</option>
+				<option>in highlights</option>
+				<option>in annotations</option>
+				<option>in titles</option>
+			</select>
+			published
+			<select class="chosen" id="filter_host">
+				<option selected>anywhere</option>
+				<option>in highlights</option>
+				<option>in annotations</option>
+				<option>in titles</option>
+			</select>
+			an visited
+			<select class="chosen" id="filter_time">
+				<option selected>anytime</option>
 				<option>in highlights</option>
 				<option>in annotations</option>
 				<option>in titles</option>

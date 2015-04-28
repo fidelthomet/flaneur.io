@@ -32,17 +32,18 @@ $(function() {
 	$(".chosen").chosen({disable_search_threshold: 5})
 	// $(".chosen").chosen()
 
-	$("#sentence_search").on("focus", function(){
-		if ($(this).text()=="anything") {
+	$("#sentence_search").on("click", function(){
+		// if ($(this).text()=="all highlights") {
 			$(this).text("")
-		}
+			$(this).focus()
+		// }
 
-		$("#search_in_chosen").css("display","inline-block")
+		// $("#search_in_chosen").css("display","inline-block")
 	})
 
 	$("#sentence_search").on("blur", function(){
 		if ($(this).text()=="") {
-			$(this).text("anything")
+			$(this).text("all highlights")
 			$("#search_in_chosen").hide()
 
 			$.each(highlights, function(index, value) {

@@ -58,7 +58,7 @@ body{
 }
 
 #header #sentence #sentence_search{
-	min-width: 79px;
+	/*min-width: 79px;*/
 	outline: none;
 }
 

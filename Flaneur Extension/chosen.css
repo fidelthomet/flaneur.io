@@ -20,7 +20,7 @@ width: auto !important;
   /* zoom: 1; */
   top: 9px;
   margin-top: -6px;
-  margin-left: -4px;
+ /* margin-left: -4px;*/
   -webkit-user-select: none;
   user-select: none;
 }
@@ -67,10 +67,10 @@ width: auto !important;
   display: block;
   overflow: hidden;
   padding: 5px 6px 1px 6px;
-  background-color: #404040;
+  background-color: #fff500;
   /* background-clip: padding-box; */
 
-  color: #F2F2F2;
+  color: #404040;
   text-decoration: none;
   white-space: nowrap;
   /* line-height: 24px; */
@@ -82,13 +82,12 @@ width: auto !important;
 }
 .chosen-container-single .chosen-single span {
   font-weight: 700;
-  -webkit-font-smoothing: antialiased;
   display: block;
   overflow: hidden;
-  background: url("arrow_grey.png") right 8px no-repeat;
+  /*background: url("arrow_grey.png") right 8px no-repeat;*/
   background-size: 10px 7px;
   margin-right: 2px;
-  padding-right: 14px;
+  
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -139,8 +138,8 @@ width: auto !important;
   height: auto;
   outline: 0;
   border: none;
-  background: white url('chosen-sprite.png') no-repeat 100% -20px;
-  background: url('chosen-sprite.png') no-repeat 100% -20px;
+ /* background: white url('chosen-sprite.png') no-repeat 100% -20px;
+  background: url('chosen-sprite.png') no-repeat 100% -20px;*/
   font-size: 20px;
   /* font-family: sans-serif; */
   line-height: normal;
@@ -191,12 +190,12 @@ width: auto !important;
   cursor: default;
 }
 .chosen-container .chosen-results li.highlighted {
-  background-color: #404040;
+  background-color: #fff500;
   /* background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc)); */
   /* background-image: -webkit-linear-gradient(#3875d7 20%, #2a62bc 90%); */
-  background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);
+/*  background-image: -o-linear-gradient(#3875d7 20%, #2a62bc 90%);*/
   /* background-image: linear-gradient(#3875d7 20%, #2a62bc 90%); */
-  color: #f2f2f2;
+  color: #404040;
 }
 .chosen-container .chosen-results li.no-results {
   color: #777;
@@ -228,10 +227,10 @@ width: auto !important;
   height: 1%;
   border: 1px solid #aaa;
   background-color: #fff;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(1%, #eeeeee), color-stop(15%, #ffffff));
+ /* background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(1%, #eeeeee), color-stop(15%, #ffffff));
   background-image: -webkit-linear-gradient(#eeeeee 1%, #ffffff 15%);
   background-image: -o-linear-gradient(#eeeeee 1%, #ffffff 15%);
-  background-image: linear-gradient(#eeeeee 1%, #ffffff 15%);
+  background-image: linear-gradient(#eeeeee 1%, #ffffff 15%);*/
   cursor: text;
 }
 .chosen-container-multi .chosen-choices li {
