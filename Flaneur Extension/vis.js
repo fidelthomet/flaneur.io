@@ -41,6 +41,15 @@ $(function() {
 		// $("#search_in_chosen").css("display","inline-block")
 	})
 
+	$(".sentence_option").on("keydown", function(e){
+		if (e.keyCode==13) {
+			event.preventDefault();
+			
+			this.blur()
+			
+		}
+	})
+
 	$("#sentence_search").on("blur", function(){
 		if ($(this).text()=="") {
 			$(this).text("all highlights")
@@ -86,106 +95,106 @@ $(function() {
 						reAddNode(value)	
 					}
 				})
-				break;
-				case "in highlights" :
+break;
+case "in highlights" :
 
-				break;
-				case "in annotations" :
-				break;
-				case "in titles" :
-				break;
+break;
+case "in annotations" :
+break;
+case "in titles" :
+break;
+}
+
+}
+})
+
+function reAddNode(value){
+	if(!graph.hasNode(value.hl_id)){
+		graph.addNode(value.hl_id,"hl")
+		value.el.show()
+		for (var i = 0; i < value.annotations.length; i++) {
+			if(!graph.hasNode(value.annotations[i].an_id)){
+				annotations[value.annotations[i].an_id].el.show()
+				graph.addNode(value.annotations[i].an_id,"an")
 			}
-
-		}
-	})
-
-	function reAddNode(value){
-		if(!graph.hasNode(value.hl_id)){
-			graph.addNode(value.hl_id,"hl")
-			value.el.show()
-			for (var i = 0; i < value.annotations.length; i++) {
-				if(!graph.hasNode(value.annotations[i].an_id)){
-					annotations[value.annotations[i].an_id].el.show()
-					graph.addNode(value.annotations[i].an_id,"an")
-				}
-				graph.addLink(value.hl_id,value.annotations[i].an_id,1)
-			};
-		}
+			graph.addLink(value.hl_id,value.annotations[i].an_id,1)
+		};
 	}
+}
 
-	
-	$("#sentence_search").on("keyup", function(){
-		var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
-		switch($("#search_in").val()){
-			case "everywhere" :
-			$(".highlights").show()
-			$.each(highlights, function(index, value) {
-				var found = 2;
-				found += value.highlight.toLowerCase().indexOf(searchTerm);
-				found += value.title.toLowerCase().indexOf(searchTerm);
-				for (var i = 0; i < value.annotations.length; i++) {
-					found ++;
-					found += value.annotations[i].annotation.toLowerCase().indexOf(searchTerm);
-				};
 
-				if (!found) {
-					value.el.addClass("passive")
-				} else {
-					value.el.removeClass("passive")
-				}
-			})
-			break;
-			case "in highlights" :
+$("#sentence_search").on("keyup", function(){
+	var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
+	switch($("#search_in").val()){
+		case "everywhere" :
+		$(".highlights").show()
+		$.each(highlights, function(index, value) {
+			var found = 2;
+			found += value.highlight.toLowerCase().indexOf(searchTerm);
+			found += value.title.toLowerCase().indexOf(searchTerm);
+			for (var i = 0; i < value.annotations.length; i++) {
+				found ++;
+				found += value.annotations[i].annotation.toLowerCase().indexOf(searchTerm);
+			};
 
-			break;
-			case "in annotations" :
-			break;
-			case "in titles" :
-			break;
-		}
-	})
+			if (!found) {
+				value.el.addClass("passive")
+			} else {
+				value.el.removeClass("passive")
+			}
+		})
+		break;
+		case "in highlights" :
 
-	emptyHighlight = $('<div class="highlight" draggable="true"><div class="hl_title"></div><div class="hl_description"></div><div class="hl_content"><span></span></div><div class="project"><span class="project_name"></span><div class="project_select"></div></div><div class="hl_tags"></div></div>');
-	emptyHighlight.on( "dragstart", function(e){
-		$(".highlight").addClass("passive")
-		$(this).removeClass("passive")
-		$(this).css({"opacity":0});
-		$("#drag_options").addClass("enable")
+		break;
+		case "in annotations" :
+		break;
+		case "in titles" :
+		break;
+	}
+})
 
-		dragObject=this;
-		mousePressed = undefined;
+emptyHighlight = $('<div class="highlight" draggable="true"><div class="hl_title"></div><div class="hl_description"></div><div class="hl_content"><span></span></div><div class="project"><span class="project_name"></span><div class="project_select"></div></div><div class="hl_tags"></div></div>');
+emptyHighlight.on( "dragstart", function(e){
+	$(".highlight").addClass("passive")
+	$(this).removeClass("passive")
+	$(this).css({"opacity":0});
+	$("#drag_options").addClass("enable")
+
+	dragObject=this;
+	mousePressed = undefined;
 		// $(this).css({"cursor":"-webkit-grabbing"})
 	})
 
-	emptyHighlight.on( "dragend", function(e){
-		$(".highlight").removeClass("passive")
-		$(this).css({"opacity":1});
-		$("#drag_options").removeClass("enable")
+emptyHighlight.on( "dragend", function(e){
+	$(".highlight").removeClass("passive")
+	$(this).css({"opacity":1});
+	$("#drag_options").removeClass("enable")
 		// $(this).css({"cursor":"-webkit-grab"})
 	})
 
-	emptyHighlight.on( "drag", function(e){
+emptyHighlight.on( "drag", function(e){
 		// $(this).css({"cursor":"-webkit-grab"})
 	})
 
-	emptyHighlight.on( "click", function(e){
+emptyHighlight.on( "click", function(e){
 
-		$(".highlight").addClass("passive")
-		$(this).removeClass("passive")
-		$(".focus").removeClass("focus")
-		$(this).addClass("focus")
+	$(".highlight").addClass("passive")
+	$(this).removeClass("passive")
+	$(".focus").removeClass("focus")
+	$(this).addClass("focus")
 
-		$("#container_inner").css("transition","transform .4s")
-		$("#container_inner").on("transitionend", function(){
-			$("#container_inner").css("transition","none")
-			$("#container_inner").off("transitionend")
-		})
+	$("#container_inner").css("transition","transform .4s")
+	$("#container_inner").on("transitionend", function(){
+		$("#container_inner").css("transition","none")
+		$("#container_inner").off("transitionend")
+	})
 
-		$($("#relations g")[0]).css("transition","transform .4s")
-		$($("#relations g")[0]).on("transitionend", function(){
-			$($("#relations g")[0]).css("transition","none")
-			$($("#relations g")[0]).off("transitionend")
-		})
+	$($("#relations g")[0]).css("transition","transform .4s")
+	$($("#relations g")[0]).on("transitionend", function(){
+		$($("#relations g")[0]).css("transition","none")
+		$($("#relations g")[0]).off("transitionend")
+	})
 		// var sx=$("#container_inner").css("transform").split(/, |\(|\)/)[1]
 		// var sy=$("#container_inner").css("transform").split(/, |\(|\)/)[4]
 
