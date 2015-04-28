@@ -19,9 +19,14 @@ $(function() {
 	var mousePressed = 0;
 	var matrix;
 
-	$("#relations").click(function(){
-		$(".focus").removeClass("focus")
-		$(".passive").removeClass("passive")
+	$("#container").click(function(e){
+		if(e.target.id=="container"){
+		
+			$(".focus").removeClass("focus")
+			$(".passive").removeClass("passive")
+			// alert("huh")
+		}
+		
 	})
 
 	$(".chosen").chosen({disable_search_threshold: 5})
@@ -122,8 +127,7 @@ $(function() {
   		if (matrix.length<7) {
   			matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
   		};
-  		console.log(matrix[5]+"  //   "+matrix[6])
-	
+  		
 
 		var x = window.innerWidth/2-(parseInt(matrix[5])+itemWidth/2);
 		var y = window.innerHeight/2-(parseInt(matrix[6])+itemWidth/2);
