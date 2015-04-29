@@ -68,6 +68,11 @@ db.open( {
 } ).then( function ( s ) {
 	server = s
 
+	if(ready)
+		init()
+	else
+		ready=true
+
 	var now = $.now()
 
 	server.authors.get( "Unknown" ).then( function ( result ) {

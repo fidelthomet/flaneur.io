@@ -12,7 +12,17 @@ var getRelationsPromise = []
 var itemWidth=336
 var marginLR = 32
 
+var ready = false;
+
 $(function() {
+	if(ready)
+		init()
+	else
+		ready=true
+})
+
+function init(){
+
 	// DRAGGING
 	var dragObject;
 	var zoomLevel = 1000;
@@ -44,9 +54,9 @@ $(function() {
 	$(".sentence_option").on("keydown", function(e){
 		if (e.keyCode==13) {
 			event.preventDefault();
-			
+
 			this.blur()
-			
+
 		}
 	})
 
@@ -342,7 +352,7 @@ $(document).on("mouseup", function(){
 	mousePressed = undefined;
 })
 
-})
+}
 
 function retrieveAllArticles(timestamp){
 	if(!timestamp)
