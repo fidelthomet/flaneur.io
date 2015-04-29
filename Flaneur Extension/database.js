@@ -1,5 +1,7 @@
 var server;
 
+var ready = false;
+
 //---
 // INIT-DB
 //---

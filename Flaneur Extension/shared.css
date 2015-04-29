@@ -93,6 +93,9 @@ input, textarea, keygen, select, button{
 	transition: opacity .4s;
 }
 
+
+
+
 .highlight.passive {
 	background: #FCFCFC
 }

@@ -12,7 +12,6 @@ var getRelationsPromise = []
 var itemWidth=336
 var marginLR = 32
 
-var ready = false;
 
 $(function() {
 	if(ready)
@@ -52,9 +51,10 @@ function init(){
 	})
 
 	$(".sentence_option").on("keydown", function(e){
+		console.log(e.keyCode)
 		if (e.keyCode==13) {
-			event.preventDefault();
-
+			
+			window.getSelection().removeAllRanges()
 			this.blur()
 
 		}
@@ -69,7 +69,7 @@ function init(){
 				reAddNode(value)
 			})
 		} else {
-
+			$(".tag").removeClass("passive")
 			var searchTerm = $(this).html().replace(/&nbsp;/gi,' ').toLowerCase()
 			switch($("#search_in").val()){
 				case "everywhere" :
@@ -122,6 +122,7 @@ function reAddNode(value){
 	if(!graph.hasNode(value.hl_id)){
 		graph.addNode(value.hl_id,"hl")
 		value.el.show()
+		value.el.removeClass("passive")
 		for (var i = 0; i < value.annotations.length; i++) {
 			if(!graph.hasNode(value.annotations[i].an_id)){
 				annotations[value.annotations[i].an_id].el.show()
@@ -147,6 +148,15 @@ $("#sentence_search").on("keyup", function(){
 				found += value.annotations[i].annotation.toLowerCase().indexOf(searchTerm);
 			};
 
+			if (!found) {
+				value.el.addClass("passive")
+			} else {
+				value.el.removeClass("passive")
+			}
+		})
+		$.each(annotations, function(index, value) {
+			var found = 1;
+			found += value.annotation.toLowerCase().indexOf(searchTerm);
 			if (!found) {
 				value.el.addClass("passive")
 			} else {
@@ -188,6 +198,10 @@ emptyHighlight.on( "drag", function(e){
 	})
 
 emptyHighlight.on( "click", function(e){
+	$(".tag").addClass("passive")
+	for (var i = 0; i < highlights[this.id.split("hl-")[1]].annotations.length; i++) {
+		annotations[highlights[this.id.split("hl-")[1]].annotations[i].an_id].el.removeClass("passive")
+	};
 
 	$(".highlight").addClass("passive")
 	$(this).removeClass("passive")
