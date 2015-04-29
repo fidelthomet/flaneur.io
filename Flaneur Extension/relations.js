@@ -195,6 +195,10 @@ function myGraph(el) {
 					$("#hl-"+d.id).css({"transform":createMatrix([1,0,0,1,d.x-itemWidth/2,d.y-highlights[d.id].height/2])});
 				else if (d.type=="an")
 					$("#an-"+d.id).css({"transform":createMatrix([1,0,0,1,d.x-annotations[d.id].width/2,d.y-annotations[d.id].height/2])});
+				else if (d.type=="au"){
+					// console.log(".")
+					$(".tag[author='au-" + d.id +"']").css({"transform":createMatrix([1,0,0,1,d.x-authors[d.id].width/2,d.y-authors[d.id].height/2])});
+				}
 				return "translate(" + d.x + "," + d.y + ")"; });
 
 			link.attr("x1", function(d) { return d.source.x; })
@@ -205,9 +209,14 @@ function myGraph(el) {
 
 
 		force
-		.distance(50)
+		.distance(5000)
 		.linkDistance( 252 )
 		.charge(-5000)
+		// .linkStrength(0.1)
+		// .friction(0.1)
+		// .gravity(0.5)
+		 // .theta(0.99)
+		// .alpha(0.01)
 		.size([w, h])
 		.start();
 	};

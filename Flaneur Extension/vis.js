@@ -1,6 +1,9 @@
 var highlights = {}
 var articles = {}
 var annotations = {}
+var authors = {}
+var sources = {}
+
 var lastRefresh = 0
 var emptyHighlight;
 var emptyHlTag;
@@ -28,13 +31,15 @@ function init(){
 	var mousePressed = 0;
 	var matrix;
 
-	$("#container").click(function(e){
-		if(e.target.id=="container"){
+	$("#relations").click(function(e){
+		// console.log(e.target)
+		// if(e.target.id=="container"){
 
 			$(".focus").removeClass("focus")
 			$(".passive").removeClass("passive")
+
 			// alert("huh")
-		}
+		// }
 		
 	})
 
@@ -51,7 +56,6 @@ function init(){
 	})
 
 	$(".sentence_option").on("keydown", function(e){
-		console.log(e.keyCode)
 		if (e.keyCode==13) {
 			
 			window.getSelection().removeAllRanges()
@@ -362,9 +366,30 @@ $("#container").on("mousemove", function(e){
 		
 	})
 
-$(document).on("mouseup", function(){
-	mousePressed = undefined;
-})
+	$(document).on("mouseup", function(){
+		mousePressed = undefined;
+	})
+
+	$("#network_opt_authors").click(function(){
+		$(this).toggleClass("active");
+		if ($(this).hasClass("active")) {
+			$(".author").show()
+			$.each(authors, function(index, value) {
+				if(value.author!="Unknown")
+					graph.addNode(value.author,"au")
+			});
+			$.each(highlights, function(index, value) {
+				if(value.author!="Unknown")
+					graph.addLink(value.hl_id,value.author,1)
+			})
+		} else {
+			$(".author").hide()
+			$.each(authors, function(index, value) {
+				if(value.author!="Unknown")
+					graph.removeNode(value.author)
+			});
+		}
+	})
 
 }
 
@@ -377,6 +402,7 @@ function retrieveAllArticles(timestamp){
 			results[i].index = i
 			articles[results[i].url]=results[i]
 			buildArticleDom(results[i].url)
+			buildArticleAndAuthorDom(results[i].url)
 		};
 		retrieveData(timestamp)
 	})
@@ -432,8 +458,32 @@ function getAllAnnotations(){
 		}
 
 
+		getAllAuthors()
 		
-		drawWeb()
+	})
+}
+
+function getAllAuthors(){
+	server.authors.query().all().execute().then( function(results){
+		for (var i = 0; i < results.length; i++) {
+			authors[results[i].author]=results[i]
+			if(results[i].author!="Unknown")
+				buildAuthorDom(results[i].author)
+		}
+
+
+		getAllSources()
+	})
+}
+
+function getAllSources(){
+	server.hosts.query().all().execute().then( function(results){
+		for (var i = 0; i < results.length; i++) {
+			sources[results[i].host]=results[i]
+			buildSourceDom(results[i].host)
+		}
+
+		drawNetwork()
 	})
 }
 
@@ -457,7 +507,7 @@ function getAnnotationsBy_hl_id(hl_id){
 	})
 }
 
-function buildArticleDom(url){
+function buildArticleAndAuthorDom(url){
 	articles[url].el = emptyArticle.clone(true)
 	.attr("article_url",url)
 
@@ -511,6 +561,51 @@ function buildAnnotationDom(an_id){
 	annotations[an_id].width=annotations[an_id].el.width()
 }
 
+function buildAuthorDom(author){
+
+	authors[author].el = emptyTag.clone(true)
+	.attr("author","au-"+author)
+	.addClass("author")
+
+	authors[author].el.children("span").text(author)
+	
+
+	$("#container_inner").append(authors[author].el)
+
+	authors[author].height=authors[author].el.height()
+	authors[author].width=authors[author].el.width()
+}
+
+function buildArticleDom(url){
+
+	articles[url].titleEl = emptyTag.clone(true)
+	.attr("article","ar-"+url)
+	.addClass("article")
+
+	articles[url].titleEl.children("span").text(articles[url].title)
+	
+
+	$("#container_inner").append(articles[url].titleEl)
+
+	articles[url].height=articles[url].titleEl.height()
+	articles[url].width=articles[url].titleEl.width()
+}
+
+function buildSourceDom(source){
+
+	sources[source].titleEl = emptyTag.clone(true)
+	.attr("source","so-"+source)
+	.addClass("source")
+
+	sources[source].titleEl.children("span").text(sources[source].title)
+	
+
+	$("#container_inner").append(sources[source].titleEl)
+
+	sources[source].height=sources[source].titleEl.height()
+	sources[source].width=sources[source].titleEl.width()
+}
+
 
 //---
 // HELPER
@@ -521,7 +616,7 @@ function createMatrix(values){
 
 //VISUALISATIONS
 
-function drawWeb(){
+function drawNetwork(){
 	$("#container_inner").addClass("g_network")
 	graph = new myGraph("#relations");
 	var graph_id = 0

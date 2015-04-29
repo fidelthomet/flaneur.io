@@ -34,27 +34,57 @@ body{
 }
 
 #header {
-	background: #F2F2F2;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 44px;
-	font-size: 20px;
-	border-bottom: 1px solid #404040;
+	  background: rgba(255,255,255,.9);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 89px;
+  font-size: 20px;
+  border-bottom: 1px solid #A6A6A6;
+
+  z-index: -2;
+  -webkit-user-select: none;
 }
 
 #header #flaneur{
-	background: #FFF500;
-	height: 32px;
-	padding: 12px 12px 0 12px;
-	font-weight: 700;
-	display: inline-block;
+	  background: #FFF500;
+  height: 77px;
+  padding: 12px 8px 0 12px;
+  font-weight: 700;
+  display: inline-block;
+  text-align: right;
+  width: 200px;
+  float: left;
+  cursor: default;
+}
+
+#title_background{
+	  background: #fff500;
+  height: 100%;
+  width: 20px;
+  /* width: 100%; */
+  float: left;
+  transform: matrix(1,0,-.2,1,0,0);
+  margin-left: -10px;
+  margin-right: 12px;
+  z-index: -1;
+}
+
+#search_background{
+position: absolute;
+  width: 100%;
+  height: 44px;
+  background: #f2f2f2;
+  z-index: -1;
+  border-bottom: 1px solid #A6A6A6;
 }
 
 #header #sentence{
-	padding: 0px 0px 0px 6px;
-	display: inline-block;
+	padding: 4px 0px 0px 8px;
+  display: inline-block;
+  cursor: default;
+
 }
 
 #header #sentence #sentence_search{
@@ -71,6 +101,21 @@ body{
 	background: #FFF500;
 	display: inline-block;
 	padding: 5px 6px 1px 6px;
+	-webkit-user-select: text;
+	cursor: pointer;
+}
+
+.graph_option{
+
+  font-weight: 700;
+  background: #f2f2f2;
+  display: inline;
+  padding: 7px 6px 4px 6px;
+  cursor: pointer;
+}
+
+.graph_option.active{
+	background: #FFF500;
 }
 
 #container{
@@ -80,6 +125,21 @@ body{
 	width: 100%;
 	bottom:  0px;
 	overflow: hidden;
+	z-index: -3;
+}
+
+.graph_options{
+	cursor: default;
+  height: 32px;
+  /* background: RGBA(255,255,255,.9); */
+  /* margin-top: -44px; */
+  /* border-bottom: 1px solid #A6A6A6; */
+  /* padding-left: 120px; */
+  display: inline-block;
+  padding-top: 19px;
+  padding-left: 8px;
+  clear: both;
+  /* float: right; */
 }
 
 #three{
@@ -208,4 +268,18 @@ svg{
 	position: absolute;
 	z-index: 1;
 }
+
+.tag.source{
+	display: none;
+}
+
+.tag.author{
+	display: none
+}
+
+.tag.article{
+	display: none;
+}
+
+
 

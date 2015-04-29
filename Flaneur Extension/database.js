@@ -182,7 +182,6 @@ function removeHighlight(data){
 	})
 
 	server.relations.query("an_id").only(data).execute().then(function(results) {
-		
 		for (var i = 0; i < results.length; i++) {
 			if(results[i].hl_id==data){
 				server.relations.remove( results[i].id )
