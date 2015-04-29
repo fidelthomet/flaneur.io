@@ -207,6 +207,8 @@ emptyHighlight.on( "click", function(e){
 		annotations[highlights[this.id.split("hl-")[1]].annotations[i].an_id].el.removeClass("passive")
 	};
 
+	$(".tag[author='au-" + highlights[this.id.split("hl-")[1]].author +"']").removeClass("passive")
+
 	$(".highlight").addClass("passive")
 	$(this).removeClass("passive")
 	$(".focus").removeClass("focus")
@@ -244,6 +246,77 @@ emptyHighlight.on( "click", function(e){
 emptyHlTag = $('<span></span>')
 
 emptyTag = $('<div class="tag"><span></span></div>');
+
+emptyTag.click(function(){
+
+	$(".tag").addClass("passive")
+	$(".highlight").addClass("passive")
+	$(".focus").removeClass("focus")
+
+	$(this).removeClass("passive")
+
+	var id
+
+	if ($(this).hasClass("annotation")) {
+		id = this.id.split("an-")[1]
+	} else if ($(this).hasClass("author")) {
+		id = $(this).attr("author")
+	}
+
+	if(id){
+		$.each(graph.getLinks(), function(index, value) {
+			if (value.source.id==id) {
+				removePassiveClass(value.target)
+			} else if (value.target.id==id) {
+				removePassiveClass(value.source)
+			}
+		})
+	}
+
+	function removePassiveClass(linkedObj){
+		switch(linkedObj.type){
+			case "an":
+			$("#an-"+linkedObj.id).removeClass("passive")
+			break;
+
+			case "au":
+			$(".tag[author='au-" + d.id +"']").removeClass("passive")
+			break;
+
+			case "hl":
+			$("#hl-"+linkedObj.id).removeClass("passive")
+			break;
+		}
+	}
+
+
+	$("#container_inner").css("transition","transform .4s")
+	$("#container_inner").on("transitionend", function(){
+		$("#container_inner").css("transition","none")
+		$("#container_inner").off("transitionend")
+	})
+
+	$($("#relations g")[0]).css("transition","transform .4s")
+	$($("#relations g")[0]).on("transitionend", function(){
+		$($("#relations g")[0]).css("transition","none")
+		$($("#relations g")[0]).off("transitionend")
+	})
+
+
+	matrix = $(this).css("transform").split(/, |\(|\)/)
+
+	if (matrix.length<7) {
+		matrix=["matrix", 1, 0, 0, 1, 0, 0, ""]
+	};
+
+
+	var x = window.innerWidth/2-(parseInt(matrix[5])+itemWidth/2);
+	var y = window.innerHeight/2-(parseInt(matrix[6])+itemWidth/2);
+	$("#container_inner").css("transform",createMatrix([1,0,0,1,x,y]))
+	$($("#relations g")[0]).css("transform",createMatrix([1,0,0,1,x,y]))
+	zoomLevel=1000;
+
+})
 
 emptyArticle = $('<div class="article"><div class="article_title"><div class="caption">title</div><div class="content" contentEditable="plaintext-only"></div></div><div class="article_author"><div class="caption">author</div><div class="content" contentEditable="plaintext-only"></div></div></div>')
 
@@ -366,30 +439,30 @@ $("#container").on("mousemove", function(e){
 		
 	})
 
-	$(document).on("mouseup", function(){
-		mousePressed = undefined;
-	})
+$(document).on("mouseup", function(){
+	mousePressed = undefined;
+})
 
-	$("#network_opt_authors").click(function(){
-		$(this).toggleClass("active");
-		if ($(this).hasClass("active")) {
-			$(".author").show()
-			$.each(authors, function(index, value) {
-				if(value.author!="Unknown")
-					graph.addNode(value.author,"au")
-			});
-			$.each(highlights, function(index, value) {
-				if(value.author!="Unknown")
-					graph.addLink(value.hl_id,value.author,1)
-			})
-		} else {
-			$(".author").hide()
-			$.each(authors, function(index, value) {
-				if(value.author!="Unknown")
-					graph.removeNode(value.author)
-			});
-		}
-	})
+$("#network_opt_authors").click(function(){
+	$(this).toggleClass("active");
+	if ($(this).hasClass("active")) {
+		$(".author").show()
+		$.each(authors, function(index, value) {
+			if(value.author!="Unknown")
+				graph.addNode(value.author,"au")
+		});
+		$.each(highlights, function(index, value) {
+			if(value.author!="Unknown")
+				graph.addLink(value.hl_id,value.author,1)
+		})
+	} else {
+		$(".author").hide()
+		$.each(authors, function(index, value) {
+			if(value.author!="Unknown")
+				graph.removeNode(value.author)
+		});
+	}
+})
 
 }
 
@@ -511,6 +584,8 @@ function buildArticleAndAuthorDom(url){
 	articles[url].el = emptyArticle.clone(true)
 	.attr("article_url",url)
 
+
+
 	articles[url].el.children(".article_title").children(".content").text(articles[url].title)
 	articles[url].el.children(".article_author").children(".content").text(articles[url].author)
 
@@ -551,6 +626,7 @@ function buildAnnotationDom(an_id){
 
 	annotations[an_id].el = emptyTag.clone(true)
 	.attr("id","an-"+an_id)
+	.addClass("annotation")
 
 	annotations[an_id].el.children("span").text(annotations[an_id].annotation)
 	
@@ -566,6 +642,8 @@ function buildAuthorDom(author){
 	authors[author].el = emptyTag.clone(true)
 	.attr("author","au-"+author)
 	.addClass("author")
+
+	console.log(author)
 
 	authors[author].el.children("span").text(author)
 	

@@ -274,7 +274,13 @@ svg{
 }
 
 .tag.author{
-	display: none
+	display: none;
+	background: #7ED2FF;
+	color: #404040;
+}
+
+.tag.author span{
+	color: #404040;
 }
 
 .tag.article{

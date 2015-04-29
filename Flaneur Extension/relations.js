@@ -114,6 +114,14 @@ function myGraph(el) {
 		update();
 	};
 
+	this.getNodes = function(){
+		return nodes
+	}
+
+	this.getLinks = function(){
+		return links
+	}
+
 	this.addLink = function (source, target, value) {
 		links.push({"source":findNode(source),"target":findNode(target),"value":value});
 		update();
