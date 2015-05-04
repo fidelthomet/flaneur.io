@@ -4,16 +4,33 @@
 	<meta charset="UTF-8">
 	<title>Flaneur.io</title>
 	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="eventPage.js"></script>
-	<script type="text/javascript" src="viewData.js"></script>
+	<script src="db.js"></script>
+	<script src="database.js"></script>
+	<script src="https://use.typekit.net/ehg6kcs.js"></script>
+	<script src="typekitReferrer.js"></script>
+
+	<script src="flaneur.js"></script>
 
 	<link rel="stylesheet" href="flaneur.css">
-
 </head>
 <body>
-	<div id="container">
-
-	<div id="drawit"></div>
+	<header>
+		<div id="diagonal"></div>
+		<div id="title">flaneur·io</div>
+		<div id="icons">
+			<div id="search" class="icon"></div>
+			<div id="view" class="icon"></div>
+			<div id="options" class="icon"></div>
+		</div>
+	</header>
+	<div id="content">
+		<div class="item focus">
+			<div class="itemHeader"></div>
+			<div class="highlights">
+				<div class="itemDescription"></div>
+				<div class="highlight"></div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

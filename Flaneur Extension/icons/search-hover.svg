@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.1 (12005) - http://www.bohemiancoding.com/sketch -->
+    <title>Search</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Icons-Copy" sketch:type="MSLayerGroup" fill="#3F3F3F">
+            <g id="Search" sketch:type="MSShapeGroup">
+                <path d="M18.8789805,22.7661894 C18.3201181,21.8064764 18,20.690622 18,19.5 C18,15.9101491 20.9101491,13 24.5,13 C28.0898509,13 31,15.9101491 31,19.5 C31,23.0898509 28.0898509,26 24.5,26 C23.309378,26 22.1935236,25.6798819 21.2338106,25.1210195 L14.375,31 L13,29.625 L18.8789805,22.7661894 L18.8789805,22.7661894 Z M0,0 L44,0 L44,44 L0,44 L0,0 Z M24.5,24 C26.9852814,24 29,21.9852814 29,19.5 C29,17.0147186 26.9852814,15 24.5,15 C22.0147186,15 20,17.0147186 20,19.5 C20,21.9852814 22.0147186,24 24.5,24 Z" id="Rectangle-1"></path>
+            </g>
+        </g>
+    </g>
+</svg>

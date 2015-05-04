@@ -564,7 +564,7 @@ function getAnnotationsBy_hl_id(hl_id){
 	return new Promise(function(resolve, reject) {
 		highlights[hl_id].annotations=[]
 
-		server.relations.query("hl_id").only(hl_id).execute().then(function(results){
+		server.an_relations.query("hl_id").only(hl_id).execute().then(function(results){
 			var getAnnotationsPromises = []
 
 			for (var i = 0; i < results.length; i++) {

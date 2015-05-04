@@ -62,16 +62,18 @@ function handleData(data){
 				result.updated=data.updated
 				server.hosts.update(result)
 			}else{
-				server.hosts.add({"host":data.host, "created":data.created, "updated":data.updated})
+				server.hosts.add({"ho_id": genId(), "host":data.host, "created":data.created, "updated":data.updated})
 			}
 		})
 
 		server.urls.get( data.url ).then(function(result) {
 			if(result){
 				result.updated=data.updated
+				result.img = data.img
+				result.description = data.description
 				server.urls.update(result)
 			}else{
-				server.urls.add({"url":data.url, "title":data.title, "host":data.host, "author": data.author, "created":data.created, "updated":data.updated})
+				server.urls.add({"ar_id": genId(), "description": data.description, "img": data.img, "url":data.url, "title":data.title, "host":data.host, "author": data.author, "created":data.created, "updated":data.updated})
 			}
 		})
 
@@ -80,7 +82,7 @@ function handleData(data){
 				result.updated=data.updated
 				server.authors.update(result)
 			}else{
-				server.authors.add({"author":data.author, "created":data.created, "updated":data.updated})
+				server.authors.add({"au_id": genId(), "author":data.author, "created":data.created, "updated":data.updated})
 			}
 		})
 
@@ -90,7 +92,7 @@ function handleData(data){
 				server.projects.update(result)
 			}else{
 				console.log("this shouldn't have happened")
-				server.projects.add({"project":data.project, "created":data.created, "updated":data.updated})
+				server.projects.add({"pr_id": genId(), "project":data.project, "created":data.created, "updated":data.updated})
 			}
 		})
 	}
@@ -153,7 +155,7 @@ function handleData(data){
 					});
 
 				})
-				server.relations.query( "hl_id" ).only(results[i].hl_id).execute().then(function( results ){
+				server.an_relations.query( "hl_id" ).only(results[i].hl_id).execute().then(function( results ){
 					for (var i = 0; i < results.length; i++) {
 						console.log(results)
 						getAnnotationsForHighlight(results[i])

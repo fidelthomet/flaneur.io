@@ -1,29 +1,63 @@
-.item{
-	max-width: 400px;
-  	margin: 10px;
-  	float: left;
-  	line-height: 17px;
-  	font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
-  	position: absolute;
-  	transition: transform .5s;
-}
+body {
+  font-family: "jaf-lapture-display", serif; }
+  body header {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 44px;
+    background: #f2f2f2; }
+    body header #diagonal {
+      background: #fff540;
+      position: absolute;
+      width: 20px;
+      height: 44px;
+      transform: matrix(1, 0, -0.2, 1, 168, 0);
+      position: absolute; }
+    body header #title {
+      width: 178px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 20px;
+      padding: 12px 0px 7px 1px;
+      background: #fff540;
+      position: absolute; }
+    body header #icons {
+      position: absolute;
+      width: 132px;
+      height: 44px;
+      right: 0px; }
+      body header #icons .icon {
+        width: 44px;
+        height: 44px;
+        float: left;
+        background: center center no-repeat; }
+        body header #icons .icon#search {
+          background-image: url("icons/search.svg"); }
+          body header #icons .icon#search:hover {
+            background-image: url("icons/search-hover.svg"); }
+        body header #icons .icon#view {
+          background-image: url("icons/view.svg"); }
+          body header #icons .icon#view:hover {
+            background-image: url("icons/view-hover.svg"); }
+        body header #icons .icon#options {
+          background-image: url("icons/options.svg"); }
+          body header #icons .icon#options:hover {
+            background-image: url("icons/options-hover.svg"); }
+  body #content .item {
+    position: absolute; }
+    body #content .item.focus {
+      top: 52px;
+      width: 336px;
+      left: 50%;
+      margin-left: -168px; }
+    body #content .item .itemHeader {
+      width: 336px;
+      height: 168px;
+      background: #f2f2f2; }
+    body #content .item .highlights {
+      background: #f2f2f2;
+      overflow: auto;
+      bottom: 0px; }
 
-.item .highlight{
-	background: rgb(255,245,0);
-	font: 12px/normal LaptureDisplay-Regular, Georgia, serif;
-}
-
-.host{
-	background: #000;
-	color: #fff;
-		max-width: 400px;
-  	margin: 10px;
-  	float: left;
-  		font: 12px/normal LaptureDisplay-Bold, Georgia, serif;
-  		padding: 2px 3px 0px;
-	transition: transform .5s;
-}
-
-#container{
-	transition: transform .5s;
-}
+/*# sourceMappingURL=flaneur.css.map */

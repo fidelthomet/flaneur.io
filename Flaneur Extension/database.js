@@ -6,7 +6,7 @@ var ready = false;
 // INIT-DB
 //---
 db.open( {
-	server: 'flaneur',
+	server: 'flaneurIO',
 	version: 1,
 	schema: {
 		highlights: {
@@ -16,8 +16,7 @@ db.open( {
 				host: {},
 				url: {},
 				created: {},
-				author: {},
-				project: {}
+				author: {}
 			}
 		},
 		annotations: {
@@ -28,7 +27,7 @@ db.open( {
 				updated: {}
 			}
 		},
-		relations: {
+		an_relations: {
 			key: { keyPath: "id", autoIncrement: true },
 			indexes: {
 				hl_id: {},
@@ -38,6 +37,7 @@ db.open( {
 		hosts: {
 			key: { keyPath: "host", autoIncrement: false },
 			indexes: {
+				ho_id: {unique: true},
 				created: {},
 				updated: {}
 			}
@@ -45,6 +45,7 @@ db.open( {
 		urls: {
 			key: { keyPath: "url", autoIncrement: false },
 			indexes: {
+				ar_id: { unique: true},
 				title: {},
 				host: {},
 				author: {},
@@ -55,6 +56,7 @@ db.open( {
 		authors: {
 			key: { keyPath: "author", autoIncrement: false },
 			indexes: {
+				au_id: {unique: true},
 				created: {},
 				updated: {}
 			}
@@ -62,8 +64,16 @@ db.open( {
 		projects: {
 			key: { keyPath: "project", autoIncrement: false },
 			indexes: {
+				pr_id: {unique: true},
 				created: {},
 				updated: {}
+			}
+		},
+		pr_relations: {
+			key: { keyPath: "id", autoIncrement: true },
+			indexes: {
+				hl_id: {},
+				pr_id: {}
 			}
 		},
 	}
@@ -79,13 +89,13 @@ db.open( {
 
 	server.authors.get( "Unknown" ).then( function ( result ) {
 		if(!result){
-			server.authors.add({author: "Unknown", created: now, updated: now})
+			server.authors.add({au_id: genId(), author: "Unknown", created: now, updated: now})
 		}
 	})
 
 	server.projects.get( "Unassigned" ).then( function ( result ) {
 		if(!result){
-			server.projects.add({project: "Unassigned", created: now, updated: now})
+			server.projects.add({pr_id: genId(), project: "Unassigned", created: now, updated: now})
 		}
 	})
 
@@ -128,7 +138,7 @@ function updateAuthor(data){
 			result.updated=$.now()
 			server.authors.update(result)
 		}else{
-			server.authors.add({"author":data.author, "created":$.now(), "updated":$.now()})
+			server.authors.add({"au_id": genId(), "author":data.author, "created":$.now(), "updated":$.now()})
 		}
 	})
 
@@ -144,11 +154,11 @@ function addAnnotation(data){
 			data.an_id=results[0].an_id
 			console.log(results[0].an_id)
 			$("#an-"+data.an_id).attr('id',"an-"+results[0].an_id)
-			server.relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
+			server.an_relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
 
 		} else {
 			server.annotations.add({"an_id": data.an_id, "annotation": data.annotation, "created":$.now(), "updated":$.now()}).then(function(){
-				server.relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
+				server.an_relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
 			})
 		}
 	})
@@ -157,11 +167,11 @@ function addAnnotation(data){
 
 function removeAnnotation(data){
 
-	server.relations.query("an_id").only(data.an_id).execute().then(function(results) {
+	server.an_relations.query("an_id").only(data.an_id).execute().then(function(results) {
 		if(results){
 			for (var i = 0; i < results.length; i++) {
 				if(results[i].hl_id==data.hl_id){
-					server.relations.remove( results[i].id )
+					server.an_relations.remove( results[i].id )
 				}
 			};
 			if(results.length==1){
@@ -181,10 +191,10 @@ function removeHighlight(data){
 		})	
 	})
 
-	server.relations.query("an_id").only(data).execute().then(function(results) {
+	server.an_relations.query("an_id").only(data).execute().then(function(results) {
 		for (var i = 0; i < results.length; i++) {
 			if(results[i].hl_id==data){
-				server.relations.remove( results[i].id )
+				server.an_relations.remove( results[i].id )
 			}
 		};
 	})
@@ -221,5 +231,7 @@ function getAnnotationsForHighlight(data){
 	})
 }
 
-
+function genId(){
+	return $.now()+"-"+Math.floor((Math.random()*.9+.1)*1000000)
+}
 

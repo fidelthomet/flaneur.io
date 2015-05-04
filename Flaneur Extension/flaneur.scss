@@ -1,0 +1,92 @@
+$light-grey: rgb(242,242,242);
+$yellow: rgb(255,245,64);
+
+body {
+	font-family: "jaf-lapture-display", serif;
+
+	header{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 44px;
+		background: $light-grey;
+		
+		#diagonal{
+			background: $yellow;
+			position: absolute;
+			width: 20px;
+			height: 44px;
+			transform: matrix(1,0,-.2,1,168,0);
+			position: absolute;
+		}
+
+		#title{
+			width: 178px;
+			text-align: right;
+			font-weight: 700;
+			font-size: 20px;
+			padding: 12px 0px 7px 1px;
+			background: $yellow;
+			position: absolute;
+		}
+
+		#icons{
+			position: absolute;
+			width: 132px;
+			height: 44px;
+			right: 0px;
+
+			.icon{
+				width: 44px;
+				height: 44px;
+				float: left;
+				background: center center no-repeat;
+
+				&#search{
+					background-image: url("icons/search.svg");
+					&:hover{
+						background-image: url("icons/search-hover.svg");
+					}
+				}
+				&#view{
+					background-image: url("icons/view.svg");
+					&:hover{
+						background-image: url("icons/view-hover.svg");
+					}
+				}
+				&#options{
+					background-image: url("icons/options.svg");
+					&:hover{
+						background-image: url("icons/options-hover.svg");
+					}
+				}
+			}
+		}
+	}
+
+	#content {
+		.item {
+			position: absolute;
+
+			&.focus {
+				top: 52px;
+				width: 336px;
+				left: 50%;
+				margin-left: -168px;
+			}
+
+			.itemHeader {
+				width: 336px;
+				height: 168px;
+				background: $light-grey;
+			}
+
+			.highlights {
+				background: $light-grey;
+				overflow: auto;
+				bottom: 0px;
+			}
+		}
+	}
+}
