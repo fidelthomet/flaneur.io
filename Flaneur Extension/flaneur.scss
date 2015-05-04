@@ -1,8 +1,12 @@
 $light-grey: rgb(242,242,242);
 $yellow: rgb(255,245,64);
+$text: #404040;
+$text-light: #8C8C8C;
+$white: #fff;
 
 body {
 	font-family: "jaf-lapture-display", serif;
+	color: $text;
 
 	header{
 		position: absolute;
@@ -45,21 +49,16 @@ body {
 
 				&#search{
 					background-image: url("icons/search.svg");
-					&:hover{
-						background-image: url("icons/search-hover.svg");
-					}
 				}
 				&#view{
 					background-image: url("icons/view.svg");
-					&:hover{
-						background-image: url("icons/view-hover.svg");
-					}
 				}
 				&#options{
 					background-image: url("icons/options.svg");
-					&:hover{
-						background-image: url("icons/options-hover.svg");
-					}
+				}
+
+				&:hover{
+					background-color: $yellow;
 				}
 			}
 		}
@@ -68,24 +67,136 @@ body {
 	#content {
 		.item {
 			position: absolute;
+			transform: scale(.75);
+			transition: transform .4s, left .4s;
+			top: 52px;
+			width: 336px;
+			left: 25%;
+			margin-left: -168px;
+
+			.itemHeader {
+				width: 336px;
+				height: 96px;
+				background: #f2f2f2;
+				background-image: -webkit-linear-gradient(top, rgba(255,255,255,.34), rgba(255,255,255,0.8));
+				background-image: -webkit-linear-gradient(top, rgba(255,255,255,.34), rgba(255,255,255,0.8)), url(http://static01.nyt.com/images/2015/05/02/upshot/03UP-View/03UP-View-facebookJumbo.jpg);
+				background-size: 100% auto;
+				position: relative;
+
+				transition: height .4s, background .4s;
+
+				.text{
+					position: absolute;
+					bottom: 0px;
+					padding: 8px;
+
+					.title{
+						font-weight: 700;
+						font-size: 16px;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						width: 320px;
+						-webkit-line-clamp: 2;
+						display: -webkit-box;
+						-webkit-box-orient: vertical;
+						padding-bottom: 4px;
+					}
+				}
+			}
+
+			.highlights {
+				display: none;
+			}
 
 			&.focus {
+				transform: scale(1);
 				top: 52px;
 				width: 336px;
 				left: 50%;
 				margin-left: -168px;
-			}
 
-			.itemHeader {
-				width: 336px;
-				height: 168px;
-				background: $light-grey;
-			}
+				.itemHeader {
+					height: 168px;
+					background-image: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,0.8));
+					background-image: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,0.8)), url(http://static01.nyt.com/images/2015/05/02/upshot/03UP-View/03UP-View-facebookJumbo.jpg);
+				}
 
-			.highlights {
-				background: $light-grey;
-				overflow: auto;
-				bottom: 0px;
+				.highlights {
+					display: block;
+					overflow-y: auto;
+
+					.description, .highlight {
+						background: #f2f2f2;
+						margin-top: 8px;
+						padding: 8px 8px 6px 8px;
+
+						&.description {
+							color: $text-light;
+						}
+
+						&.highlight {
+							
+							.hl_content{
+								margin: 1px 0px 0px 0px;
+
+								span {
+									line-height: 20px;
+									outline: 4px solid $white;
+									background: $white;
+									font-size: 16px;
+									padding: 3px 0px 1px 0px;
+								}
+							}
+
+							.hl_tags {
+								margin: 7px 0px -4px 0px;
+
+								span{
+									cursor: pointer;
+									color: $text-light;
+									font-size: 12px;
+									padding: 1px 0px 0px 0px;
+									margin-right: 20px;
+									font-style: italic;
+									white-space: pre-wrap;
+									/*word-break: break-all;*/
+									display: inline-block;
+									margin: 1px 4px 1px 0px;
+
+									&:hover{
+										color: $text;
+
+										&:before{
+											background-image: url("tag_dark.png");
+										}
+									}
+
+									&:before{
+										content: "";
+										display: block;
+										background: url("tag.png") center center no-repeat;
+										background-size: 13px 11px;
+										width: 13px;
+										height: 11px;
+										float: left;
+										margin: 0 1px 0 0;
+									}
+								}
+							}
+
+							&:hover {
+
+								.hl_content{
+
+									span {
+										outline: 4px solid $yellow;
+										background: $yellow;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
