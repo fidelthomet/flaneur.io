@@ -1,3 +1,4 @@
+@charset "UTF-8";
 body {
   font-family: "jaf-lapture-display", serif;
   color: #404040; }
@@ -7,7 +8,7 @@ body {
     top: 0px;
     width: 100%;
     height: 44px;
-    background: #f2f2f2; }
+    background: #f0f0f0; }
     body header #diagonal {
       background: #fff540;
       position: absolute;
@@ -42,22 +43,30 @@ body {
         body header #icons .icon:hover {
           background-color: #fff540; }
   body #content .item {
+    transform-origin: center top;
     position: absolute;
     transform: scale(0.75);
     transition: transform .4s, left .4s;
     top: 52px;
     width: 336px;
-    left: 25%;
-    margin-left: -168px; }
+    left: 75%;
+    margin-left: -84px;
+    height: 288px; }
+    body #content .item.isLeft {
+      left: 25%;
+      margin-left: -252px; }
     body #content .item .itemHeader {
       width: 336px;
       height: 96px;
-      background: #f2f2f2;
-      background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.8));
-      background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.8)), url(http://static01.nyt.com/images/2015/05/02/upshot/03UP-View/03UP-View-facebookJumbo.jpg);
+      background: #f0f0f0;
       background-size: 100% auto;
       position: relative;
-      transition: height .4s, background .4s; }
+      transition: height .4s, background .4s;
+      color: #000; }
+      body #content .item .itemHeader .gradient {
+        width: 100%;
+        height: 100%;
+        background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.8)); }
       body #content .item .itemHeader .text {
         position: absolute;
         bottom: 0px;
@@ -72,63 +81,70 @@ body {
           display: -webkit-box;
           -webkit-box-orient: vertical;
           padding-bottom: 4px; }
+        body #content .item .itemHeader .text .author:after {
+          content: " · "; }
     body #content .item .highlights {
-      display: none; }
+      display: block; }
+      body #content .item .highlights .description, body #content .item .highlights .highlight {
+        background: #fafafa;
+        margin-top: 8px;
+        padding: 8px 8px 6px 8px; }
+        body #content .item .highlights .description.description, body #content .item .highlights .highlight.description {
+          color: #8C8C8C; }
+        body #content .item .highlights .description.highlight .hl_content, body #content .item .highlights .highlight.highlight .hl_content {
+          margin: 1px 0px 1px 0px; }
+          body #content .item .highlights .description.highlight .hl_content span, body #content .item .highlights .highlight.highlight .hl_content span {
+            line-height: 20px;
+            outline: 4px solid #fff;
+            background: #fff;
+            font-size: 16px;
+            padding: 3px 0px 1px 0px; }
+        body #content .item .highlights .description.highlight .hl_tags, body #content .item .highlights .highlight.highlight .hl_tags {
+          margin: 6px 0px -4px 0px; }
+          body #content .item .highlights .description.highlight .hl_tags span, body #content .item .highlights .highlight.highlight .hl_tags span {
+            cursor: pointer;
+            color: #8C8C8C;
+            font-size: 12px;
+            padding: 1px 0px 0px 0px;
+            margin-right: 20px;
+            font-style: italic;
+            white-space: pre-wrap;
+            /*word-break: break-all;*/
+            display: inline-block;
+            margin: 1px 4px 1px 0px; }
+            body #content .item .highlights .description.highlight .hl_tags span:hover, body #content .item .highlights .highlight.highlight .hl_tags span:hover {
+              color: #404040; }
+              body #content .item .highlights .description.highlight .hl_tags span:hover:before, body #content .item .highlights .highlight.highlight .hl_tags span:hover:before {
+                background-image: url("tag_dark.png"); }
+            body #content .item .highlights .description.highlight .hl_tags span:before, body #content .item .highlights .highlight.highlight .hl_tags span:before {
+              content: "";
+              display: block;
+              background: url("tag.png") center center no-repeat;
+              background-size: 13px 11px;
+              width: 13px;
+              height: 11px;
+              float: left;
+              margin: 0 1px 0 0; }
+        body #content .item .highlights .description.highlight:hover .hl_content span, body #content .item .highlights .highlight.highlight:hover .hl_content span {
+          outline: 4px solid #fff540;
+          background: #fff540; }
     body #content .item.focus {
       transform: scale(1);
       top: 52px;
       width: 336px;
       left: 50%;
-      margin-left: -168px; }
+      margin-left: -168px;
+      bottom: 0px;
+      height: auto; }
       body #content .item.focus .itemHeader {
-        height: 168px;
-        background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8));
-        background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8)), url(http://static01.nyt.com/images/2015/05/02/upshot/03UP-View/03UP-View-facebookJumbo.jpg); }
+        height: 168px; }
+        body #content .item.focus .itemHeader .gradient {
+          background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8)); }
       body #content .item.focus .highlights {
-        display: block;
-        overflow-y: auto; }
-        body #content .item.focus .highlights .description, body #content .item.focus .highlights .highlight {
-          background: #f2f2f2;
-          margin-top: 8px;
-          padding: 8px 8px 6px 8px; }
-          body #content .item.focus .highlights .description.description, body #content .item.focus .highlights .highlight.description {
-            color: #8C8C8C; }
-          body #content .item.focus .highlights .description.highlight .hl_content, body #content .item.focus .highlights .highlight.highlight .hl_content {
-            margin: 1px 0px 0px 0px; }
-            body #content .item.focus .highlights .description.highlight .hl_content span, body #content .item.focus .highlights .highlight.highlight .hl_content span {
-              line-height: 20px;
-              outline: 4px solid #fff;
-              background: #fff;
-              font-size: 16px;
-              padding: 3px 0px 1px 0px; }
-          body #content .item.focus .highlights .description.highlight .hl_tags, body #content .item.focus .highlights .highlight.highlight .hl_tags {
-            margin: 7px 0px -4px 0px; }
-            body #content .item.focus .highlights .description.highlight .hl_tags span, body #content .item.focus .highlights .highlight.highlight .hl_tags span {
-              cursor: pointer;
-              color: #8C8C8C;
-              font-size: 12px;
-              padding: 1px 0px 0px 0px;
-              margin-right: 20px;
-              font-style: italic;
-              white-space: pre-wrap;
-              /*word-break: break-all;*/
-              display: inline-block;
-              margin: 1px 4px 1px 0px; }
-              body #content .item.focus .highlights .description.highlight .hl_tags span:hover, body #content .item.focus .highlights .highlight.highlight .hl_tags span:hover {
-                color: #404040; }
-                body #content .item.focus .highlights .description.highlight .hl_tags span:hover:before, body #content .item.focus .highlights .highlight.highlight .hl_tags span:hover:before {
-                  background-image: url("tag_dark.png"); }
-              body #content .item.focus .highlights .description.highlight .hl_tags span:before, body #content .item.focus .highlights .highlight.highlight .hl_tags span:before {
-                content: "";
-                display: block;
-                background: url("tag.png") center center no-repeat;
-                background-size: 13px 11px;
-                width: 13px;
-                height: 11px;
-                float: left;
-                margin: 0 1px 0 0; }
-          body #content .item.focus .highlights .description.highlight:hover .hl_content span, body #content .item.focus .highlights .highlight.highlight:hover .hl_content span {
-            outline: 4px solid #fff540;
-            background: #fff540; }
+        position: absolute;
+        overflow-x: hidden;
+        overflow-y: auto;
+        top: 168px;
+        bottom: 8px; }
 
 /*# sourceMappingURL=flaneur.css.map */

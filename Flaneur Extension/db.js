@@ -385,7 +385,7 @@
                     execute: execute,
                     filter: filter,
                     distinct: distinct,
-                    map: map
+                    map: map,
                 };
             };
             var filter = function ( ) {
