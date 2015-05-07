@@ -12,6 +12,8 @@ body {
 	font-family: "jaf-lapture-display", serif;
 	color: $text;
 
+
+
 	header{
 		position: absolute;
 		left: 0px;
@@ -79,7 +81,17 @@ body {
 			left: 75%;
 			margin-left: -84px;
 			height: 288px;
+			overflow: hidden;
 			// background: $light-grey;
+
+			&:hover{
+				// overflow: visible;
+				// z-index: 20;
+				// box-shadow: #000 1px 1px 5px;
+				// height: auto;
+				// background: #fff;
+				// margin-bottom: 8px;
+			}
 
 			&.isLeft {
 				left: 25%;
@@ -95,6 +107,7 @@ body {
 				transition: height .4s, background .4s;
 				color: $black;
 
+
 				.gradient {
 					width: 100%;
 					height: 100%;
@@ -106,7 +119,19 @@ body {
 					bottom: 0px;
 					padding: 8px;
 
+					a {
+						text-decoration: none;
+						// cursor: pointer;
+
+						&:visited{
+							color: $black;
+						}
+					}
+
+
+
 					.title{
+						// cursor: pointer;
 						font-weight: 700;
 						font-size: 16px;
 						overflow: hidden;
@@ -127,80 +152,79 @@ body {
 			}
 
 			.highlights {
-					display: block;
-					
-					.description, .highlight {
-						background: $super-light-grey;
-						margin-top: 8px;
-						padding: 8px 8px 6px 8px;
+				display: block;
 
-						&.description {
-							color: $text-light;
+				.description, .highlight {
+					background: $super-light-grey;
+					margin-top: 8px;
+					padding: 8px 8px 6px 8px;
+
+					&.description {
+						color: $text-light;
+					}
+
+					&.highlight {
+
+						.hl_content{
+							margin: 1px 0px 1px 0px;
+
+							span {
+								line-height: 20px;
+								outline: 4px solid $white;
+								background: $white;
+								font-size: 16px;
+								padding: 3px 0px 1px 0px;
+							}
 						}
 
-						&.highlight {
-							
-							.hl_content{
-								margin: 1px 0px 1px 0px;
+						.hl_tags {
+							margin: 6px 0px -4px 0px;
 
-								span {
-									line-height: 20px;
-									outline: 4px solid $white;
-									background: $white;
-									font-size: 16px;
-									padding: 3px 0px 1px 0px;
-								}
-							}
+							span{
+								cursor: pointer;
+								color: $text-light;
+								font-size: 12px;
+								padding: 1px 0px 0px 0px;
+								margin-right: 20px;
+								font-style: italic;
+								white-space: pre-wrap;
+								/*word-break: break-all;*/
+								display: inline-block;
+								margin: 1px 4px 1px 0px;
 
-							.hl_tags {
-								margin: 6px 0px -4px 0px;
-
-								span{
-									cursor: pointer;
-									color: $text-light;
-									font-size: 12px;
-									padding: 1px 0px 0px 0px;
-									margin-right: 20px;
-									font-style: italic;
-									white-space: pre-wrap;
-									/*word-break: break-all;*/
-									display: inline-block;
-									margin: 1px 4px 1px 0px;
-
-									&:hover{
-										color: $text;
-
-										&:before{
-											background-image: url("tag_dark.png");
-										}
-									}
+								&:hover{
+									color: $text;
 
 									&:before{
-										content: "";
-										display: block;
-										background: url("tag.png") center center no-repeat;
-										background-size: 13px 11px;
-										width: 13px;
-										height: 11px;
-										float: left;
-										margin: 0 1px 0 0;
+										background-image: url("tag_dark.png");
 									}
 								}
-							}
 
-							&:hover {
-
-								.hl_content{
-
-									span {
-										outline: 4px solid $yellow;
-										background: $yellow;
-									}
+								&:before{
+									content: "";
+									display: block;
+									background: url("tag.png") center center no-repeat;
+									background-size: 13px 11px;
+									width: 13px;
+									height: 11px;
+									float: left;
+									margin: 0 1px 0 0;
 								}
 							}
 						}
+
+						
 					}
 				}
+			}
+
+			.blur_gradient {
+				background-image: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+				height: 96px;
+				position: absolute;
+				width: 100%;
+				bottom: 0px;
+			}
 
 			&.focus {
 				transform: scale(1);
@@ -226,6 +250,22 @@ body {
 					overflow-y: auto;
 					top: 168px;
 					bottom: 8px;
+					.highlight{
+						&:hover {
+
+							.hl_content{
+
+								span {
+									outline: 4px solid $yellow;
+									background: $yellow;
+								}
+							}
+						}
+					}
+				}
+
+				.blur_gradient {
+					display: none;
 				}
 			}
 		}

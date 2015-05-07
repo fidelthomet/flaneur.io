@@ -69,18 +69,29 @@ function updateHash (params, clear) {
 
 function update(){
 	if(state.article!=prevState.article && state.article){
-		// if(!el.articles[state.article])
 		server.urls.query("ar_id").only(state.article).execute().then(function(results){
-			el.articles[state.article] = results[0]
-			el.articles[state.article].dom = dom.article.clone(true)
-			.attr("id","ar-"+state.article)
-			.addClass("focus")
+			if(!$("#ar-"+state.article)[0]){
+				el.articles[state.article] = results[0]
+				el.articles[state.article].dom = dom.article.clone(true)
+				.attr("id","ar-"+state.article)
+
+				$("#content").append(el.articles[state.article].dom)
+			} else {
+				$.each(results[0],function(index,item){
+					el.articles[state.article][index]=item
+				})
+				el.articles[state.article].dom.css("transform","")
+				el.articles[state.article].dom.removeClass("isLeft").removeClass("isRight").removeClass("blur")
+			}
+			
+			el.articles[state.article].dom.addClass("focus")
 
 			if(el.articles[state.article].img){
 				el.articles[state.article].dom.find(".itemHeader").css("background-image","url("+el.articles[state.article].img+")")
 			}
 
 			el.articles[state.article].dom.find(".itemHeader .text .title").text(el.articles[state.article].title)
+			el.articles[state.article].dom.find(".itemHeader .text a").attr("href",el.articles[state.article].url)
 			if(el.articles[state.article].author!="Unknown"){
 				el.articles[state.article].dom.find(".itemHeader .text .author").text(el.articles[state.article].author)
 			} else {
@@ -88,11 +99,12 @@ function update(){
 			}
 			el.articles[state.article].dom.find(".itemHeader .text .host").text(el.articles[state.article].host)
 
-			$("#content").append(el.articles[state.article].dom)
-
+			
+			el.articles[state.article].dom.find(".highlights").empty()
 			if(el.articles[state.article].description){
 				var description = dom.description.clone(true)
 				.text(el.articles[state.article].description)
+				
 				el.articles[state.article].dom.find(".highlights").append(description)
 			}
 
@@ -157,8 +169,15 @@ function update(){
 								return true
 							return ($.inArray(article.url,highlightUrls)>-1)
 						}).execute().then(function(results){
+
+							$(".blur").addClass("remove")
+							$(".created").removeClass("created")
+
 							linkedElements = results;
 							$.each(linkedElements, function(index, item){
+
+								$("#ar-"+item.ar_id).removeClass("remove")
+
 								item.links = []
 								item.linkStrength = 0
 								// HL
@@ -189,22 +208,50 @@ function update(){
 
 								item.linkStrength += item.created * .00000000000001
 							})
+
+							$(".remove").remove()
 							
 							linkedElements.sort(compare)
 
 							$.each(linkedElements,function(index,item){
-								item.dom = dom.article.clone(true)
-								.attr("id","ar-"+item.ar_id)
+
+								if(!$("#ar-"+item.ar_id)[0]){
+									el.articles[item.ar_id] = item
+									el.articles[item.ar_id].dom = dom.article.clone(true)
+									.attr("id","ar-"+item.ar_id)
+									.addClass("blur")
+
+									$("#content").append(el.articles[item.ar_id].dom)
+								} else {
+									$.each(item,function(index,subItem){
+										el.articles[item.ar_id][index]=subItem
+									})
+									item.dom = el.articles[item.ar_id].dom
+
+									
+									item.dom.removeClass("isLeft").removeClass("isRight").removeClass("focus").addClass("blur")
+								}
+
+								el.articles[item.ar_id].dom.addClass("created")
 								.click(function(){
-									$("#content").empty()
+									//$("#content").empty()
 									updateHash({article: this.id.split("ar-")[1]}, true)
 								})
 								
+								// console.log(el.articles[item.ar_id].dom)
+
 								if(item.isLeft){
+									console.log(item.isLeft)
 									item.dom.addClass("isLeft")
-									item.dom.css("transform", transformHeadline(item.dom, $(".isLeft").length*224))
+									console.log(item.dom[0].id)
+									// console.log(($(".created.isLeft").length))
+									// console.log(item.dom.attr("class"))
+									item.dom.css("transform", transformHeadline(item.dom, ($(".created.isLeft").length-1)*224))
 								} else {
-									item.dom.css("transform", transformHeadline(item.dom, $(".isRight").length*224))
+									console.log("--")
+									console.log(item.dom[0].id)
+									item.dom.addClass("isRight")
+									item.dom.css("transform", transformHeadline(item.dom, ($(".created.isRight").length-1)*224))
 								}
 
 
@@ -214,6 +261,7 @@ function update(){
 								}
 
 								item.dom.find(".itemHeader .text .title").text(item.title)
+								item.dom.find(".itemHeader .text a").removeAttr("href")
 								if(item.author!="Unknown"){
 									item.dom.find(".itemHeader .text .author").text(item.author)
 								} else {
@@ -223,13 +271,16 @@ function update(){
 
 
 
-								$("#content").append(item.dom)
+								item.dom.find(".highlights").empty()
 
 								if(item.description){
 									var description = dom.description.clone(true)
 									.text(item.description)
 									item.dom.find(".highlights").append(description)
 								}
+
+								getHighlightsByUrl(item.ar_id)
+
 							})
 						})
 					})
@@ -237,6 +288,22 @@ function update(){
 			})
 		})
 	}
+}
+
+function getHighlightsByUrl(ar_id){
+
+	server.highlights.query("url").only(el.articles[ar_id].url).execute().then(function(results){
+		el.articles[ar_id].highlights = {}
+		var highlightPromises = []
+		$.each(results,function(index, item){
+			el.articles[ar_id].highlights[item.hl_id] = item;
+			var highlight = dom.highlight.clone(true)
+			.attr("id", "hl-"+item.hl_id)
+			highlight.find(".hl_content span").text(item.highlight)
+			el.articles[ar_id].dom.find(".highlights").append(highlight)
+			highlightPromises.push(getAnnotationsByHl(ar_id, item.hl_id))
+		})
+	})
 }
 
 function getAnnotationsByHl(ar_id, hl_id){
@@ -282,7 +349,7 @@ function transformHeadline(element, y){
 /* ---
 DOM ELEMENTS
 --- */
-dom.article = $('<div class="article item"><div class="itemHeader"><div class="gradient"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div></div>')
+dom.article = $('<div class="article item"><div class="itemHeader"><div class="gradient"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div><div class="blur_gradient"></div></div>')
 dom.description = $('<div class="description"></div>')
 dom.highlight = $('<div class="highlight"><div class="hl_content"><span></span></div><div class="hl_tags"></div></div>')
 dom.annotation = $('<span></span>')

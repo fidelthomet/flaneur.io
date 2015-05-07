@@ -51,7 +51,8 @@ body {
     width: 336px;
     left: 75%;
     margin-left: -84px;
-    height: 288px; }
+    height: 288px;
+    overflow: hidden; }
     body #content .item.isLeft {
       left: 25%;
       margin-left: -252px; }
@@ -71,6 +72,10 @@ body {
         position: absolute;
         bottom: 0px;
         padding: 8px; }
+        body #content .item .itemHeader .text a {
+          text-decoration: none; }
+          body #content .item .itemHeader .text a:visited {
+            color: #000; }
         body #content .item .itemHeader .text .title {
           font-weight: 700;
           font-size: 16px;
@@ -125,9 +130,12 @@ body {
               height: 11px;
               float: left;
               margin: 0 1px 0 0; }
-        body #content .item .highlights .description.highlight:hover .hl_content span, body #content .item .highlights .highlight.highlight:hover .hl_content span {
-          outline: 4px solid #fff540;
-          background: #fff540; }
+    body #content .item .blur_gradient {
+      background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), white);
+      height: 96px;
+      position: absolute;
+      width: 100%;
+      bottom: 0px; }
     body #content .item.focus {
       transform: scale(1);
       top: 52px;
@@ -146,5 +154,10 @@ body {
         overflow-y: auto;
         top: 168px;
         bottom: 8px; }
+        body #content .item.focus .highlights .highlight:hover .hl_content span {
+          outline: 4px solid #fff540;
+          background: #fff540; }
+      body #content .item.focus .blur_gradient {
+        display: none; }
 
 /*# sourceMappingURL=flaneur.css.map */

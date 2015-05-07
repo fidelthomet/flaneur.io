@@ -3,7 +3,7 @@ var removeHighlightTimeout = {}
 
 $(function(){
 	$("#open").click(function(){
-		chrome.tabs.create({ url: "vis.html" });
+		chrome.tabs.create({ url: "flaneur.html" });
 	})
 
 	chrome.tabs.executeScript({ file: "jquery.js" }, function() {
