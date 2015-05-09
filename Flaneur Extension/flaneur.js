@@ -4,8 +4,15 @@ var dom = {}
 var el = { articles:{}, annotations:{}, authors:{}, hosts:{} }
 var links = {}
 var linkedElements = []
+var snap
+var isLeftHeight;
+var isRightHeight;
+var drawLinksTimeout;
+var snapLinks = [];
 
 $(function () {
+	snap = Snap("#svg")
+
 	handlers()
 	if(ready)
 		init()
@@ -69,12 +76,18 @@ function updateHash (params, clear) {
 
 function update(){
 	if(state.article!=prevState.article && state.article){
+		window.clearTimeout(drawLinksTimeout);
+		$.each(snapLinks, function(index,item){
+			item.animate({
+				stroke: "#FAFAFA"
+			},200,mina.easein)
+		})
 		server.urls.query("ar_id").only(state.article).execute().then(function(results){
 			if(!$("#ar-"+state.article)[0]){
 				el.articles[state.article] = results[0]
 				el.articles[state.article].dom = dom.article.clone(true)
 				.attr("id","ar-"+state.article)
-
+				el.articles[state.article].hue=Math.random()*360;
 				$("#content").append(el.articles[state.article].dom)
 			} else {
 				$.each(results[0],function(index,item){
@@ -83,11 +96,13 @@ function update(){
 				el.articles[state.article].dom.css("transform","")
 				el.articles[state.article].dom.removeClass("isLeft").removeClass("isRight").removeClass("blur")
 			}
-			
+
 			el.articles[state.article].dom.addClass("focus")
 
 			if(el.articles[state.article].img){
-				el.articles[state.article].dom.find(".itemHeader").css("background-image","url("+el.articles[state.article].img+")")
+				el.articles[state.article].dom.find(".itemHeader .img").css("background-image","url("+el.articles[state.article].img+")")
+			} else {
+				el.articles[state.article].dom.find(".itemHeader .img").css("background-color","hsl("+el.articles[state.article].hue+",90%,80%)")
 			}
 
 			el.articles[state.article].dom.find(".itemHeader .text .title").text(el.articles[state.article].title)
@@ -97,15 +112,15 @@ function update(){
 			} else {
 				el.articles[state.article].dom.find(".itemHeader .text .author").hide()
 			}
-			el.articles[state.article].dom.find(".itemHeader .text .host").text(el.articles[state.article].host)
+			el.articles[state.article].dom.find(".itemHeader .text .host").text(el.articles[state.article].host.split("www.")[el.articles[state.article].host.split("www.").length-1])
 
-			
+
 			el.articles[state.article].dom.find(".highlights").empty()
 			if(el.articles[state.article].description){
 				var description = dom.description.clone(true)
 				.text(el.articles[state.article].description)
-				
-				el.articles[state.article].dom.find(".highlights").append(description)
+				el.articles[state.article].dom.find(".itemHeader .text .description").empty()
+				el.articles[state.article].dom.find(".itemHeader .text").append(description)
 			}
 
 			server.highlights.query("url").only(el.articles[state.article].url).execute().then(function(results){
@@ -115,11 +130,17 @@ function update(){
 					el.articles[state.article].highlights[item.hl_id] = item;
 					var highlight = dom.highlight.clone(true)
 					.attr("id", "hl-"+item.hl_id)
-					highlight.find(".hl_content span").text(item.highlight)
+					highlight.find(".hl_content span.underline").text(item.highlight)
+					highlight.find(".hl_content span.text").text(item.highlight)
 					el.articles[state.article].dom.find(".highlights").append(highlight)
 					highlightPromises.push(getAnnotationsByHl(state.article, item.hl_id))
 				})
 				Promise.all(highlightPromises).then(function(){
+
+					//Set height
+					var itemHeight = el.articles[state.article].dom.find(".itemHeader").height()+el.articles[state.article].dom.find(".highlights").height()
+					el.articles[state.article].dom.css("height", itemHeight+"px")
+
 					var relPromises = []
 					// REL time
 					relPromises.push(server.urls.query("created").all().keys().execute().then(function(results){
@@ -158,6 +179,8 @@ function update(){
 
 					Promise.all(relPromises).then(function(){
 
+
+
 						server.urls.query("created").filter(function(article){
 							if(article.ar_id==el.articles[state.article].ar_id)
 								return false
@@ -165,7 +188,7 @@ function update(){
 								return true
 							if(article.host == el.articles[state.article].host)
 								return true
-							if(el.articles[state.article].author && article.author == el.articles[state.article].author)
+							if(el.articles[state.article].author!="Unknown" && article.author == el.articles[state.article].author)
 								return true
 							return ($.inArray(article.url,highlightUrls)>-1)
 						}).execute().then(function(results){
@@ -210,98 +233,215 @@ function update(){
 							})
 
 							$(".remove").remove()
+							isLeftHeight = isRightHeight = 0
 							
 							linkedElements.sort(compare)
 
+							var allItemPromise = []
+
 							$.each(linkedElements,function(index,item){
+								allItemPromise.push(new Promise(function(resolve, reject) {
+									if(!$("#ar-"+item.ar_id)[0]){
+										el.articles[item.ar_id] = item
+										el.articles[item.ar_id].dom = dom.article.clone(true)
+										.attr("id","ar-"+item.ar_id)
+										.addClass("blur")
+										item.hue = Math.random()*360;
+										if(item.isLeft){
+											item.dom.addClass("isLeft")	
+										}
+										$("#content").append(el.articles[item.ar_id].dom)
+									} else {
+										$.each(item,function(index,subItem){
+											el.articles[item.ar_id][index]=subItem
+										})
+										item = el.articles[item.ar_id]
+										item.dom = el.articles[item.ar_id].dom
 
-								if(!$("#ar-"+item.ar_id)[0]){
-									el.articles[item.ar_id] = item
-									el.articles[item.ar_id].dom = dom.article.clone(true)
-									.attr("id","ar-"+item.ar_id)
-									.addClass("blur")
+										item.isHidden=false;
+										
+										item.dom.removeClass("isLeft").removeClass("isRight").removeClass("focus").addClass("blur")
+									}
 
-									$("#content").append(el.articles[item.ar_id].dom)
-								} else {
-									$.each(item,function(index,subItem){
-										el.articles[item.ar_id][index]=subItem
+									el.articles[item.ar_id].dom.addClass("created")
+									.click(function(){
+										//$("#content").empty()
+										updateHash({article: this.id.split("ar-")[1]}, true)
 									})
-									item.dom = el.articles[item.ar_id].dom
-
 									
-									item.dom.removeClass("isLeft").removeClass("isRight").removeClass("focus").addClass("blur")
-								}
-
-								el.articles[item.ar_id].dom.addClass("created")
-								.click(function(){
-									//$("#content").empty()
-									updateHash({article: this.id.split("ar-")[1]}, true)
-								})
-								
-								// console.log(el.articles[item.ar_id].dom)
-
-								if(item.isLeft){
-									console.log(item.isLeft)
-									item.dom.addClass("isLeft")
-									console.log(item.dom[0].id)
-									// console.log(($(".created.isLeft").length))
-									// console.log(item.dom.attr("class"))
-									item.dom.css("transform", transformHeadline(item.dom, ($(".created.isLeft").length-1)*224))
-								} else {
-									console.log("--")
-									console.log(item.dom[0].id)
-									item.dom.addClass("isRight")
-									item.dom.css("transform", transformHeadline(item.dom, ($(".created.isRight").length-1)*224))
-								}
 
 
 
-								if(item.img){
-									item.dom.find(".itemHeader").css("background-image","url("+item.img+")")
-								}
+									if(item.img){
+										item.dom.find(".itemHeader .img").css("background-image","url("+item.img+")")
+									} else {
+										item.dom.find(".itemHeader .img").css("background-color","hsl("+item.hue+",90%,80%)")
+									}
 
-								item.dom.find(".itemHeader .text .title").text(item.title)
-								item.dom.find(".itemHeader .text a").removeAttr("href")
-								if(item.author!="Unknown"){
-									item.dom.find(".itemHeader .text .author").text(item.author)
-								} else {
-									item.dom.find(".itemHeader .text .author").hide()
-								}
-								item.dom.find(".itemHeader .text .host").text(item.host)
+									item.dom.find(".itemHeader .text .title").text(item.title)
+									item.dom.find(".itemHeader .text a").removeAttr("href")
+									if(item.author!="Unknown"){
+										item.dom.find(".itemHeader .text .author").text(item.author)
+									} else {
+										item.dom.find(".itemHeader .text .author").hide()
+									}
+									item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
+
+
+									if(item.description){
+										var description = dom.description.clone(true)
+										.text(item.description)
+										item.dom.find(".itemHeader .text .description").empty()
+										item.dom.find(".itemHeader .text").append(description)
+									}
+
+									if(item.isLeft){
+										var itemHeight = item.dom.find(".itemHeader").height()
+										item.dom.addClass("isLeft")
+										item.dom.css("height", itemHeight+"px")
+										if((itemHeight+isLeftHeight)*.75+54<window.innerHeight){
+											item.dom.css("transform", transformHeadline(item.dom, isLeftHeight*.75))
+											item.isHidden=false;
+										}else{
+											item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
+											item.isHidden=true;
+										}
+										isLeftHeight+=itemHeight+24
+									} else {
+										var itemHeight = item.dom.find(".itemHeader").height()
+										item.dom.addClass("isRight")
+										item.dom.css("height", itemHeight+"px")
+										if((itemHeight+isRightHeight)*.75+54<window.innerHeight){
+											item.dom.css("transform", transformHeadline(item.dom, isRightHeight*.75))
+											item.isHidden=false;
+										}else{
+											item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
+											item.isHidden=true;
+										}
+										isRightHeight+=itemHeight+24
+									}
 
 
 
-								item.dom.find(".highlights").empty()
 
-								if(item.description){
-									var description = dom.description.clone(true)
-									.text(item.description)
-									item.dom.find(".highlights").append(description)
-								}
 
-								getHighlightsByUrl(item.ar_id)
 
-							})
-						})
-					})
-				})
-			})
-		})
-	}
+
+
+									item.dom.find(".highlights").empty()
+									getHighlightsByUrl(item.ar_id).then(function(){
+										resolve()
+
+									})
+								}))
+})
+							//
+							Promise.all(allItemPromise).then(function(){
+								drawLinksTimeout = window.setTimeout(function(){
+
+									snapLinks=[];
+
+									el.articles[state.article].dock = {}
+									el.articles[state.article].dock.x = el.articles[state.article].dom.offset().left
+									el.articles[state.article].dock.y = el.articles[state.article].dom.find(".host").offset().top
+
+									$.each(el.articles,function(index,item){
+										if(!item.isHidden && item.ar_id!=state.article){
+											
+											var focusDock = {}
+											focusDock.x = el.articles[state.article].dock.x+(!item.isLeft)*336
+
+											focusDock.y = el.articles[state.article].dock.y+6
+
+											item.dock = {}
+											item.dock.x = item.dom.offset().left+item.isLeft*252
+											item.dock.y = item.dom.offset().top+32
+											
+											if (item.created == links.before || item.created == links.after){
+												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
+													fill: "none",
+													stroke: "#FAFAFA"
+												}).animate({
+													stroke: "#FF3369"
+												},400,mina.easeout))
+												item.dock.y += 4
+											}
+
+											focusDock.y -= 4;
+											if(item.author == el.articles[state.article].author && item.author!="Unknown"){
+												item.dock.y -= 8
+												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
+													fill: "none",
+													stroke: "#FAFAFA"
+												}).animate({
+													stroke: "#33FF99"
+												},400,mina.easeout))
+												item.dock.y += 8
+											}
+
+											focusDock.y += 8;
+											if(item.host == el.articles[state.article].host){
+												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
+													fill: "none",
+													stroke: "#FAFAFA"
+												}).animate({
+													stroke: "#33CCFF"
+												},400,mina.easeout))
+												item.dock.y += 4
+											}
+
+											if(item.highlights){
+												
+												$.each(item.highlights, function(index, itemB){
+													if(itemB.annotations)
+														$.each(itemB.annotations, function(index, itemC){
+															if(($.inArray(itemC.an_id,annotations)>-1)){
+																var an_offset = {}
+																an_offset.x = focusDock.x
+																an_offset.y = $(".focus .an-"+itemC.an_id).offset().top+$(".focus .an-"+itemC.an_id).height()/2+4
+
+
+																snapLinks.push(snap.path(createCurve(item.dock,an_offset)).attr({
+																	fill: "none",
+																	stroke: "#FAFAFA"
+																}).animate({
+																	stroke: "#737373"
+																},400,mina.easeout))
+																item.dock.y += 4
+															}
+														})
+												})
+											}	
+										}
+									})
+},850)
+
+})
+})
+})
+})
+})
+})
+}
 }
 
 function getHighlightsByUrl(ar_id){
-
-	server.highlights.query("url").only(el.articles[ar_id].url).execute().then(function(results){
-		el.articles[ar_id].highlights = {}
-		var highlightPromises = []
-		$.each(results,function(index, item){
-			el.articles[ar_id].highlights[item.hl_id] = item;
-			var highlight = dom.highlight.clone(true)
-			.attr("id", "hl-"+item.hl_id)
-			highlight.find(".hl_content span").text(item.highlight)
-			el.articles[ar_id].dom.find(".highlights").append(highlight)
-			highlightPromises.push(getAnnotationsByHl(ar_id, item.hl_id))
+	return new Promise(function(resolve, reject) {
+		server.highlights.query("url").only(el.articles[ar_id].url).execute().then(function(results){
+			el.articles[ar_id].highlights = {}
+			var highlightPromises = []
+			$.each(results,function(index, item){
+				el.articles[ar_id].highlights[item.hl_id] = item;
+				var highlight = dom.highlight.clone(true)
+				.attr("id", "hl-"+item.hl_id)
+				highlight.find(".hl_content span.underline").text(item.highlight)
+				highlight.find(".hl_content span.text").text(item.highlight)
+				el.articles[ar_id].dom.find(".highlights").append(highlight)
+				highlightPromises.push(getAnnotationsByHl(ar_id, item.hl_id))
+			})
+			Promise.all(highlightPromises).then(function(){
+				resolve()
+			})
 		})
 	})
 }
@@ -344,14 +484,31 @@ function transformHeadline(element, y){
 	return "matrix(.75, 0, 0, .75, 0, "+y+")"
 }
 
+function createCurve(v1,v2){
+
+	var x1,y1,x2,y2;
+
+	if(v1.x>v2.x){
+		x2 = v1.x;
+		y2 = v1.y;
+		x1 = v2.x;
+		y1 = v2.y;
+	} else {
+		x1 = v1.x;
+		y1 = v1.y;
+		x2 = v2.x;
+		y2 = v2.y;
+	}
+	return "M"+x1+" "+y1+" C "+(x1+24)+" "+y1+", "+(x2-24)+" "+y2+", "+x2+" "+y2
+}
 
 
 /* ---
 DOM ELEMENTS
 --- */
-dom.article = $('<div class="article item"><div class="itemHeader"><div class="gradient"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div><div class="blur_gradient"></div></div>')
+dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="gradient"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div><div class="blur_gradient"></div></div>')
 dom.description = $('<div class="description"></div>')
-dom.highlight = $('<div class="highlight"><div class="hl_content"><span></span></div><div class="hl_tags"></div></div>')
+dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span><span class="underline"></span></div><div class="hl_tags"></div></div>')
 dom.annotation = $('<span></span>')
 
 
