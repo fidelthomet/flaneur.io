@@ -9,6 +9,7 @@ var isLeftHeight;
 var isRightHeight;
 var drawLinksTimeout;
 var snapLinks = [];
+var scrollY = 0;
 
 $(function () {
 	snap = Snap("#svg")
@@ -38,6 +39,31 @@ function handlers(){
 
 	$("#title").click(function(){
 		getLastArticle()
+	})
+
+	$( window ).scroll(function() {
+		$.each(snapLinks, function(index, item){
+			
+			var vals = item.attr("d").split(" ")
+			console.log(item.attr("d"))
+			if(item.attr("isLeft")=="true"){
+				vals[8] = vals[6] = parseFloat(item.attr("originY"))-$(window).scrollTop()
+			} else {
+				vals[1] = vals[4] = parseFloat(item.attr("originY"))-$(window).scrollTop()
+			}	
+
+			var newD = vals[0]+" "+vals[1]+" "+vals[2]+" "+vals[3]+" "+vals[4]+" "+vals[5]+" "+vals[6]+" "+vals[7]+" "+vals[8]
+			console.log(newD)
+			console.log("--")
+			// console.log(newD)
+			// item.animate({
+			// 	d: newD
+			// },100,mina.easein)
+			item.attr("d",newD).attr({
+				fill: "none"
+			})
+		})
+		scrollY = window.scrollY
 	})
 }
 
@@ -130,7 +156,6 @@ function update(){
 					el.articles[state.article].highlights[item.hl_id] = item;
 					var highlight = dom.highlight.clone(true)
 					.attr("id", "hl-"+item.hl_id)
-					highlight.find(".hl_content span.underline").text(item.highlight)
 					highlight.find(".hl_content span.text").text(item.highlight)
 					el.articles[state.article].dom.find(".highlights").append(highlight)
 					highlightPromises.push(getAnnotationsByHl(state.article, item.hl_id))
@@ -339,6 +364,9 @@ function update(){
 							Promise.all(allItemPromise).then(function(){
 								drawLinksTimeout = window.setTimeout(function(){
 
+									$.each(snapLinks, function(index, item){
+										item.remove()
+									})
 									snapLinks=[];
 
 									el.articles[state.article].dock = {}
@@ -360,7 +388,9 @@ function update(){
 											if (item.created == links.before || item.created == links.after){
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
-													stroke: "#FAFAFA"
+													stroke: "#FAFAFA",
+													originY : focusDock.y,
+													isLeft : item.isLeft
 												}).animate({
 													stroke: "#FF3369"
 												},400,mina.easeout))
@@ -372,7 +402,9 @@ function update(){
 												item.dock.y -= 8
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
-													stroke: "#FAFAFA"
+													stroke: "#FAFAFA",
+													originY : focusDock.y,
+													isLeft : item.isLeft
 												}).animate({
 													stroke: "#33FF99"
 												},400,mina.easeout))
@@ -383,7 +415,9 @@ function update(){
 											if(item.host == el.articles[state.article].host){
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
-													stroke: "#FAFAFA"
+													stroke: "#FAFAFA",
+													originY : focusDock.y,
+													isLeft : item.isLeft
 												}).animate({
 													stroke: "#33CCFF"
 												},400,mina.easeout))
@@ -391,11 +425,12 @@ function update(){
 											}
 
 											if(item.highlights){
-												
+												var linkedAnnotations = []
 												$.each(item.highlights, function(index, itemB){
 													if(itemB.annotations)
 														$.each(itemB.annotations, function(index, itemC){
-															if(($.inArray(itemC.an_id,annotations)>-1)){
+															if(($.inArray(itemC.an_id,annotations)>-1) && ($.inArray(itemC.an_id,linkedAnnotations)==-1)){
+																linkedAnnotations.push(itemC.an_id)
 																var an_offset = {}
 																an_offset.x = focusDock.x
 																an_offset.y = $(".focus .an-"+itemC.an_id).offset().top+$(".focus .an-"+itemC.an_id).height()/2+4
@@ -403,7 +438,9 @@ function update(){
 
 																snapLinks.push(snap.path(createCurve(item.dock,an_offset)).attr({
 																	fill: "none",
-																	stroke: "#FAFAFA"
+																	stroke: "#FAFAFA",
+																	originY : an_offset.y,
+																	isLeft : item.isLeft
 																}).animate({
 																	stroke: "#737373"
 																},400,mina.easeout))
@@ -434,7 +471,6 @@ function getHighlightsByUrl(ar_id){
 				el.articles[ar_id].highlights[item.hl_id] = item;
 				var highlight = dom.highlight.clone(true)
 				.attr("id", "hl-"+item.hl_id)
-				highlight.find(".hl_content span.underline").text(item.highlight)
 				highlight.find(".hl_content span.text").text(item.highlight)
 				el.articles[ar_id].dom.find(".highlights").append(highlight)
 				highlightPromises.push(getAnnotationsByHl(ar_id, item.hl_id))
@@ -508,7 +544,7 @@ DOM ELEMENTS
 --- */
 dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="gradient"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div><div class="blur_gradient"></div></div>')
 dom.description = $('<div class="description"></div>')
-dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span><span class="underline"></span></div><div class="hl_tags"></div></div>')
+dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
 dom.annotation = $('<span></span>')
 
 

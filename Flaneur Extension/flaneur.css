@@ -55,7 +55,7 @@ body {
     position: absolute;
     transform: scale(0.75);
     transition: transform .8s, left .8s, height .6s .4s;
-    top: 52px;
+    top: 64px;
     width: 336px;
     left: 75%;
     margin-left: -84px;
@@ -145,7 +145,7 @@ body {
               color: #000; }
     body #content .item.focus {
       transform: scale(1);
-      top: 52px;
+      top: 64px;
       width: 336px;
       left: 50%;
       margin-left: -168px;
