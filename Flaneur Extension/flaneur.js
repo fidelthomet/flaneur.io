@@ -535,7 +535,7 @@ function createCurve(v1,v2){
 		x2 = v2.x;
 		y2 = v2.y;
 	}
-	return "M"+x1+" "+y1+" C "+(x1+24)+" "+y1+", "+(x2-24)+" "+y2+", "+x2+" "+y2
+	return "M"+x1+" "+y1+" C "+(x1+window.innerWidth/56)+" "+y1+", "+(x2-window.innerWidth/56)+" "+y2+", "+x2+" "+y2
 }
 
 

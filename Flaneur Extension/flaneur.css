@@ -8,41 +8,39 @@ body {
     top: 0px;
     width: 100%;
     height: 44px;
-    background: #f0f0f0;
-    z-index: 300; }
-    body header #diagonal {
-      background: #fff540;
-      position: absolute;
-      width: 20px;
-      height: 44px;
-      transform: matrix(1, 0, -0.2, 1, 168, 0);
-      position: absolute; }
+    background: #fff;
+    z-index: 300;
+    position: fixed;
+    box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px; }
     body header #title {
-      width: 178px;
       text-align: right;
       font-weight: 700;
       font-size: 20px;
-      padding: 12px 0px 7px 1px;
-      background: #fff540;
-      position: absolute; }
-    body header #icons {
+      padding: 12px 0px 0px 0px;
       position: absolute;
-      width: 132px;
+      display: inline;
+      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+      background-image: linear-gradient(to top, transparent, transparent 4px, #fff540 4px, #fff540 6px, transparent 6px);
+      left: 25%;
+      margin-left: -214px; }
+    body header #icons .icon {
+      width: 44px;
       height: 44px;
-      right: 0px; }
-      body header #icons .icon {
-        width: 44px;
-        height: 44px;
-        float: left;
-        background: center center no-repeat; }
-        body header #icons .icon#search {
-          background-image: url("icons/search.svg"); }
-        body header #icons .icon#view {
-          background-image: url("icons/view.svg"); }
-        body header #icons .icon#options {
-          background-image: url("icons/options.svg"); }
-        body header #icons .icon:hover {
-          background-color: #fff540; }
+      float: left;
+      background: center center no-repeat;
+      position: absolute;
+      left: 50%; }
+      body header #icons .icon#search {
+        background-image: url("icons/search.svg");
+        margin-left: -212px; }
+      body header #icons .icon#view {
+        background-image: url("icons/view.svg");
+        margin-left: 168px; }
+      body header #icons .icon#options {
+        background-image: url("icons/options.svg");
+        margin-left: 212px; }
+      body header #icons .icon:hover {
+        background-color: #fff540; }
   body #content #svg {
     position: fixed;
     width: 100%;
@@ -123,7 +121,7 @@ body {
             padding: 3px 0px 1px 0px; }
             body #content .item .highlights .highlight.highlight .hl_content span.text {
               text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-              background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 4px, transparent 3px); }
+              background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 4px, transparent 4px); }
             body #content .item .highlights .highlight.highlight .hl_content span.underline {
               display: none;
               border-bottom: 2px solid #fff540;
