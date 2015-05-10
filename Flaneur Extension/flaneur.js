@@ -45,7 +45,7 @@ function handlers(){
 		$.each(snapLinks, function(index, item){
 			
 			var vals = item.attr("d").split(" ")
-			console.log(item.attr("d"))
+			
 			if(item.attr("isLeft")=="true"){
 				vals[8] = vals[6] = parseFloat(item.attr("originY"))-$(window).scrollTop()
 			} else {
@@ -53,17 +53,74 @@ function handlers(){
 			}	
 
 			var newD = vals[0]+" "+vals[1]+" "+vals[2]+" "+vals[3]+" "+vals[4]+" "+vals[5]+" "+vals[6]+" "+vals[7]+" "+vals[8]
-			console.log(newD)
-			console.log("--")
-			// console.log(newD)
-			// item.animate({
-			// 	d: newD
-			// },100,mina.easein)
+			
 			item.attr("d",newD).attr({
 				fill: "none"
 			})
 		})
 		scrollY = window.scrollY
+	})
+	$("#searchfield").on("keydown",function(e){
+		if (e.keyCode==13) {
+			e.preventDefault()
+			window.getSelection().removeAllRanges()
+			this.blur()
+		}
+	})
+
+	$("#searchfield").on("keyup",function(e){
+		if($(this).text()){
+			search($(this).html().replace(/&nbsp;/gi,' ').toLowerCase())
+			$("#content").addClass("opaque")
+			// $(".item").addClass("opaque")
+		} else {
+			$("#content").removeClass("opaque")
+			$("#metahits").empty()
+			$("#articlehits").empty()
+			// $(".hitem").removeClass("opaque")
+		}
+	})
+
+	$("#metahits").on('DOMMouseScroll mousewheel', function(ev) {
+		var $this = $(this),
+		scrollTop = this.scrollTop,
+		scrollHeight = this.scrollHeight,
+		height = $this.height(),
+		delta = ev.originalEvent.wheelDelta,
+		up = delta > 0;
+
+		var prevent = function() {
+			ev.stopPropagation();
+			ev.preventDefault();
+			ev.returnValue = false;
+			return false;
+		}
+
+		if (!up && -delta > scrollHeight - height - scrollTop) {
+
+			$this.scrollTop(scrollHeight);
+			return prevent();
+		} else if (up && delta > scrollTop) {
+
+			$this.scrollTop(0);
+			return prevent();
+		}
+	});
+
+	dom.sarticle.on("click", function(){
+		$("#searchfield").text("")
+		$("#metahits").empty()
+		$("#articlehits").empty()
+		$("#content").removeClass("opaque")
+		if(state.article!=this.id.split("sar-")[1]){
+			
+			$(".article").remove()
+			el.articles = {}
+			$.each(snapLinks, function(index, item){
+				item.remove()
+			})
+			updateHash({article: this.id.split("sar-")[1]}, true)
+		}
 	})
 }
 
@@ -507,6 +564,156 @@ function getAnnotationsByHl(ar_id, hl_id){
 	})
 }
 
+function search(value){
+	var sAuthors = []
+	var sHosts = []
+	var sAnnotations = []
+	var sArticles = []
+	var sHighlights = []
+
+	var searchPromises = []
+
+	searchPromises.push(server.authors.query("updated").filter(function(author){
+		var hits = 0
+		$.each(value.split(" "), function(index, searchItem){
+			$.each(author.author.split(" "), function(index, keyItem){
+				if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+					hits++
+					return false;
+				}
+			})
+		})
+		return (hits == value.split(" ").length)
+	}).desc().execute().then(function(results){
+		sAuthors = results;
+	}))
+
+
+	searchPromises.push(server.annotations.query("updated").filter(function(annotation){
+		var hits = 0
+		$.each(value.split(" "), function(index, searchItem){
+			$.each(annotation.annotation.split(" "), function(index, keyItem){
+				if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+					hits++
+					return false;
+				}
+			})
+		})
+		return (hits == value.split(" ").length)
+	}).desc().execute().then(function(results){
+		sAnnotations = results;
+	}))
+
+	if(value.length>=3){
+		searchPromises.push(server.urls.query("updated").filter(function(url){
+			var hits = 0
+			$.each(value.split(" "), function(index, searchItem){
+				if(url.description){
+					$.each(url.description.split(" "), function(index, keyItem){
+						if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+							hits++
+							return false;
+						}
+					})
+				}
+			})
+			return (hits == value.split(" ").length)
+		}).desc().execute().then(function(results){
+			sArticles = results;
+		}))
+
+		searchPromises.push(server.highlights.query().filter(function(highlight){
+			var hits = 0
+			$.each(value.split(" "), function(index, searchItem){
+				$.each(highlight.highlight.split(" "), function(index, keyItem){
+					if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+						hits++
+						return false;
+					}
+				})
+			})
+			return (hits == value.split(" ").length)
+		}).execute().then(function(results){
+			sHighlights = results;
+		}))
+
+		searchPromises.push(server.hosts.query("updated").filter(function(host){
+			
+			return (host.host.toLowerCase().indexOf(value.toLowerCase())>-1)
+
+		}).desc().execute().then(function(results){
+			sHosts = results;
+		}))
+
+	} else {
+		searchPromises.push(server.hosts.query("updated").filter(function(host){
+			var hits = 0
+			$.each(value.split("."), function(index, searchItem){
+				$.each(host.host.split("."), function(index, keyItem){
+					if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+						hits++
+						return false;
+					}
+				})
+			})
+			return (hits == value.split(".").length)
+		}).desc().execute().then(function(results){
+			sHosts = results;
+		}))
+	}
+
+	Promise.all(searchPromises).then(function(){
+
+		$("#metahits").empty()
+
+		$.each(sAuthors, function(index, item){
+			item.dom = dom.metahit.clone(true)
+			.attr("id","sau-"+item.au_id)
+			.addClass("mauthor")
+
+			item.dom.find("span").text(item.author)
+			$("#metahits").append(item.dom)
+		})
+
+		$.each(sHosts, function(index, item){
+			item.dom = dom.metahit.clone(true)
+			.attr("id","sho-"+item.ho_id)
+			.addClass("mhost")
+
+			item.dom.find("span").text(item.host.split("www.")[item.host.split("www.").length-1])
+			$("#metahits").append(item.dom)
+		})
+
+		$.each(sAnnotations, function(index, item){
+			item.dom = dom.metahit.clone(true)
+			.attr("id","san-"+item.an_id)
+			.addClass("mannotation")
+
+			item.dom.find("span").text(item.annotation)
+			$("#metahits").append(item.dom)
+		})
+
+		$("#articlehits").css("top", $("#metahits").height()+"px")
+		$("#articlehits").empty()
+
+		$.each(sArticles, function(index, item){
+			item.dom = dom.sarticle.clone(true)
+			.attr("id","sar-"+item.ar_id)
+
+			item.dom.find(".itemHeader .img").css("background-image", "url("+item.img+")")
+			item.dom.find(".itemHeader .text .title").text(item.title)
+			if(item.author!="Unknown"){
+				item.dom.find(".itemHeader .text .author").text(item.author)
+			} else {
+				item.dom.find(".itemHeader .text .author").hide()
+			}
+			item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
+
+			$("#articlehits").append(item.dom)
+		})
+	})
+}
+
 // HELPER
 function compare(a,b) {
 	if (a.linkStrength > b.linkStrength)
@@ -542,9 +749,9 @@ function createCurve(v1,v2){
 /* ---
 DOM ELEMENTS
 --- */
-dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="gradient"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div><div class="blur_gradient"></div></div>')
+dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div></div>')
 dom.description = $('<div class="description"></div>')
 dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
 dom.annotation = $('<span></span>')
-
-
+dom.metahit = $('<div class="metahit"><span></span></div>')
+dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span></div></div></div>')
