@@ -24,6 +24,8 @@ $(function () {
 function handlers(){
 	$( window ).on("hashchange", function(e) {
 
+		$("#ar-"+state.article).addClass("blur")
+		// $("#ar-"+state.article).removeClass("focus")
 		prevState = {}
 		$.each(state, function(index, item){
 			prevState[index] = item	
@@ -36,6 +38,11 @@ function handlers(){
 
 		update()
 	})
+
+	$("#search").click(function(){
+		$("#searchfield").focus()
+	})
+
 
 	$("#title").click(function(){
 		getLastArticle()
@@ -72,11 +79,15 @@ function handlers(){
 		if($(this).text()){
 			search($(this).html().replace(/&nbsp;/gi,' ').toLowerCase())
 			$("#content").addClass("opaque")
+			$(this).addClass("active")
+			$("#search").addClass("active")
 			// $(".item").addClass("opaque")
 		} else {
 			$("#content").removeClass("opaque")
 			$("#metahits").empty()
 			$("#articlehits").empty()
+			$(this).removeClass("active")
+			$("#search").removeClass("active")
 			// $(".hitem").removeClass("opaque")
 		}
 	})
@@ -112,11 +123,27 @@ function handlers(){
 		$("#searchfield").trigger("keyup")
 	})
 
+	dom.annotation.on("click", function(){
+		$("#searchfield").text($(this).text())
+		$("#searchfield").trigger("keyup")
+	})
+
+	dom.article.find(".author").on("click", function(){
+		$("#searchfield").text($(this).text())
+		$("#searchfield").trigger("keyup")
+	})
+
+	dom.article.find(".host").on("click", function(){
+		$("#searchfield").text($(this).text())
+		$("#searchfield").trigger("keyup")
+	})
+
 	dom.sarticle.on("click", function(){
 		$("#searchfield").text("")
 		$("#metahits").empty()
 		$("#articlehits").empty()
 		$("#content").removeClass("opaque")
+		$("#searchfield").trigger("keyup")
 		if(state.article!=this.id.split("sar-")[1]){
 			
 			$(".article").remove()
@@ -189,6 +216,8 @@ function update(){
 
 			if(el.articles[state.article].img){
 				el.articles[state.article].dom.find(".itemHeader .img").css("background-image","url("+el.articles[state.article].img+")")
+			} else if(el.articles[state.article].color){
+				el.articles[state.article].dom.find(".itemHeader .img").css("background-color","hsl("+el.articles[state.article].color+",90%,80%)")
 			} else {
 				el.articles[state.article].dom.find(".itemHeader .img").css("background-color","hsl("+el.articles[state.article].hue+",90%,80%)")
 			}

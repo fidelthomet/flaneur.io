@@ -53,19 +53,26 @@ body {
 			
 			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 5px, $yellow 5px, $yellow 6px, rgba(0, 0, 0, 0) 6px);
 			left: 25%;
-			margin-left: -214px;
+			margin-left: -210px;
 		}
 
 		#icons{
 			#searchfield{
 				position: absolute;
-				height: 32px;
+				height: 24px;
 				width: 336px;
 				left: 50%;
-				margin-left: -168px;
+				margin-left: -132px;
 				outline: none;
 				font-size: 20px;
 				padding-top: 12px;
+				transition: transform .4s;
+				
+				overflow: hidden;
+				
+				&.active{
+					transform: translateX(-28px)
+				}
 			}
 			.icon{
 				width: 44px;
@@ -74,25 +81,71 @@ body {
 				background: center center no-repeat;
 				position: absolute;
 				left: 50%;
-
+				
 				&#search{
 					background-image: url("icons/Search.svg");
-					margin-left: -212px;
+					margin-left: -176px;
+					transition: transform .4s, opacity .4s;
+					cursor: pointer;
+
+
+					&.active{
+						transform: translateX(-28px);
+						opacity: 0;
+					}
 				}
 				&#view{
 					background-image: url("icons/View.svg");
 					left: 75%;
-					margin-left: 126px;
+					margin-left: 122px;
 				}
 				&#options{
 					background-image: url("icons/Options.svg");
 					// margin-left: 212px;
 					left: 75%;
-					margin-left: 170px;
+					margin-left: -50px;
+
+					#option_inner{
+						display: none;
+					}
+					&:hover{
+						#option_inner{
+							display: block;
+							position: absolute;
+							top: 44px;
+							width: 252px;
+							background: #fff;
+							margin-left: 8px;
+							box-shadow: rgba(166,166,166,.6) 0px 2px 4px;
+
+							.option{
+								height: 24px;
+								font-size: 16px;
+								padding: 7px 8px 1px 8px;
+								cursor: pointer;
+								
+
+								
+						
+								a{
+									color: $black;
+									text-decoration: none;
+								}
+								a:visited{
+									color: $black;
+								}
+								&:hover span{
+									text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $yellow 2px, $yellow 3px, rgba(0, 0, 0, 0) 3px);
+								}
+							}
+						}
+					}
+
 				}
 
 				&:hover{
-					background-color: $yellow;
+					// background-color: $yellow;
 				}
 			}
 		}
@@ -321,6 +374,7 @@ body {
 						height: 20px;
 						font-size: 16px;
 						width: auto;
+						cursor: pointer;
 
 						overflow: hidden;
 						text-overflow: ellipsis;
@@ -361,12 +415,14 @@ body {
 							font-size: 12px;
 							background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $author-green 1px, $author-green 2px, rgba(0, 0, 0, 0) 2px);
 							margin-right: 4px;
+							cursor: pointer;
 						}
 
 						.host{
 							font-size: 12px;
 							background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $soruce-blue 1px, $soruce-blue 2px, rgba(0, 0, 0, 0) 2px);
 							margin-right: 4px;
+							cursor: pointer;
 						}
 						.date{
 							font-size: 12px;

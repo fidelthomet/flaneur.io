@@ -21,16 +21,20 @@ body {
       display: inline;
       background-image: linear-gradient(to top, transparent, transparent 5px, #fff540 5px, #fff540 6px, transparent 6px);
       left: 25%;
-      margin-left: -214px; }
+      margin-left: -210px; }
     body header #icons #searchfield {
       position: absolute;
-      height: 32px;
+      height: 24px;
       width: 336px;
       left: 50%;
-      margin-left: -168px;
+      margin-left: -132px;
       outline: none;
       font-size: 20px;
-      padding-top: 12px; }
+      padding-top: 12px;
+      transition: transform .4s;
+      overflow: hidden; }
+      body header #icons #searchfield.active {
+        transform: translateX(-28px); }
     body header #icons .icon {
       width: 44px;
       height: 44px;
@@ -40,17 +44,43 @@ body {
       left: 50%; }
       body header #icons .icon#search {
         background-image: url("icons/Search.svg");
-        margin-left: -212px; }
+        margin-left: -176px;
+        transition: transform .4s, opacity .4s;
+        cursor: pointer; }
+        body header #icons .icon#search.active {
+          transform: translateX(-28px);
+          opacity: 0; }
       body header #icons .icon#view {
         background-image: url("icons/View.svg");
         left: 75%;
-        margin-left: 126px; }
+        margin-left: 122px; }
       body header #icons .icon#options {
         background-image: url("icons/Options.svg");
         left: 75%;
-        margin-left: 170px; }
-      body header #icons .icon:hover {
-        background-color: #fff540; }
+        margin-left: -50px; }
+        body header #icons .icon#options #option_inner {
+          display: none; }
+        body header #icons .icon#options:hover #option_inner {
+          display: block;
+          position: absolute;
+          top: 44px;
+          width: 252px;
+          background: #fff;
+          margin-left: 8px;
+          box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px; }
+          body header #icons .icon#options:hover #option_inner .option {
+            height: 24px;
+            font-size: 16px;
+            padding: 7px 8px 1px 8px;
+            cursor: pointer; }
+            body header #icons .icon#options:hover #option_inner .option a {
+              color: #000;
+              text-decoration: none; }
+            body header #icons .icon#options:hover #option_inner .option a:visited {
+              color: #000; }
+            body header #icons .icon#options:hover #option_inner .option:hover span {
+              text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+              background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
   body #content {
     transition: opacity .4s; }
     body #content.opaque {
@@ -192,6 +222,7 @@ body {
           height: 20px;
           font-size: 16px;
           width: auto;
+          cursor: pointer;
           overflow: hidden;
           text-overflow: ellipsis;
           width: 320px;
@@ -213,11 +244,13 @@ body {
       body .item.focus .itemHeader .text .author {
         font-size: 12px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #33FF99 1px, #33FF99 2px, transparent 2px);
-        margin-right: 4px; }
+        margin-right: 4px;
+        cursor: pointer; }
       body .item.focus .itemHeader .text .host {
         font-size: 12px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #33CCFF 1px, #33CCFF 2px, transparent 2px);
-        margin-right: 4px; }
+        margin-right: 4px;
+        cursor: pointer; }
       body .item.focus .itemHeader .text .date {
         font-size: 12px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px);
