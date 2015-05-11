@@ -66,8 +66,8 @@ body {
   body .item {
     transform-origin: center top;
     position: absolute;
-    transform: scale(0.75) translateY(-256px);
-    transition: transform .8s, left .8s, height .6s, opacity .6s;
+    transform: scale(0.75);
+    transition: transform .8s, left .8s, height .6s .4s;
     top: 64px;
     width: 336px;
     left: 75%;
@@ -81,13 +81,9 @@ body {
     body .item.isLeft {
       left: 25%;
       margin-left: -252px; }
-      body .item.isLeft.remove {
-        left: -50px; }
     body .item.isRight {
       left: 75%;
       margin-left: -84px; }
-      body .item.isRight.remove {
-        left: calc(100% + 50px); }
     body .item .itemHeader {
       width: 336px;
       background-size: 100% auto;
@@ -124,10 +120,6 @@ body {
           font-size: 16px;
           background-image: linear-gradient(to top, transparent, transparent 1px, #33CCFF 1px, #33CCFF 2.3px, transparent 2.3px);
           margin-right: 4px; }
-        body .item .itemHeader .text .date {
-          font-size: 16px;
-          background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2.3px, transparent 2.3px);
-          margin-right: 4px; }
         body .item .itemHeader .text .description {
           margin-top: 6px;
           color: #737373; }
@@ -144,7 +136,7 @@ body {
             padding: 3px 0px 1px 0px; }
             body .item .highlights .highlight.highlight .hl_content span.text {
               text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-              background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
+              background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 4px, transparent 4px); }
             body .item .highlights .highlight.highlight .hl_content span.underline {
               display: none;
               border-bottom: 2px solid #fff540;
@@ -170,7 +162,6 @@ body {
       width: 336px;
       left: 50%;
       margin-left: -168px;
-      transition: transform .8s, left .8s, height .6s .2s;
       z-index: 200;
       font-size: 12px;
       position: absolute;
@@ -217,10 +208,6 @@ body {
       body .item.focus .itemHeader .text .host {
         font-size: 12px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #33CCFF 1px, #33CCFF 2px, transparent 2px);
-        margin-right: 4px; }
-      body .item.focus .itemHeader .text .date {
-        font-size: 12px;
-        background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px);
         margin-right: 4px; }
       body .item.focus .highlights {
         overflow-x: hidden;
