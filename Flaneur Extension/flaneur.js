@@ -107,6 +107,11 @@ function handlers(){
 		}
 	});
 
+	dom.metahit.on("click", function(){
+		$("#searchfield").text($(this).text())
+		$("#searchfield").trigger("keyup")
+	})
+
 	dom.sarticle.on("click", function(){
 		$("#searchfield").text("")
 		$("#metahits").empty()
@@ -196,6 +201,7 @@ function update(){
 				el.articles[state.article].dom.find(".itemHeader .text .author").hide()
 			}
 			el.articles[state.article].dom.find(".itemHeader .text .host").text(el.articles[state.article].host.split("www.")[el.articles[state.article].host.split("www.").length-1])
+			el.articles[state.article].dom.find(".itemHeader .text .date").text(moment(el.articles[state.article].created).fromNow())
 
 
 			el.articles[state.article].dom.find(".highlights").empty()
@@ -314,7 +320,8 @@ function update(){
 								item.linkStrength += item.created * .00000000000001
 							})
 
-							$(".remove").remove()
+							$(".remove").removeAttr("id")
+
 							isLeftHeight = isRightHeight = 0
 							
 							linkedElements.sort(compare)
@@ -368,7 +375,7 @@ function update(){
 										item.dom.find(".itemHeader .text .author").hide()
 									}
 									item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
-
+									item.dom.find(".itemHeader .text .date").text(moment(item.created).fromNow())
 
 									if(item.description){
 										var description = dom.description.clone(true)
@@ -424,6 +431,7 @@ function update(){
 									$.each(snapLinks, function(index, item){
 										item.remove()
 									})
+									$(".remove").remove()
 									snapLinks=[];
 
 									el.articles[state.article].dock = {}
@@ -728,30 +736,36 @@ function search(value){
 					$("#metahits").empty()
 
 					$.each(sAuthors, function(index, item){
-						item.dom = dom.metahit.clone(true)
-						.attr("id","sau-"+item.au_id)
-						.addClass("mauthor")
+						if(item.author.toLowerCase()!=value){
+							item.dom = dom.metahit.clone(true)
+							.attr("id","sau-"+item.au_id)
+							.addClass("mauthor")
 
-						item.dom.find("span").text(item.author)
-						$("#metahits").append(item.dom)
+							item.dom.find("span").text(item.author)
+							$("#metahits").append(item.dom)
+						}
 					})
 
 					$.each(sHosts, function(index, item){
-						item.dom = dom.metahit.clone(true)
-						.attr("id","sho-"+item.ho_id)
-						.addClass("mhost")
+						if(item.host.toLowerCase()!=value && item.host.split("www.")[item.host.split("www.").length-1] != value){
+							item.dom = dom.metahit.clone(true)
+							.attr("id","sho-"+item.ho_id)
+							.addClass("mhost")
 
-						item.dom.find("span").text(item.host.split("www.")[item.host.split("www.").length-1])
-						$("#metahits").append(item.dom)
+							item.dom.find("span").text(item.host.split("www.")[item.host.split("www.").length-1])
+							$("#metahits").append(item.dom)
+						}
 					})
 
 					$.each(sAnnotations, function(index, item){
-						item.dom = dom.metahit.clone(true)
-						.attr("id","san-"+item.an_id)
-						.addClass("mannotation")
+						if(item.annotation.toLowerCase()!=value){
+							item.dom = dom.metahit.clone(true)
+							.attr("id","san-"+item.an_id)
+							.addClass("mannotation")
 
-						item.dom.find("span").text(item.annotation)
-						$("#metahits").append(item.dom)
+							item.dom.find("span").text(item.annotation)
+							$("#metahits").append(item.dom)
+						}
 					})
 
 					$("#articlehits").css("top", $("#metahits").height()+"px")
@@ -769,7 +783,7 @@ function search(value){
 							item.dom.find(".itemHeader .text .author").hide()
 						}
 						item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
-
+						item.dom.find(".itemHeader .text .date").text(moment(item.created).fromNow())
 						$("#articlehits").append(item.dom)
 					})
 				})
@@ -809,13 +823,23 @@ function createCurve(v1,v2){
 	return "M"+x1+" "+y1+" C "+(x1+window.innerWidth/56)+" "+y1+", "+(x2-window.innerWidth/56)+" "+y2+", "+x2+" "+y2
 }
 
+function getTime(timestamp){
+	var then = new Date(timestamp)
+	var now = $.now()
+
+	if(then.getFullYear() == now.getFullYear()){
+
+	} else {
+		return
+	}
+}
 
 /* ---
 DOM ELEMENTS
 --- */
-dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span></div></div><div class="highlights"></div></div>')
+dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span><span class="date"></span></div></div><div class="highlights"></div></div>')
 dom.description = $('<div class="description"></div>')
 dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
 dom.annotation = $('<span></span>')
 dom.metahit = $('<div class="metahit"><span></span></div>')
-dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span></div></div></div>')
+dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span><span class="date"></span></div></div></div>')
