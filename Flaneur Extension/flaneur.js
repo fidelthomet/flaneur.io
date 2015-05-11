@@ -570,6 +570,8 @@ function search(value){
 	var sAnnotations = []
 	var sArticles = []
 	var sHighlights = []
+	var sRelations = []
+	var sAn_ids = []
 
 	var searchPromises = []
 
@@ -602,41 +604,12 @@ function search(value){
 		return (hits == value.split(" ").length)
 	}).desc().execute().then(function(results){
 		sAnnotations = results;
+		$.each(results, function(index, item){
+			sAn_ids.push(item.an_id)
+		})
 	}))
 
 	if(value.length>=3){
-		searchPromises.push(server.urls.query("updated").filter(function(url){
-			var hits = 0
-			$.each(value.split(" "), function(index, searchItem){
-				if(url.description){
-					$.each(url.description.split(" "), function(index, keyItem){
-						if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
-							hits++
-							return false;
-						}
-					})
-				}
-			})
-			return (hits == value.split(" ").length)
-		}).desc().execute().then(function(results){
-			sArticles = results;
-		}))
-
-		searchPromises.push(server.highlights.query().filter(function(highlight){
-			var hits = 0
-			$.each(value.split(" "), function(index, searchItem){
-				$.each(highlight.highlight.split(" "), function(index, keyItem){
-					if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
-						hits++
-						return false;
-					}
-				})
-			})
-			return (hits == value.split(" ").length)
-		}).execute().then(function(results){
-			sHighlights = results;
-		}))
-
 		searchPromises.push(server.hosts.query("updated").filter(function(host){
 			
 			return (host.host.toLowerCase().indexOf(value.toLowerCase())>-1)
@@ -663,53 +636,144 @@ function search(value){
 	}
 
 	Promise.all(searchPromises).then(function(){
-
-		$("#metahits").empty()
-
-		$.each(sAuthors, function(index, item){
-			item.dom = dom.metahit.clone(true)
-			.attr("id","sau-"+item.au_id)
-			.addClass("mauthor")
-
-			item.dom.find("span").text(item.author)
-			$("#metahits").append(item.dom)
-		})
-
-		$.each(sHosts, function(index, item){
-			item.dom = dom.metahit.clone(true)
-			.attr("id","sho-"+item.ho_id)
-			.addClass("mhost")
-
-			item.dom.find("span").text(item.host.split("www.")[item.host.split("www.").length-1])
-			$("#metahits").append(item.dom)
-		})
-
+		var searchPromises1 = []
 		$.each(sAnnotations, function(index, item){
-			item.dom = dom.metahit.clone(true)
-			.attr("id","san-"+item.an_id)
-			.addClass("mannotation")
-
-			item.dom.find("span").text(item.annotation)
-			$("#metahits").append(item.dom)
+			searchPromises1.push(
+				server.an_relations.query().filter(function(relation){
+					return ($.inArray(relation.an_id,sAn_ids)>-1)
+				}).execute().then(function(results){
+					console.log(results)
+					$.each(results, function(index, item){
+						sRelations.push(item.hl_id)
+					})
+				})
+			)
 		})
+		Promise.all(searchPromises1).then(function(){
+			var searchPromises2 = []
+			searchPromises2.push(server.highlights.query().filter(function(highlight){
+				var hits = 0
+				if ($.inArray(highlight.hl_id,sRelations)>-1){
+					return true;
+				} else {
+					$.each(value.split(" "), function(index, searchItem){
+						$.each(highlight.highlight.split(" "), function(index, keyItem){
+							if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+								hits++
+								return false;
+							}
+						})
+					})
+				}
+				return (hits == value.split(" ").length)
+			}).execute().then(function(results){
+				// sHighlights = results;
+				$.each(results, function(index, item){
+					sHighlights.push(item.url)
+				})
+			}))
 
-		$("#articlehits").css("top", $("#metahits").height()+"px")
-		$("#articlehits").empty()
+			Promise.all(searchPromises2).then(function(){
+				var searchPromises3 = []
+				if(value.length>=3){
+					searchPromises3.push(server.urls.query("updated").filter(function(url){
+						var hits = 0
+						var lasthits = 0
+						if ($.inArray(url.url,sHighlights)>-1){
+							return true;
+						} else {
+							$.each(value.split(" "), function(sindex, searchItem){
 
-		$.each(sArticles, function(index, item){
-			item.dom = dom.sarticle.clone(true)
-			.attr("id","sar-"+item.ar_id)
+								if(url.description){
+									$.each(url.description.split(" "), function(index, keyItem){
+										if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+											hits++
+											return false;
+										}
+									})
+								}
+								if(lasthits == hits){
+									$.each(url.title.split(" "), function(index, keyItem){
+										if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+											hits++
+											return false;
+										}
+									})
+								}
+								if(lasthits == hits){
+									$.each(url.author.split(" "), function(index, keyItem){
+										if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+											hits++
+											return false;
+										}
+									})
+								}
+								if(lasthits == hits){
+									if(url.host.toLowerCase().indexOf(searchItem.toLowerCase())>-1)
+										hits++
+								}
 
-			item.dom.find(".itemHeader .img").css("background-image", "url("+item.img+")")
-			item.dom.find(".itemHeader .text .title").text(item.title)
-			if(item.author!="Unknown"){
-				item.dom.find(".itemHeader .text .author").text(item.author)
-			} else {
-				item.dom.find(".itemHeader .text .author").hide()
-			}
-			item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
 
-			$("#articlehits").append(item.dom)
+								lasthits = hits
+							})
+						}
+
+						return (hits == value.split(" ").length)
+					}).desc().limit(10).execute().then(function(results){
+						sArticles = results;
+					}))
+				}
+				//
+				Promise.all(searchPromises3).then(function(){
+					$("#metahits").empty()
+
+					$.each(sAuthors, function(index, item){
+						item.dom = dom.metahit.clone(true)
+						.attr("id","sau-"+item.au_id)
+						.addClass("mauthor")
+
+						item.dom.find("span").text(item.author)
+						$("#metahits").append(item.dom)
+					})
+
+					$.each(sHosts, function(index, item){
+						item.dom = dom.metahit.clone(true)
+						.attr("id","sho-"+item.ho_id)
+						.addClass("mhost")
+
+						item.dom.find("span").text(item.host.split("www.")[item.host.split("www.").length-1])
+						$("#metahits").append(item.dom)
+					})
+
+					$.each(sAnnotations, function(index, item){
+						item.dom = dom.metahit.clone(true)
+						.attr("id","san-"+item.an_id)
+						.addClass("mannotation")
+
+						item.dom.find("span").text(item.annotation)
+						$("#metahits").append(item.dom)
+					})
+
+					$("#articlehits").css("top", $("#metahits").height()+"px")
+					$("#articlehits").empty()
+
+					$.each(sArticles, function(index, item){
+						item.dom = dom.sarticle.clone(true)
+						.attr("id","sar-"+item.ar_id)
+
+						item.dom.find(".itemHeader .img").css("background-image", "url("+item.img+")")
+						item.dom.find(".itemHeader .text .title").text(item.title)
+						if(item.author!="Unknown"){
+							item.dom.find(".itemHeader .text .author").text(item.author)
+						} else {
+							item.dom.find(".itemHeader .text .author").hide()
+						}
+						item.dom.find(".itemHeader .text .host").text(item.host.split("www.")[item.host.split("www.").length-1])
+
+						$("#articlehits").append(item.dom)
+					})
+				})
+			})
 		})
 	})
 }
