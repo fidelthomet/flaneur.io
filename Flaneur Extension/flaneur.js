@@ -154,6 +154,37 @@ function handlers(){
 			updateHash({article: this.id.split("sar-")[1]}, true)
 		}
 	})
+
+	$(window).resize(function(){
+		$.each(snapLinks, function(index, item){
+			
+			focusx = (window.innerWidth-336)/2
+			leftx = (window.innerWidth*.25)+42
+			rightx = (window.innerWidth*.75)-42
+			
+			var vals = item.attr("d").split(" ")
+			
+			// console.log(vals)
+
+			if(item.attr("isLeft")=="true"){
+				vals[0]="M"+leftx
+				vals[3]=(leftx+window.innerWidth/56)
+				vals[5]=(focusx-window.innerWidth/56)
+				vals[7]=(focusx)
+			} else {
+				vals[0]="M"+(focusx+336)
+				vals[3]=(focusx+336+window.innerWidth/56)
+				vals[5]=(rightx-window.innerWidth/56)
+				vals[7]=(rightx)
+			}	
+
+			var newD = vals[0]+" "+vals[1]+" "+vals[2]+" "+vals[3]+" "+vals[4]+" "+vals[5]+" "+vals[6]+" "+vals[7]+" "+vals[8]
+			
+			item.attr("d",newD).attr({
+				fill: "none"
+			})
+		})
+	})
 }
 
 function init(){
@@ -161,9 +192,22 @@ function init(){
 }
 
 function getLastArticle(){
-	server.urls.query("updated").all().desc().limit(0,1).execute().then(function(results){
-		updateHash({article: results[0].ar_id}, true)
-	})
+	
+	if(location.hash.split("#")[1]){
+		server.urls.query("ar_id").only(location.hash.split("#")[1]).desc().execute().then(function(results){
+			if(results.length){
+				updateHash({article: location.hash.split("#")[1]}, true)
+			} else {
+				server.urls.query("created").all().desc().limit(0,1).execute().then(function(results){
+					updateHash({article: results[0].ar_id}, true)
+				})
+			}
+		})
+	} else {
+		server.urls.query("created").all().desc().limit(0,1).execute().then(function(results){
+			updateHash({article: results[0].ar_id}, true)
+		})
+	}
 }
 
 function updateHash (params, clear) {
@@ -421,7 +465,7 @@ function update(){
 											item.dom.css("transform", transformHeadline(item.dom, isLeftHeight*.75))
 											item.isHidden=false;
 										}else{
-											item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
+											// item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
 											item.isHidden=true;
 										}
 										isLeftHeight+=itemHeight+24
@@ -433,7 +477,7 @@ function update(){
 											item.dom.css("transform", transformHeadline(item.dom, isRightHeight*.75))
 											item.isHidden=false;
 										}else{
-											item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
+											item.dom.css("transform", transformHeadline(item.dom, -window.innerHeight))
 											item.isHidden=true;
 										}
 										isRightHeight+=itemHeight+24
@@ -679,12 +723,12 @@ function search(value){
 				server.an_relations.query().filter(function(relation){
 					return ($.inArray(relation.an_id,sAn_ids)>-1)
 				}).execute().then(function(results){
-					console.log(results)
+					
 					$.each(results, function(index, item){
 						sRelations.push(item.hl_id)
 					})
 				})
-			)
+				)
 		})
 		Promise.all(searchPromises1).then(function(){
 			var searchPromises2 = []
@@ -759,7 +803,7 @@ function search(value){
 					}).desc().limit(10).execute().then(function(results){
 						sArticles = results;
 					}))
-				}
+}
 				//
 				Promise.all(searchPromises3).then(function(){
 					$("#metahits").empty()
@@ -816,9 +860,9 @@ function search(value){
 						$("#articlehits").append(item.dom)
 					})
 				})
-			})
-		})
-	})
+})
+})
+})
 }
 
 // HELPER

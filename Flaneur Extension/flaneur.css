@@ -19,54 +19,58 @@ body {
       padding: 12px 0px 0px 0px;
       position: absolute;
       display: inline;
-      background-image: linear-gradient(to top, transparent, transparent 5px, #fff540 5px, #fff540 6px, transparent 6px);
+      background-image: linear-gradient(to top, transparent, transparent 4px, #fff540 4px, #fff540 6px, transparent 6px);
       left: 25%;
       margin-left: -210px; }
     body header #icons #searchfield {
       position: absolute;
       height: 24px;
-      width: 336px;
+      width: 292px;
       left: 50%;
-      margin-left: -132px;
+      margin-left: -160px;
       outline: none;
       font-size: 20px;
       padding-top: 12px;
       transition: transform .4s;
       overflow: hidden; }
-      body header #icons #searchfield.active {
-        transform: translateX(-28px); }
     body header #icons .icon {
       width: 44px;
       height: 44px;
       float: left;
       background: center center no-repeat;
       position: absolute;
-      left: 50%; }
+      left: 50%;
+      transition: background .2s; }
+      body header #icons .icon:hover {
+        background-color: #fff540; }
       body header #icons .icon#search {
-        background-image: url("icons/Search.svg");
-        margin-left: -176px;
-        transition: transform .4s, opacity .4s;
+        background-image: url("icons/Search-hover.svg");
+        margin-left: -212px;
+        transition: transform .4s, opacity .4s,background .2s;
         cursor: pointer; }
+        body header #icons .icon#search:hover {
+          background-image: url("icons/Search-hover.svg"); }
         body header #icons .icon#search.active {
-          transform: translateX(-28px);
-          opacity: 0; }
+          background-color: #fff540; }
       body header #icons .icon#view {
-        background-image: url("icons/View.svg");
+        background-image: url("icons/View-hover.svg");
         left: 75%;
         margin-left: 122px; }
       body header #icons .icon#options {
-        background-image: url("icons/Options.svg");
-        left: 75%;
-        margin-left: -50px; }
+        background-image: url("icons/Options-hover.svg");
+        margin-left: -44px;
+        left: 100%; }
+        body header #icons .icon#options:hover {
+          background-image: url("icons/Options-hover.svg"); }
         body header #icons .icon#options #option_inner {
           display: none; }
         body header #icons .icon#options:hover #option_inner {
           display: block;
           position: absolute;
           top: 44px;
-          width: 252px;
+          width: 168px;
           background: #fff;
-          margin-left: 8px;
+          margin-left: -124px;
           box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px; }
           body header #icons .icon#options:hover #option_inner .option {
             height: 24px;
@@ -185,7 +189,8 @@ body {
           body .item .highlights .highlight.highlight .hl_tags span {
             cursor: pointer;
             color: #737373;
-            font-size: 12px;
+            font-size: 14px;
+            text-decoration: underline;
             white-space: pre-wrap;
             /*word-break: break-all;*/
             display: block;
@@ -193,7 +198,7 @@ body {
             margin: 0px -8px;
             padding: 5px 8px 3px; }
             body .item .highlights .highlight.highlight .hl_tags span:hover {
-              color: #000; }
+              color: #737373; }
     body .item.focus {
       transform: scale(1);
       top: 64px;
@@ -202,7 +207,7 @@ body {
       margin-left: -168px;
       transition: transform .8s, left .8s, height .6s .2s;
       z-index: 200;
-      font-size: 12px;
+      font-size: 14px;
       position: absolute;
       margin-bottom: 24px; }
       body .item.focus.sarticle {
@@ -242,17 +247,17 @@ body {
       body .item.focus .itemHeader .img {
         height: 168px; }
       body .item.focus .itemHeader .text .author {
-        font-size: 12px;
+        font-size: 14px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #33FF99 1px, #33FF99 2px, transparent 2px);
         margin-right: 4px;
         cursor: pointer; }
       body .item.focus .itemHeader .text .host {
-        font-size: 12px;
+        font-size: 14px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #33CCFF 1px, #33CCFF 2px, transparent 2px);
         margin-right: 4px;
         cursor: pointer; }
       body .item.focus .itemHeader .text .date {
-        font-size: 12px;
+        font-size: 14px;
         background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px);
         margin-right: 4px; }
       body .item.focus .highlights {

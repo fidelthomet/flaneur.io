@@ -10,24 +10,43 @@
 	<script src="database.js"></script>
 	<script src="popup.js"></script>
 
-	<link href="shared.css" rel="stylesheet">
-	<link href="popup.css" rel="stylesheet">
+	<!-- <link href="shared.css" rel="stylesheet"> -->
+	<!-- <link href="popup.css" rel="stylesheet"> -->
+	<link href="flaneurpopup.css" rel="stylesheet">
 </head>
 <body>
 	<div id="main">
 		<div id="nothing_selected">
-			You haven't highlighted anything on this webpage yet.
+
+			
+			<div>Select some text to<br/>create a new highlight</div>
 		</div>
 		<div id="highlights">
 
-			<div id="title"><div class="caption">title</div><div class="content" contentEditable="plaintext-only"></div></div>
-			<div id="author"><div class="caption">author</div><div class="content" contentEditable="plaintext-only"></div></div>
+			<div class="article item focus">
+				<div class="itemHeader">
+					<div class="img">
+					</div>
+					<div class="text">
+						<div class="title" contenteditable="plaintext-only">
+						</div>
+						<span class="author" contenteditable="plaintext-only">
+						</span>
+						<span class="host">
+						</span>
+						<span class="date">
+						</span>
+					</div>
+				</div>
+				<div class="highlights">
+				</div>
+			</div>
 		
 		</div>
 
 	</div>
 	<div id="open">
-		open flaneur·io
+		view all highlights
 	</div>
 
 </body>

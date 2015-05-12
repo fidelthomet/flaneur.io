@@ -1,0 +1,187 @@
+@charset "UTF-8";
+
+$light-grey: rgb(240,240,240);
+$super-light-grey: rgb(250,250,250);
+$yellow: rgb(255,245,64);
+$text: #000;
+$text-light: #737373;
+$white: #fff;
+$black: #000;
+$shadow: rgba(166,166,166,.6) 0px 2px 4px;
+$author-green: #33FF99;
+$soruce-blue: #33CCFF;
+$date-red: #FF3369;
+$border-line: #BBB;
+$border-light-line: #F2F2F2;
+$background: #FAFAFA;
+$font-size: 14px;
+$font-size-big: 16px;
+
+body {
+	font-family: "jaf-lapture-display", serif;
+	color: $text;
+	background: $white;
+	margin: 0px;
+
+	#main {
+		width: 336px;
+		min-height: 64px;
+		/*padding-bottom: 32px;*/
+	}
+
+	#nothing_selected{
+		background: #fff url(icons/select.svg) center 16px no-repeat;
+		font-size: 14px;
+		// font-style: italic;
+		// background: $white;
+		text-align: center;
+		padding: 40px 62px 14px;
+		-webkit-user-select: none;
+		margin-bottom: 32px;
+	}
+
+	#open {
+		width: 336px;
+		height: 26px;
+		background: $yellow;
+		margin: 0px;
+		position: fixed;
+		left: 0px;
+		bottom: 0px;
+		font-weight: 700;
+		font-size: 16px;
+		cursor: pointer;
+		text-align: center;
+		padding-top: 6px;
+		-webkit-user-select: none;
+		box-shadow: rgba(166,166,166,.6) 0px -1px 4px;
+	}
+
+	#highlights{
+		display: none;
+		margin-bottom: 32px;
+	}
+
+	.itemHeader {
+		width: 336px;
+		background-size: 100% auto;
+		position: relative;
+		transition: height .4s, background .4s;
+		color: $black;
+
+
+		.img{
+			width: 100%;
+			height: 96px;
+			background: hsl(160,90%,80%) center center no-repeat;
+			background-size: cover;
+		}
+
+		.text{
+
+			bottom: 0px;
+			padding: 8px;
+			div,span{
+				outline: none;
+			}
+
+			.title{
+
+				font-weight: 700;
+				font-size: $font-size-big;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				width: 320px;
+				-webkit-line-clamp: 2;
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				padding-bottom: 4px;
+			}
+
+			.author{
+				font-size: $font-size-big;
+
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $author-green 1px, $author-green 2.3px, rgba(0, 0, 0, 0) 2.3px);
+				margin-right: 4px;
+			}
+
+			.host{
+				font-size: $font-size-big;
+
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $soruce-blue 1px, $soruce-blue 2.3px, rgba(0, 0, 0, 0) 2.3px);
+				margin-right: 4px;
+			}
+
+			.date{
+				font-size: $font-size-big;
+
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2.3px, rgba(0, 0, 0, 0) 2.3px);
+				margin-right: 4px;
+			}
+
+			.description {
+				margin-top: 6px;
+				color: $text-light;
+			}
+		}
+	}
+	.highlights {
+		display: block;
+
+		.highlight {
+					// background: $super-light-grey;
+					
+					padding: 8px 8px 4px 8px;
+					border-top: 1px solid $border-line;
+
+					&.highlight {
+
+						.hl_content{
+							margin: 1px 0px 1px 0px;
+
+							span{
+								line-height: 20px;
+								font-size: $font-size-big;
+								padding: 3px 0px 1px 0px;
+
+								&.text{
+									transition: background-position .2s;
+									animation-delay: 3s;
+									background-position: center 20px;
+									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $yellow 2px, $yellow 3px, rgba(0, 0, 0, 0) 3px);
+								}
+							}
+							&:hover .text{
+								text-shadow: none;
+								background-position: center 14px;
+								background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $date-red 2px, $date-red 3px, rgba(0, 0, 0, 0) 3px);
+							}
+						}
+
+						.hl_tags {
+							margin: 6px 0px -4px 0px;
+
+							span{
+								transition: background-position .2s;
+								cursor: pointer;
+								color: $text-light;
+								font-size: $font-size;
+								text-decoration: underline;
+								white-space: pre-wrap;
+								display: block;
+								border-top: 1px solid $border-light-line;
+								margin: 0px -8px;
+								padding: 5px 8px 3px;
+							}
+							&:hover span{
+								text-shadow: none;
+								background-position: center 14px;
+								background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $date-red 2px, $date-red 3px, rgba(0, 0, 0, 0) 3px);
+							}
+						}
+
+						
+					}
+				}
+			}
+		}

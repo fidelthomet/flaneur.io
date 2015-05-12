@@ -26,11 +26,18 @@ if ($('meta[property="og:description"]').attr('content')) {
 }
 
 // Image
+data.imgs = []
 if ($('meta[property="og:image"]').attr('content')) {
+	data.imgs.push($('meta[property="og:image"]').attr('content'))
 	data.img = $('meta[property="og:image"]').attr('content');
 } else if($('meta[name="twitter:image:src"],meta[name="property:image:src"]').attr('content')) {
+	data.imgs.push($('meta[name="twitter:image:src"],meta[name="property:image:src"]').attr('content'))
 	data.img = $('meta[name="twitter:image:src"],meta[name="property:image:src"]').attr('content');
 }
+
+$.each($('img'),function(index, item) {
+	data.imgs.push($(item).attr("src"))
+})
 
 // Author
 if ($('meta[name="author"]').attr('content')){

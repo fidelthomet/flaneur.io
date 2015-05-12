@@ -1,18 +1,25 @@
 {
-  "name": "flaneur.io extension",
-  "version": "1.0.0",
-  "description": "Flaneur.io let's you search and explore your online-research",
+  "name": "flaneur.io",
+  "version": "0.9.0",
+  "description": "Save and explore text fragments.",
   "browser_action": {
     "default_title": "Flaneur.io",
-    "default_icon": "icon_128.png",
+    "default_icon": {
+      "19": "icons/flaneur.png",
+      "38": "icons/flaneur38.png"
+    },
     "default_popup": "popup.html"
   },
   "background": {
     "page": "flaneur.html"
   },
+  "icons": { "16": "icons/flaneur16.png",
+           "48": "icons/flaneur48.png",
+          "128": "icons/flaneur128.png" 
+  },
   
  
-  "permissions": [ "tabs", "http://*/*", "https://*/*", "file://*/*", "unlimitedStorage", 
+  "permissions": [ "tabs", "http://*/*", "https://*/*", "unlimitedStorage", 
   "*://use.typekit.net/*","webRequest", "webRequestBlocking"],
   "content_security_policy": "script-src 'self' https://use.typekit.net; object-src 'self'",
   "manifest_version": 2

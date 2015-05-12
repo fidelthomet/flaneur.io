@@ -14,6 +14,8 @@ $date-red: #FF3369;
 $border-line: #D9D9D9;
 $border-light-line: #F2F2F2;
 $background: #FAFAFA;
+$font-size: 14px;
+$font-size-big: 16px;
 
 body {
 	font-family: "jaf-lapture-display", serif;
@@ -51,7 +53,7 @@ body {
 			position: absolute;
 			display: inline;
 			
-			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 5px, $yellow 5px, $yellow 6px, rgba(0, 0, 0, 0) 6px);
+			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 4px, $yellow 4px, $yellow 6px, rgba(0, 0, 0, 0) 6px);
 			left: 25%;
 			margin-left: -210px;
 		}
@@ -60,9 +62,9 @@ body {
 			#searchfield{
 				position: absolute;
 				height: 24px;
-				width: 336px;
+				width: 292px;
 				left: 50%;
-				margin-left: -132px;
+				margin-left: -160px;
 				outline: none;
 				font-size: 20px;
 				padding-top: 12px;
@@ -71,7 +73,7 @@ body {
 				overflow: hidden;
 				
 				&.active{
-					transform: translateX(-28px)
+					// transform: translateX(-28px)
 				}
 			}
 			.icon{
@@ -81,29 +83,45 @@ body {
 				background: center center no-repeat;
 				position: absolute;
 				left: 50%;
+				transition: background .2s;
+
+				&:hover{
+					background-color: $yellow;
+				}
 				
 				&#search{
-					background-image: url("icons/Search.svg");
-					margin-left: -176px;
-					transition: transform .4s, opacity .4s;
+					background-image: url("icons/Search-hover.svg");
+					margin-left: -212px;
+					transition: transform .4s, opacity .4s,background .2s;
 					cursor: pointer;
 
 
+					&:hover{
+							background-image: url("icons/Search-hover.svg");
+					}
+
+
 					&.active{
-						transform: translateX(-28px);
-						opacity: 0;
+						background-color: $yellow;
+						
 					}
 				}
 				&#view{
-					background-image: url("icons/View.svg");
+					background-image: url("icons/View-hover.svg");
 					left: 75%;
 					margin-left: 122px;
 				}
+				
 				&#options{
-					background-image: url("icons/Options.svg");
-					// margin-left: 212px;
-					left: 75%;
-					margin-left: -50px;
+					background-image: url("icons/Options-hover.svg");
+
+					&:hover{
+						background-image: url("icons/Options-hover.svg");
+					}
+
+					margin-left: -44px;
+					left: 100%;
+					// margin-left: -50px;
 
 					#option_inner{
 						display: none;
@@ -113,20 +131,17 @@ body {
 							display: block;
 							position: absolute;
 							top: 44px;
-							width: 252px;
+							width: 168px;
 							background: #fff;
-							margin-left: 8px;
+							margin-left: -124px;
 							box-shadow: rgba(166,166,166,.6) 0px 2px 4px;
 
 							.option{
 								height: 24px;
-								font-size: 16px;
+								font-size: $font-size-big;
 								padding: 7px 8px 1px 8px;
 								cursor: pointer;
 								
-
-								
-						
 								a{
 									color: $black;
 									text-decoration: none;
@@ -241,7 +256,7 @@ body {
 					.title{
 						// cursor: pointer;
 						font-weight: 700;
-						font-size: 16px;
+						font-size: $font-size-big;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						width: 320px;
@@ -252,21 +267,21 @@ body {
 					}
 
 					.author{
-						font-size: 16px;
+						font-size: $font-size-big;
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $author-green 1px, $author-green 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
 					}
 
 					.host{
-						font-size: 16px;
+						font-size: $font-size-big;
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $soruce-blue 1px, $soruce-blue 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
 					}
 
 					.date{
-						font-size: 16px;
+						font-size: $font-size-big;
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
@@ -295,7 +310,7 @@ body {
 
 							span{
 								line-height: 20px;
-								font-size: 16px;
+								font-size: $font-size-big;
 								padding: 3px 0px 1px 0px;
 
 								&.text{
@@ -320,7 +335,8 @@ body {
 							span{
 								cursor: pointer;
 								color: $text-light;
-								font-size: 12px;
+								font-size: $font-size;
+								text-decoration: underline;
 								white-space: pre-wrap;
 								/*word-break: break-all;*/
 								display: block;
@@ -329,7 +345,7 @@ body {
 								// background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $text-light 1px, $text-light 2px, rgba(0, 0, 0, 0) 2px);
 								padding: 5px 8px 3px;
 								&:hover{
-									color: $text;
+									color: $text-light;
 								}
 							}
 						}
@@ -348,7 +364,7 @@ body {
 				// max-height: calc(100% - 76px);
 				transition: transform .8s, left .8s, height .6s .2s;
 				z-index: 200;
-				font-size: 12px;
+				font-size: $font-size;
 				position: absolute;
 				margin-bottom: 24px;
 
@@ -372,7 +388,7 @@ body {
 					.metahit{
 						margin: 4px 8px 0px 8px;
 						height: 20px;
-						font-size: 16px;
+						font-size: $font-size-big;
 						width: auto;
 						cursor: pointer;
 
@@ -412,20 +428,20 @@ body {
 					}
 					.text{
 						.author{
-							font-size: 12px;
+							font-size: $font-size;
 							background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $author-green 1px, $author-green 2px, rgba(0, 0, 0, 0) 2px);
 							margin-right: 4px;
 							cursor: pointer;
 						}
 
 						.host{
-							font-size: 12px;
+							font-size: $font-size;
 							background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $soruce-blue 1px, $soruce-blue 2px, rgba(0, 0, 0, 0) 2px);
 							margin-right: 4px;
 							cursor: pointer;
 						}
 						.date{
-							font-size: 12px;
+							font-size: $font-size;
 							background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2px, rgba(0, 0, 0, 0) 2px);
 							margin-right: 4px;
 						}
