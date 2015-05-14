@@ -29,7 +29,7 @@ body {
 		top: 0px;
 		width: 100%;
 		height: 44px;
-		background: $white;
+		background: $yellow;
 		z-index: 300;
 		position: fixed;
 		box-shadow: $shadow;
@@ -53,7 +53,7 @@ body {
 			position: absolute;
 			display: inline;
 			
-			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 4px, $yellow 4px, $yellow 6px, rgba(0, 0, 0, 0) 6px);
+			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 3px, $white 3px, $white 5px, rgba(0, 0, 0, 0) 5px);
 			left: 25%;
 			margin-left: -210px;
 		}
@@ -108,8 +108,8 @@ body {
 				}
 				&#view{
 					background-image: url("icons/View-hover.svg");
-					left: 75%;
-					margin-left: 122px;
+					
+					margin-left: 168px;
 				}
 				
 				&#options{
@@ -119,9 +119,7 @@ body {
 						background-image: url("icons/Options-hover.svg");
 					}
 
-					margin-left: -44px;
-					left: 100%;
-					// margin-left: -50px;
+					margin-left: 212px;
 
 					#option_inner{
 						display: none;

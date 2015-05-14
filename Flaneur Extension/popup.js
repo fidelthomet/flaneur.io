@@ -3,6 +3,7 @@ var removeHighlightTimeout = {}
 var imgID = 0
 var data;
 var ar_id = "";
+var activeHighlight;
 
 $(function(){
 	$("#open").click(function(){
@@ -21,18 +22,195 @@ $(function(){
 		})
 	})
 
-	$("#title .content").on("blur", function(){
+	$(".text .title").on("blur", function(){
 		if(!$(this).text()){
 			$(this).text("Untitled")
+			updateTitle({url:url, title:$(this).text()})
+		}
+	})
+	$(".text .title").on("keyup", function(){
+		if(!$(this).text()){
+			updateTitle({url:url, title: "Untitled"})
 		}
 		updateTitle({url:url, title:$(this).text()})
 	})
-	$("#author .content").on("blur", function(){
+	$(".text .author").on("blur", function(){
 		if(!$(this).text()){
 			$(this).text("Unknown")
+			updateAuthor({url:url, author:$(this).text()})
+		}
+	})
+	$(".text .author").on("keyup", function(){
+		if(!$(this).text()){
+			updateAuthor({url:url, author: "Unknown"})
 		}
 		updateAuthor({url:url, author:$(this).text()})
 	})
+
+	$("#overlay").click(function(){
+		$(this).hide();
+		$("#overlay #contextmenu").removeClass("show")
+	})
+
+	dom.highlight.find(".hl_content .text").click(function(){
+		// removeHighlight($(this).closest(".highlight").attr('id').split("hl-")[1])
+		// $(this).closest(".highlight").remove()
+		// if(!$(".highlight").length){
+		// 	$("#nothing_selected").show()
+		// 	$("#highlights").hide()
+		// }
+	})
+
+	$(document).on("contextmenu", function(e){
+		e.preventDefault();
+	})
+
+	dom.highlight.on("contextmenu",function(e){
+		window.getSelection().removeAllRanges()
+		e.preventDefault()
+		activeHighlight = $(this).attr("id").split("hl-")[1]
+		
+		var copy = $("<div id='copy'>Copy</div>")
+		copy.click(function(){
+			copytext($("#hl-"+activeHighlight+" .hl_content").text())
+		})
+		var copyAsLink = $("<div id='copyAsLink'>Copy as Link</div>")
+		copyAsLink.click(function(){
+			copytext("["+$("#hl-"+activeHighlight+" .hl_content").text()+"]("+data.url+")")
+		})
+		// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
+		var del = $("<div id='delete'>Delete</div>")
+		del.click(function(){
+			removeHighlight(activeHighlight)
+			$("#hl-"+activeHighlight).remove()
+
+			if(!$(".highlight").length){
+				$("#nothing_selected").show()
+				$("#highlights").hide()
+			}
+		})
+		del.on("mouseover", function(){
+			$("#hl-"+activeHighlight+" .hl_content span").addClass("delete")
+		})
+		del.on("mouseout", function(){
+			$("#hl-"+activeHighlight+" .hl_content span").removeClass("delete")
+		})
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([copy, copyAsLink, del])		
+
+		var x = e.clientX;
+		var y = e.clientY;
+
+		if(x > window.innerWidth-112){
+			x-=112
+		}
+		if(y > window.innerHeight-112){
+			y-=61
+		}
+
+
+		$("#overlay #contextmenu").css({left: x, top: y})
+
+
+		$("#overlay").show()
+
+		// $("#overlay #contextmenu").addClass("show")
+	})
+
+	dom.highlight.find(".create").click(function(){
+		var newTag = dom.annotation.clone()
+		.addClass("focus")
+
+		
+		
+
+		newTag.find("span")
+		.attr("contenteditable","plaintext-only")
+		.addClass("tagspan")
+		.text("")
+		var an_id = $.now()+"-"+Math.floor((Math.random()*.9+.1)*1000000)
+		newTag.find("span").attr("an_id", an_id)
+		newTag.find("span").attr("id", "an-"+an_id)
+		newTag.insertBefore(this)
+		$(window).scrollTop($(window).scrollTop()+24);
+		newTag.find("span").focus();
+
+		newTag.find(".tagspan").on("keydown", function(e){
+			if (e.keyCode==13) {
+				e.preventDefault()
+				window.getSelection().removeAllRanges()
+				this.blur()
+				event.preventDefault();
+				$(this).parent().removeClass("focus")
+
+				if($(this).text()){
+
+					$(this).parent().parent().find(".create").trigger("click")
+				}
+			}
+		})
+
+		newTag.find(".tagspan").on("keyup", function(){
+			var parent = $(this).parent()
+			var value = $(this).text()
+			if(value && value != " "){
+				server.annotations.query("updated").filter(function(annotation){
+					var hits = 0
+					$.each(value.split(" "), function(index, searchItem){
+						$.each(annotation.annotation.split(" "), function(index, keyItem){
+							if(keyItem.toLowerCase().indexOf(searchItem.toLowerCase())==0){
+								hits++
+								return false;
+							}
+						})
+					})
+					return (hits == value.split(" ").length)
+				}).desc().limit(0,5).execute().then(function(results){
+					$(".suggestion").remove()
+					$.each(results, function(index, item){
+						var suggestion = dom.annotation.clone()
+						.addClass("suggestion")
+						.mousedown(function(){
+						
+							$(this).parent().find(".tagspan").text($(this).text())
+							$(this).parent().find(".tagspan").attr("an_id",$(this).attr("an_id"))
+							// $(this).parent().find(".tagspan").trigger("b")
+						})
+						.click(function(e){
+							e.stopPropagation()
+							$(".suggestion").remove()
+						})
+						suggestion.find("span").text(item.annotation)
+						suggestion.find("span").attr("an_id", item.an_id)
+						parent.append(suggestion)
+					})
+				})
+			} else {
+				$(".suggestion").remove()
+			}
+		})
+
+newTag.find(".tagspan").on("blur", function(){
+	$(".focus").removeClass("focus")
+	if ($(this).text()==" "||!$(this).text()) {
+		$(this).parent().remove()
+	} else {
+		addAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('an_id'), annotation: $(this).text()})
+		$(this).attr("contentEditable","false")
+		$(this).parent().click(function(){
+			removeAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).find("span").attr('an_id')})
+			$(this).remove()
+		})
+	}
+})
+})
+
+
+dom.annotation.click(function(){
+	removeAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('an_id')})
+	$(this).remove()
+})
 })
 
 function handleData(){
@@ -48,7 +226,6 @@ function handleData(){
 				data.author = result.author
 				data.color = result.color
 				ar_id = data.ar_id = result.ar_id
-				console.log (data.ar_id)
 			}
 
 			server.projects.query("updated").all().execute().then( function(results){
@@ -68,9 +245,23 @@ function handleData(){
 
 	function storeHighlight(){
 
-		server.highlights.add(data).then( function(){
-			getPopupData()
+		server.highlights.query("created").all().desc().limit(0,1).execute().then(function(results){
+			if(!results.length){
+				server.highlights.add(data).then( function(){
+					getPopupData()
+				})
+			} else {
+
+				if(results[0].url == data.url && results[0].highlight == data.highlight){
+					getPopupData()
+				} else {
+					server.highlights.add(data).then( function(){
+						getPopupData()
+					})
+				}
+			}
 		})
+		
 
 		server.hosts.get( data.host ).then(function(result) {
 			if(result){
@@ -141,9 +332,12 @@ function handleData(){
 						server.annotations.get( rel.an_id ).then(function(an) {
 							if(an){
 								var annotation = dom.annotation.clone(true)
-								.attr("id","an-"+an.an_id).text(an.annotation)
+								.attr("an_id", an.an_id)
+								annotation.find("span")
+								.text(an.annotation)
 
-								$("#hl-"+hl.hl_id+" .hl_tags").append(annotation)
+								annotation.insertBefore("#hl-"+hl.hl_id+" .hl_tags .create")
+								$("html, body").scrollTop($(document).height())
 							}
 						})
 					})
@@ -235,6 +429,16 @@ function selectElementContents(el) {
 	sel.addRange(range);
 }
 
+function copytext(text){
+	var input = $("<input></input>");
+	input.val(text)
+	$("body").append(input)
+	input.focus()
+	document.execCommand('selectAll');
+	document.execCommand('copy');
+	input.remove();
+}
+
 // DOM
 var hlDOM = ['<div id="hl-','" class="highlight"><div class="delete_highlight"></div><div class="hl_content"><span>','</span></div><div class="project"><span class="project_name">Unassigned</span><div class="project_select"></div></div><div class="hl_tags">','</div><div class="deleting"></div></div>']
 var tagDOM = ['<span id="an-','" contentEditable="plaintext-only">','</span>']
@@ -242,5 +446,5 @@ var tagNoEditDOM = ['<span id="an-','">','</span>']
 var newTagDOM = '<span class="addtag" contentEditable="plaintext-only">Add Tags & Annotaions</span>'
 
 dom = {}
-dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
-dom.annotation = $('<span></span>')
+dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"><div class="create"><span>Add Annotation</span></div></div></div>')
+dom.annotation = $('<div><span></span></div>')

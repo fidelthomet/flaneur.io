@@ -19,8 +19,7 @@
   },
   
  
-  "permissions": [ "tabs", "http://*/*", "https://*/*", "unlimitedStorage", 
-  "*://use.typekit.net/*","webRequest", "webRequestBlocking"],
+  "permissions": [ "clipboardWrite", "tabs", "http://*/*", "https://*/*", "unlimitedStorage", "*://use.typekit.net/*","webRequest", "webRequestBlocking"],
   "content_security_policy": "script-src 'self' https://use.typekit.net; object-src 'self'",
   "manifest_version": 2
 }

@@ -32,6 +32,28 @@ body {
   body #highlights {
     display: none;
     margin-bottom: 32px; }
+  body #overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: none; }
+    body #overlay #contextmenu {
+      position: absolute;
+      top: 205px;
+      left: 150px;
+      background: #fff;
+      box-shadow: #CCC 0px 2px 4px;
+      border-radius: 0px 2px 2px 2px;
+      padding: 2px 0px;
+      width: 112px; }
+      body #overlay #contextmenu div {
+        padding: 4px 8px 0px; }
+        body #overlay #contextmenu div:hover {
+          background: #fff540; }
+        body #overlay #contextmenu div#delete {
+          color: #FF3369; }
   body .itemHeader {
     width: 336px;
     background-size: 100% auto;
@@ -89,26 +111,44 @@ body {
             animation-delay: 3s;
             background-position: center 20px;
             background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
-        body .highlights .highlight.highlight .hl_content:hover .text {
-          text-shadow: none;
-          background-position: center 14px;
-          background-image: linear-gradient(to top, transparent, transparent 2px, #FF3369 2px, #FF3369 3px, transparent 3px); }
+            body .highlights .highlight.highlight .hl_content span.text.delete {
+              text-shadow: none;
+              background-position: center 14px;
+              background-image: linear-gradient(to top, transparent, transparent 2px, #FF3369 2px, #FF3369 3px, transparent 3px); }
       body .highlights .highlight.highlight .hl_tags {
         margin: 6px 0px -4px 0px; }
-        body .highlights .highlight.highlight .hl_tags span {
-          transition: background-position .2s;
-          cursor: pointer;
-          color: #737373;
-          font-size: 14px;
-          text-decoration: underline;
-          white-space: pre-wrap;
-          display: block;
+        body .highlights .highlight.highlight .hl_tags div {
           border-top: 1px solid #F2F2F2;
-          margin: 0px -8px;
-          padding: 5px 8px 3px; }
-        body .highlights .highlight.highlight .hl_tags:hover span {
-          text-shadow: none;
-          background-position: center 14px;
-          background-image: linear-gradient(to top, transparent, transparent 2px, #FF3369 2px, #FF3369 3px, transparent 3px); }
+          margin: 0px -8px 3px;
+          padding: 5px 8px 0px;
+          cursor: pointer;
+          min-height: 14px; }
+          body .highlights .highlight.highlight .hl_tags div.focus {
+            box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px;
+            margin: 0px -4px 0px;
+            padding: 5px 4px 3px; }
+          body .highlights .highlight.highlight .hl_tags div span {
+            transition: background-position .2s;
+            background-position: center 13px;
+            cursor: pointer;
+            outline: none;
+            color: #737373;
+            font-size: 14px;
+            white-space: pre-wrap;
+            background-image: linear-gradient(to top, transparent, transparent 1px, #737373 1px, #737373 2px, transparent 2px); }
+          body .highlights .highlight.highlight .hl_tags div:hover span {
+            text-shadow: none;
+            background-position: center 8px;
+            background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px); }
+          body .highlights .highlight.highlight .hl_tags div:hover span:focus, body .highlights .highlight.highlight .hl_tags div.suggestion span {
+            text-shadow: none;
+            background-position: center 13px;
+            background-image: linear-gradient(to top, transparent, transparent 1px, #737373 1px, #737373 2px, transparent 2px); }
+          body .highlights .highlight.highlight .hl_tags div.create span {
+            color: #A6A6A6; }
+          body .highlights .highlight.highlight .hl_tags div.create:hover span {
+            text-shadow: none;
+            background-position: center 13px;
+            background-image: linear-gradient(to top, transparent, transparent 1px, #737373 1px, #737373 2px, transparent 2px); }
 
 /*# sourceMappingURL=flaneurpopup.css.map */

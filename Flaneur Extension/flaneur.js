@@ -528,6 +528,7 @@ function update(){
 													fill: "none",
 													stroke: "#FAFAFA",
 													originY : focusDock.y,
+													strokeWidth: 2,
 													isLeft : item.isLeft
 												}).animate({
 													stroke: "#FF3369"
@@ -542,6 +543,7 @@ function update(){
 													fill: "none",
 													stroke: "#FAFAFA",
 													originY : focusDock.y,
+													strokeWidth: 2,
 													isLeft : item.isLeft
 												}).animate({
 													stroke: "#33FF99"
@@ -555,6 +557,7 @@ function update(){
 													fill: "none",
 													stroke: "#FAFAFA",
 													originY : focusDock.y,
+													strokeWidth: 2,
 													isLeft : item.isLeft
 												}).animate({
 													stroke: "#33CCFF"
@@ -578,9 +581,10 @@ function update(){
 																	fill: "none",
 																	stroke: "#FAFAFA",
 																	originY : an_offset.y,
+																	strokeWidth: 2,
 																	isLeft : item.isLeft
 																}).animate({
-																	stroke: "#737373"
+																	stroke: "#D9D9D9"
 																},400,mina.easeout))
 																item.dock.y += 4
 															}

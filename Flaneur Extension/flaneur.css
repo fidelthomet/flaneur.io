@@ -8,7 +8,7 @@ body {
     top: 0px;
     width: 100%;
     height: 44px;
-    background: #fff;
+    background: #fff540;
     z-index: 300;
     position: fixed;
     box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px; }
@@ -19,7 +19,7 @@ body {
       padding: 12px 0px 0px 0px;
       position: absolute;
       display: inline;
-      background-image: linear-gradient(to top, transparent, transparent 4px, #fff540 4px, #fff540 6px, transparent 6px);
+      background-image: linear-gradient(to top, transparent, transparent 3px, #fff 3px, #fff 5px, transparent 5px);
       left: 25%;
       margin-left: -210px; }
     body header #icons #searchfield {
@@ -54,12 +54,10 @@ body {
           background-color: #fff540; }
       body header #icons .icon#view {
         background-image: url("icons/View-hover.svg");
-        left: 75%;
-        margin-left: 122px; }
+        margin-left: 168px; }
       body header #icons .icon#options {
         background-image: url("icons/Options-hover.svg");
-        margin-left: -44px;
-        left: 100%; }
+        margin-left: 212px; }
         body header #icons .icon#options:hover {
           background-image: url("icons/Options-hover.svg"); }
         body header #icons .icon#options #option_inner {

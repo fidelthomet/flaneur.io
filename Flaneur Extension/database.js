@@ -146,17 +146,23 @@ function updateAuthor(data){
 }
 
 function addAnnotation(data){
-	server.annotations.query("annotation").only( data.annotation ).execute().then(function(results) {
+	console.log(data)
+	server.annotations.query("annotation").filter(function(annotation){ return (data.annotation.toLowerCase() == annotation.annotation.toLowerCase()) }).execute().then(function(results) {
 		if (results[0]) {
+			console.log("A")
 			results[0].updated=$.now()
 			server.annotations.update(results[0])
 
+			console.log($("#an-"+data.an_id))
+			$("#an-"+data.an_id).attr('an_id', results[0].an_id)
+
 			data.an_id=results[0].an_id
-			console.log(results[0].an_id)
-			$("#an-"+data.an_id).attr('id',"an-"+results[0].an_id)
+			
 			server.an_relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
 
 		} else {
+
+			
 			server.annotations.add({"an_id": data.an_id, "annotation": data.annotation, "created":$.now(), "updated":$.now()}).then(function(){
 				server.an_relations.add({"hl_id": data.hl_id, "an_id": data.an_id})
 			})
