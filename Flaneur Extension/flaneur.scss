@@ -21,6 +21,7 @@ body {
 	font-family: "jaf-lapture-display", serif;
 	color: $text;
 	background: $background;
+	font-size: $font-size;
 
 
 	header{
@@ -52,7 +53,7 @@ body {
 			// background: $yellow;
 			position: absolute;
 			display: inline;
-			
+			cursor: pointer;
 			background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 3px, $white 3px, $white 5px, rgba(0, 0, 0, 0) 5px);
 			left: 25%;
 			margin-left: -210px;
@@ -62,7 +63,7 @@ body {
 			#searchfield{
 				position: absolute;
 				height: 24px;
-				width: 292px;
+				width: 336px;
 				left: 50%;
 				margin-left: -160px;
 				outline: none;
@@ -83,40 +84,46 @@ body {
 				background: center center no-repeat;
 				position: absolute;
 				left: 50%;
-				transition: background .2s;
+				transition: background-color .2s;
+				cursor: pointer;
 
-				&:hover{
-					background-color: $yellow;
+				&:hover, &.active{
+					background-color: $white;
 				}
+
+				
 				
 				&#search{
-					background-image: url("icons/Search-hover.svg");
+					background-image: url("icons/Search.svg");
 					margin-left: -212px;
-					transition: transform .4s, opacity .4s,background .2s;
-					cursor: pointer;
+					
 
 
 					&:hover{
-							background-image: url("icons/Search-hover.svg");
+						// background-image: url("icons/Search-hover.svg");
 					}
 
 
 					&.active{
-						background-color: $yellow;
+						// background-image: url("icons/Search-hover.svg");
 						
 					}
 				}
 				&#view{
-					background-image: url("icons/View-hover.svg");
+					background-image: url("icons/View.svg");
 					
 					margin-left: 168px;
+
+					&:hover{
+						// background-color: url("icons/View-hover.svg");
+					}
 				}
 				
 				&#options{
-					background-image: url("icons/Options-hover.svg");
+					background-image: url("icons/Options.svg");
 
 					&:hover{
-						background-image: url("icons/Options-hover.svg");
+						// background-image: url("icons/Options-hover.svg");
 					}
 
 					margin-left: 212px;
@@ -126,7 +133,7 @@ body {
 					}
 					&:hover{
 						#option_inner{
-							display: block;
+							display: none;
 							position: absolute;
 							top: 44px;
 							width: 168px;
@@ -156,10 +163,6 @@ body {
 					}
 
 				}
-
-				&:hover{
-					// background-color: $yellow;
-				}
 			}
 		}
 	}
@@ -172,6 +175,88 @@ body {
 			opacity: 0;
 			pointer-events: none;
 		}	
+	}
+
+	#overlay{
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		display: none;
+		z-index: 500;
+
+
+		#contextmenu{
+			position: absolute;
+			top: 205px;
+			left: 150px;
+			background: #fff;
+			box-shadow: #CCC 0px 2px 4px;
+			border-radius: 0px 2px 2px 2px;
+			padding: 2px 0px;
+			width: 112px;
+			font-size: $font-size;
+			
+			div{
+				padding: 4px 8px 0px;
+				&:hover{
+					background: $yellow;
+				}
+				&#delete{
+					color: $date-red;
+				}
+				cursor: default;
+
+				&.view{
+					padding-left: 18px;
+					background-position: 4px center;
+					background-size: 10px 10px;
+					background-repeat: no-repeat;
+					
+					&#lAuthor{
+						background-image: url("icons/radio-author.png")
+					}
+					&#lAnnotation{
+						background-image: url("icons/radio-annotation.png")
+					}
+					&#lSource{
+						background-image: url("icons/radio-source.png")
+					}
+					&#lTime{
+						background-image: url("icons/radio-time.png")
+					}
+					&#scent{
+						background-image: url("icons/radio-scent.png")
+					}
+					&.active{
+						&#lAuthor{
+							background-image: url("icons/radio-active-author.png")
+						}
+						&#lAnnotation{
+							background-image: url("icons/radio-active-annotation.png")
+						}
+						&#lSource{
+							background-image: url("icons/radio-active-source.png")
+						}
+						&#lTime{
+							background-image: url("icons/radio-active-time.png")
+						}
+						&#scent{
+							background-image: url("icons/radio-active-scent.png")
+						}
+
+					}
+
+				}
+			}
+			#feedbacklink{
+				text-decoration: none;
+				color: $text;
+			}
+
+			
+		}
 	}
 
 	#svg{
@@ -269,6 +354,7 @@ body {
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $author-green 1px, $author-green 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
+
 					}
 
 					.host{
@@ -276,13 +362,23 @@ body {
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $soruce-blue 1px, $soruce-blue 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
+						white-space: nowrap;
+						&:before{
+							content: " ";
+							white-space: normal;
+						}
 					}
 
 					.date{
+						white-space: nowrap;
 						font-size: $font-size-big;
 						// text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 						background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2.3px, rgba(0, 0, 0, 0) 2.3px);
 						margin-right: 4px;
+						&:before{
+							content: " ";
+							white-space: normal;
+						}
 					}
 
 					.description {
@@ -313,8 +409,15 @@ body {
 
 								&.text{
 									// position: absolute;
-									text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+									transition: background-position .2s;
+									background-position: center 20px;
 									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $yellow 2px, $yellow 3px, rgba(0, 0, 0, 0) 3px);
+
+									&.delete{
+										text-shadow: none;
+										background-position: center 14px;
+										background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 2px, $date-red 2px, $date-red 3px, rgba(0, 0, 0, 0) 3px);
+									}
 								}
 
 								&.underline {
@@ -330,11 +433,11 @@ body {
 						.hl_tags {
 							margin: 6px 0px -4px 0px;
 
-							span{
+							div{
 								cursor: pointer;
 								color: $text-light;
 								font-size: $font-size;
-								text-decoration: underline;
+								
 								white-space: pre-wrap;
 								/*word-break: break-all;*/
 								display: block;
@@ -344,6 +447,19 @@ body {
 								padding: 5px 8px 3px;
 								&:hover{
 									color: $text-light;
+								}
+
+								&.delete span{
+
+									text-shadow: none;
+									background-position: center 8px;
+									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2px, rgba(0, 0, 0, 0) 2px);
+								}
+
+								span{
+									transition: background-position .2s;
+									background-position: center 13px;
+									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $text-light 1px, $text-light 2px, rgba(0, 0, 0, 0) 2px);
 								}
 							}
 						}
@@ -459,4 +575,7 @@ body {
 			width: 100%;
 			left: 0px;
 		}
+
+
 	}
+

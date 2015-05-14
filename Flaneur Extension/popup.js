@@ -8,7 +8,7 @@ var activeHighlight;
 $(function(){
 	$("#open").click(function(){
 
-		chrome.tabs.create({ url: "flaneur.html#"+ar_id });
+		chrome.tabs.create({ url: "flaneur.html#article="+ar_id });
 	})
 
 	chrome.tabs.executeScript({ file: "jquery.js" }, function() {
@@ -65,10 +65,10 @@ $(function(){
 		e.preventDefault();
 	})
 
-	dom.highlight.on("contextmenu",function(e){
+	dom.highlight.find(".hl_content").on("contextmenu",function(e){
 		window.getSelection().removeAllRanges()
 		e.preventDefault()
-		activeHighlight = $(this).attr("id").split("hl-")[1]
+		activeHighlight = $(this).parent().attr("id").split("hl-")[1]
 		
 		var copy = $("<div id='copy'>Copy</div>")
 		copy.click(function(){
@@ -105,7 +105,7 @@ $(function(){
 		if(x > window.innerWidth-112){
 			x-=112
 		}
-		if(y > window.innerHeight-112){
+		if(y > window.innerHeight-61){
 			y-=61
 		}
 
@@ -116,6 +116,45 @@ $(function(){
 		$("#overlay").show()
 
 		// $("#overlay #contextmenu").addClass("show")
+	})
+
+	dom.annotation.on("contextmenu",function(e){
+		window.getSelection().removeAllRanges()
+		e.preventDefault()
+		activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
+		activeAnnotation = $(this)
+
+		var del = $("<div id='delete'>Delete</div>")
+		del.click(function(){
+			removeAnnotation({hl_id: activeHighlight, an_id: activeAnnotation.attr("an_id")})
+			activeAnnotation.remove()
+		})
+		del.on("mouseover", function(){
+			$([name="twitter:title"])
+			activeAnnotation.addClass("delete")
+		})
+		del.on("mouseout", function(){
+			activeAnnotation.removeClass("delete")
+		})
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([del])		
+
+		var x = e.clientX;
+		var y = e.clientY
+
+		if(x > window.innerWidth-112){
+			x-=112
+		}
+		if(y > window.innerHeight-20){
+			y-=20
+		}
+
+
+		$("#overlay #contextmenu").css({left: x, top: y})
+
+
+		$("#overlay").show()
 	})
 
 	dom.highlight.find(".create").click(function(){
@@ -344,69 +383,7 @@ function handleData(){
 				})
 			})
 		})
-
-
-		// 		$("#highlights").append(hlDOM[0]+results[i].hl_id+hlDOM[1]+results[i].highlight+hlDOM[2]+newTagDOM+hlDOM[3])
-		// 		$("#hl-"+results[i].hl_id+" .delete_highlight").click(function(event){
-		// 			event.stopPropagation() 
-		// 			$(this).closest(".highlight").children(".deleting").addClass("now")
-		// 			removeHighlightTimeout[$(this).closest(".highlight").attr('id')]=(window.setTimeout(finishRemovingHighlight, 3000, $(this).closest(".highlight").attr('id').split("hl-")[1]));
-		// 			$(this).closest(".highlight").click(function(){
-		// 				console.log("huhu")
-		// 				window.clearTimeout(removeHighlightTimeout[$(this).attr("id")])
-		// 				$(this).children(".deleting").removeClass("now")
-		// 			})
-
-		// 		})
-		// 		$("#hl-"+results[i].hl_id+" .addtag").on("focus",function(){
-		// 			var hl_id = $(this).parent().parent()[0].id.split("-")[1];
-		// 			var an_id = $.now()+"-"+Math.floor((Math.random()*.9+.1)*1000000)
-		// 			$(this).before(tagDOM[0]+an_id+tagDOM[1]+" "+tagDOM[2])
-		// 			$("#an-"+an_id).focus();
-		// 			$("#an-"+an_id).on("keydown", function(e){
-		// 				if ($(this).text()==" ") {
-		// 					$(this).text('')
-		// 				};
-
-		// 				if (e.keyCode==13) {
-		// 					event.preventDefault();
-		// 					if(!$(this).text()){
-		// 						this.blur()
-		// 					} else {
-		// 						$(this).parent().children(".addtag").focus()
-		// 					}
-		// 				}
-		// 			});
-		// 			$("#an-"+an_id).on("keyup", function(){
-		// 				if (!$(this).text()) {
-		// 					$(this).text(' ')
-		// 				};
-		// 			});
-		// 			$("#an-"+an_id).on("blur", function(){
-		// 				if ($(this).text()==" "||!$(this).text()) {
-		// 					$(this).remove()
-		// 				} else {
-		// 					addAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('id').split("an-")[1], annotation: $(this).text()})
-		// 					$(this).attr("contentEditable","false")
-		// 					$(this).click(function(){
-		// 						removeAnnotation({hl_id: $(this).closest(".highlight").attr('id').split("hl-")[1], an_id: $(this).attr('id').split("an-")[1]})
-		// 						$(this).remove()
-		// 					})
-		// 				}
-		// 			});
-
-		// 		})
-		// 		server.an_relations.query( "hl_id" ).only(results[i].hl_id).execute().then(function( results ){
-		// 			for (var i = 0; i < results.length; i++) {
-		// 				console.log(results)
-		// 				getAnnotationsForHighlight(results[i])
-		// 			};
-
-		// 		})
-
-		// 	};
-		// });
-}
+	}
 }
 
 function finishRemovingHighlight(data){

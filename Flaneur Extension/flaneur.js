@@ -8,6 +8,8 @@ var snap
 var isLeftHeight;
 var isRightHeight;
 var drawLinksTimeout;
+var activeHighlight;
+var activeAnnotation;
 var snapLinks = [];
 var scrollY = 0;
 
@@ -39,13 +41,21 @@ function handlers(){
 		update()
 	})
 
+
+	$("#overlay").click(function(){
+		$(this).hide();
+		$(".icon").removeClass("active")
+		$("#overlay #contextmenu").removeAttr('style');
+		$("#overlay #contextmenu").removeClass("show")
+	})
+
 	$("#search").click(function(){
 		$("#searchfield").focus()
 	})
 
 
 	$("#title").click(function(){
-		getLastArticle()
+		getLastArticle(true)
 	})
 
 	$( window ).scroll(function() {
@@ -185,18 +195,191 @@ function handlers(){
 			})
 		})
 	})
+
+	$(document).on("contextmenu", function(e){
+		// e.preventDefault();
+	})
+
+	dom.highlight.find(".hl_content").on("contextmenu",function(e){
+		window.getSelection().removeAllRanges()
+		e.preventDefault()
+		activeHighlight = $(this).parent().attr("id").split("hl-")[1]
+		
+		var copy = $("<div id='copy'>Copy</div>")
+		copy.click(function(){
+			copytext($("#hl-"+activeHighlight+" .hl_content").text())
+		})
+		var copyAsLink = $("<div id='copyAsLink'>Copy as Link</div>")
+		copyAsLink.click(function(){
+			copytext("["+$("#hl-"+activeHighlight+" .hl_content").text()+"]("+el.articles[state.article].url+")")
+		})
+		// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
+		var del = $("<div id='delete'>Delete</div>")
+		del.click(function(){
+			removeHighlight(activeHighlight,true)
+			$("#content").addClass("opaque")
+		})
+		del.on("mouseover", function(){
+			$("#hl-"+activeHighlight+" .hl_content span").addClass("delete")
+		})
+		del.on("mouseout", function(){
+			$("#hl-"+activeHighlight+" .hl_content span").removeClass("delete")
+		})
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([copy, copyAsLink, del])		
+
+		var x = e.clientX;
+		var y = e.clientY;
+
+		if(x > window.innerWidth-112){
+			x-=112
+		}
+		if(y > window.innerHeight-61){
+			y-=61
+		}
+
+
+		$("#overlay #contextmenu").css({left: x, top: y})
+
+
+		$("#overlay").show()
+	})
+
+	dom.annotation.on("contextmenu",function(e){
+		window.getSelection().removeAllRanges()
+		e.preventDefault()
+		activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
+		activeAnnotation = $(this)
+
+		var del = $("<div id='delete'>Delete</div>")
+		del.click(function(){
+			removeAnnotation({hl_id: activeHighlight, an_id: activeAnnotation.attr("an_id")}, true)
+			$("#content").addClass("opaque")
+		})
+		del.on("mouseover", function(){
+			$([name="twitter:title"])
+			activeAnnotation.addClass("delete")
+		})
+		del.on("mouseout", function(){
+			activeAnnotation.removeClass("delete")
+		})
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([del])		
+
+		var x = e.clientX;
+		var y = e.clientY
+
+		if(x > window.innerWidth-112){
+			x-=112
+		}
+		if(y > window.innerHeight-20){
+			y-=20
+		}
+
+
+		$("#overlay #contextmenu").css({left: x, top: y})
+
+
+		$("#overlay").show()
+	})
+
+	$("#options").click(function(){
+		var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
+		var rate = $("<div id='rate'>Rate Extension</div>")
+		var help = $("<div id='help'>Show Tutorial</div>")
+		
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([help, rate, feedback])		
+
+		$(this).addClass("active")
+		var x = $(this).offset().left
+		var y = 46
+
+		$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
+
+		$("#overlay").show()
+	})
+
+	$("#view").click(function(){
+		var scents = $("<div id='scent' class='view'>Show Scents</div>").click(function(){
+			localStorage.setItem("showScents",(localStorage.getItem("showScents")=="0")*1)
+		})
+		var lAuthor = $("<div id='lAuthor' class='view'>Link via Author</div>").click(function(){
+			localStorage.setItem("linkAuthor",(localStorage.getItem("linkAuthor")=="0")*1)
+			location.reload()
+		})
+		var lSource = $("<div id='lSource' class='view'>Link via Source</div>").click(function(){
+			localStorage.setItem("linkSource",(localStorage.getItem("linkSource")=="0")*1)
+			location.reload()
+		})
+		var lAnnotation = $("<div id='lAnnotation' class='view'>Link via Annotation</div>").click(function(){
+			localStorage.setItem("linkAnnotation",(localStorage.getItem("linkAnnotation")=="0")*1)
+			location.reload()
+		})
+		var lTime = $("<div id='lTime' class='view'>Link via Time</div>").click(function(){
+			localStorage.setItem("linkTime",(localStorage.getItem("linkTime")=="0")*1)
+			location.reload()
+		})
+
+		$("#overlay #contextmenu").empty()
+		$("#overlay #contextmenu").append([lAuthor, lSource, lTime, lAnnotation, scents])
+
+		if (localStorage.getItem("linkTime")=="1") {
+			lTime.addClass("active")
+		};
+		if (localStorage.getItem("linkAnnotation")=="1") {
+			lAnnotation.addClass("active")
+		};
+		if (localStorage.getItem("linkSource")=="1") {
+			lSource.addClass("active")
+		};
+		if (localStorage.getItem("linkAuthor")=="1") {
+			lAuthor.addClass("active")
+		};
+		if (localStorage.getItem("showScents")=="1") {
+			scents.addClass("active")
+		};
+
+		$(this).addClass("active")
+		var x = $(this).offset().left
+		var y = 46
+
+		$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
+
+		$("#overlay").show()
+	})
 }
 
 function init(){
 	getLastArticle()
+
+	if (localStorage.getItem("linkTime")==null) {
+		localStorage.setItem("linkTime", 1)
+	};
+	if (localStorage.getItem("linkAnnotation")==null) {
+		localStorage.setItem("linkAnnotation", 1)
+	};
+	if (localStorage.getItem("linkSource")==null) {
+		localStorage.setItem("linkSource", 1)
+	};
+	if (localStorage.getItem("linkAuthor")==null) {
+		localStorage.setItem("linkAuthor", 1)
+	};
+	if (localStorage.getItem("showScents")==null) {
+		localStorage.setItem("showScents", 1)
+	};
+
 }
 
-function getLastArticle(){
+function getLastArticle(reload){
 	
-	if(location.hash.split("#")[1]){
-		server.urls.query("ar_id").only(location.hash.split("#")[1]).desc().execute().then(function(results){
+	if(location.hash.split("#")[1]&&!reload){
+		server.urls.query("ar_id").only(location.hash.split("#article=")[1]).desc().execute().then(function(results){
 			if(results.length){
-				updateHash({article: location.hash.split("#")[1]}, true)
+				updateHash({article: location.hash.split("=")[1]}, true)
 			} else {
 				server.urls.query("created").all().desc().limit(0,1).execute().then(function(results){
 					updateHash({article: results[0].ar_id}, true)
@@ -345,13 +528,16 @@ function update(){
 						server.urls.query("created").filter(function(article){
 							if(article.ar_id==el.articles[state.article].ar_id)
 								return false
-							if((links.before && article.created == links.before)||(links.after && article.created == links.after))
+							if(((links.before && article.created == links.before)||(links.after && article.created == links.after)) && localStorage.getItem("linkTime")=="1")
 								return true
-							if(article.host == el.articles[state.article].host)
+							if(article.host == el.articles[state.article].host && localStorage.getItem("linkSource")=="1")
 								return true
-							if(el.articles[state.article].author!="Unknown" && article.author == el.articles[state.article].author)
+							if(el.articles[state.article].author!="Unknown" && article.author == el.articles[state.article].author && localStorage.getItem("linkAuthor")=="1")
 								return true
-							return ($.inArray(article.url,highlightUrls)>-1)
+							if(localStorage.getItem("linkAnnotation")=="1")
+								return ($.inArray(article.url,highlightUrls)>-1)
+							else
+								return false
 						}).execute().then(function(results){
 
 							$(".blur").addClass("remove")
@@ -465,7 +651,7 @@ function update(){
 											item.dom.css("transform", transformHeadline(item.dom, isLeftHeight*.75))
 											item.isHidden=false;
 										}else{
-											// item.dom.css("transform", transformHeadline(item.dom, window.innerHeight))
+											item.dom.css("transform", transformHeadline(item.dom, 0-itemHeight))
 											item.isHidden=true;
 										}
 										isLeftHeight+=itemHeight+24
@@ -477,7 +663,7 @@ function update(){
 											item.dom.css("transform", transformHeadline(item.dom, isRightHeight*.75))
 											item.isHidden=false;
 										}else{
-											item.dom.css("transform", transformHeadline(item.dom, -window.innerHeight))
+											item.dom.css("transform", transformHeadline(item.dom, 0-itemHeight))
 											item.isHidden=true;
 										}
 										isRightHeight+=itemHeight+24
@@ -523,7 +709,7 @@ function update(){
 											item.dock.x = item.dom.offset().left+item.isLeft*252
 											item.dock.y = item.dom.offset().top+32
 											
-											if (item.created == links.before || item.created == links.after){
+											if ((item.created == links.before || item.created == links.after) && (localStorage.getItem("linkTime")=="1")){
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
 													stroke: "#FAFAFA",
@@ -537,7 +723,7 @@ function update(){
 											}
 
 											focusDock.y -= 4;
-											if(item.author == el.articles[state.article].author && item.author!="Unknown"){
+											if(item.author == el.articles[state.article].author && item.author!="Unknown" && (localStorage.getItem("linkAuthor")=="1")){
 												item.dock.y -= 8
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
@@ -552,7 +738,7 @@ function update(){
 											}
 
 											focusDock.y += 8;
-											if(item.host == el.articles[state.article].host){
+											if(item.host == el.articles[state.article].host && (localStorage.getItem("linkSource")=="1")){
 												snapLinks.push(snap.path(createCurve(item.dock,focusDock)).attr({
 													fill: "none",
 													stroke: "#FAFAFA",
@@ -565,7 +751,7 @@ function update(){
 												item.dock.y += 4
 											}
 
-											if(item.highlights){
+											if(item.highlights && (localStorage.getItem("linkAnnotation")=="1")){
 												var linkedAnnotations = []
 												$.each(item.highlights, function(index, itemB){
 													if(itemB.annotations)
@@ -584,7 +770,7 @@ function update(){
 																	strokeWidth: 2,
 																	isLeft : item.isLeft
 																}).animate({
-																	stroke: "#D9D9D9"
+																	stroke: "#737373"
 																},400,mina.easeout))
 																item.dock.y += 4
 															}
@@ -634,11 +820,14 @@ function getAnnotationsByHl(ar_id, hl_id){
 			$.each(results, function(index, item){
 				annotationPromises.push(
 					server.annotations.get(item.an_id).then(function(result){
-						el.articles[ar_id].highlights[hl_id].annotations[result.an_id]=result
-						var annotation = dom.annotation.clone(true)
-						.addClass("an-"+result.an_id)
-						.text(result.annotation)
-						$("#hl-"+hl_id +" .hl_tags").append(annotation)
+						if(result){
+							el.articles[ar_id].highlights[hl_id].annotations[result.an_id]=result
+							var annotation = dom.annotation.clone(true)
+							.addClass("an-"+result.an_id)
+							.attr("an_id",result.an_id)
+							annotation.find("span").text(result.annotation)
+							$("#hl-"+hl_id +" .hl_tags").append(annotation)
+						}
 					})
 					)
 			})
@@ -911,12 +1100,23 @@ function getTime(timestamp){
 	}
 }
 
+
+function copytext(text){
+	var input = $("<input></input>");
+	input.val(text)
+	$("body").append(input)
+	input.focus()
+	document.execCommand('selectAll');
+	document.execCommand('copy');
+	input.remove();
+}
+
 /* ---
 DOM ELEMENTS
 --- */
 dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span><span class="date"></span></div></div><div class="highlights"></div></div>')
 dom.description = $('<div class="description"></div>')
 dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
-dom.annotation = $('<span></span>')
+dom.annotation = $('<div><span></span></div>')
 dom.metahit = $('<div class="metahit"><span></span></div>')
 dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span><span class="date"></span></div></div></div>')

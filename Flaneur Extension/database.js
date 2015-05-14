@@ -171,29 +171,39 @@ function addAnnotation(data){
 	
 }
 
-function removeAnnotation(data){
+function removeAnnotation(data, reload){
 
 	server.an_relations.query("an_id").only(data.an_id).execute().then(function(results) {
 		if(results){
+			var removalPromises = []
 			for (var i = 0; i < results.length; i++) {
 				if(results[i].hl_id==data.hl_id){
-					server.an_relations.remove( results[i].id )
+					removalPromises.push(server.an_relations.remove( results[i].id ))
 				}
 			};
 			if(results.length==1){
-				server.annotations.remove( data.an_id )
+				removalPromises.push(server.annotations.remove( data.an_id ))
 			}
+			Promise.all(removalPromises).then(function(){
+				if(reload)
+					location.reload()
+			})
 		}
 	})
 }
 
-function removeHighlight(data){
+function removeHighlight(data, reload){
 	server.highlights.get(data).then(function(result){
 		server.highlights.query("url").only(result.url).execute().then(function(results){
 			if(results.length==1){
 				removeUrl(results[0].url)
 			}
-			server.highlights.remove(data)
+			server.highlights.remove(data).then(function(results){
+				if(reload){
+					location.reload()
+				}
+			})
+
 		})	
 	})
 

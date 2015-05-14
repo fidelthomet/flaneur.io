@@ -1,7 +1,8 @@
 body {
   font-family: "jaf-lapture-display", serif;
   color: #000;
-  background: #FAFAFA; }
+  background: #FAFAFA;
+  font-size: 14px; }
   body header {
     position: fixed;
     left: 0px;
@@ -19,13 +20,14 @@ body {
       padding: 12px 0px 0px 0px;
       position: absolute;
       display: inline;
+      cursor: pointer;
       background-image: linear-gradient(to top, transparent, transparent 3px, #fff 3px, #fff 5px, transparent 5px);
       left: 25%;
       margin-left: -210px; }
     body header #icons #searchfield {
       position: absolute;
       height: 24px;
-      width: 292px;
+      width: 336px;
       left: 50%;
       margin-left: -160px;
       outline: none;
@@ -40,30 +42,23 @@ body {
       background: center center no-repeat;
       position: absolute;
       left: 50%;
-      transition: background .2s; }
-      body header #icons .icon:hover {
-        background-color: #fff540; }
+      transition: background-color .2s;
+      cursor: pointer; }
+      body header #icons .icon:hover, body header #icons .icon.active {
+        background-color: #fff; }
       body header #icons .icon#search {
-        background-image: url("icons/Search-hover.svg");
-        margin-left: -212px;
-        transition: transform .4s, opacity .4s,background .2s;
-        cursor: pointer; }
-        body header #icons .icon#search:hover {
-          background-image: url("icons/Search-hover.svg"); }
-        body header #icons .icon#search.active {
-          background-color: #fff540; }
+        background-image: url("icons/Search.svg");
+        margin-left: -212px; }
       body header #icons .icon#view {
-        background-image: url("icons/View-hover.svg");
+        background-image: url("icons/View.svg");
         margin-left: 168px; }
       body header #icons .icon#options {
-        background-image: url("icons/Options-hover.svg");
+        background-image: url("icons/Options.svg");
         margin-left: 212px; }
-        body header #icons .icon#options:hover {
-          background-image: url("icons/Options-hover.svg"); }
         body header #icons .icon#options #option_inner {
           display: none; }
         body header #icons .icon#options:hover #option_inner {
-          display: block;
+          display: none;
           position: absolute;
           top: 44px;
           width: 168px;
@@ -88,6 +83,59 @@ body {
     body #content.opaque {
       opacity: 0;
       pointer-events: none; }
+  body #overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 500; }
+    body #overlay #contextmenu {
+      position: absolute;
+      top: 205px;
+      left: 150px;
+      background: #fff;
+      box-shadow: #CCC 0px 2px 4px;
+      border-radius: 0px 2px 2px 2px;
+      padding: 2px 0px;
+      width: 112px;
+      font-size: 14px; }
+      body #overlay #contextmenu div {
+        padding: 4px 8px 0px;
+        cursor: default; }
+        body #overlay #contextmenu div:hover {
+          background: #fff540; }
+        body #overlay #contextmenu div#delete {
+          color: #FF3369; }
+        body #overlay #contextmenu div.view {
+          padding-left: 18px;
+          background-position: 4px center;
+          background-size: 10px 10px;
+          background-repeat: no-repeat; }
+          body #overlay #contextmenu div.view#lAuthor {
+            background-image: url("icons/radio-author.png"); }
+          body #overlay #contextmenu div.view#lAnnotation {
+            background-image: url("icons/radio-annotation.png"); }
+          body #overlay #contextmenu div.view#lSource {
+            background-image: url("icons/radio-source.png"); }
+          body #overlay #contextmenu div.view#lTime {
+            background-image: url("icons/radio-time.png"); }
+          body #overlay #contextmenu div.view#scent {
+            background-image: url("icons/radio-scent.png"); }
+          body #overlay #contextmenu div.view.active#lAuthor {
+            background-image: url("icons/radio-active-author.png"); }
+          body #overlay #contextmenu div.view.active#lAnnotation {
+            background-image: url("icons/radio-active-annotation.png"); }
+          body #overlay #contextmenu div.view.active#lSource {
+            background-image: url("icons/radio-active-source.png"); }
+          body #overlay #contextmenu div.view.active#lTime {
+            background-image: url("icons/radio-active-time.png"); }
+          body #overlay #contextmenu div.view.active#scent {
+            background-image: url("icons/radio-active-scent.png"); }
+      body #overlay #contextmenu #feedbacklink {
+        text-decoration: none;
+        color: #000; }
   body #svg {
     position: fixed;
     width: 100%;
@@ -155,11 +203,19 @@ body {
         body .item .itemHeader .text .host {
           font-size: 16px;
           background-image: linear-gradient(to top, transparent, transparent 1px, #33CCFF 1px, #33CCFF 2.3px, transparent 2.3px);
-          margin-right: 4px; }
+          margin-right: 4px;
+          white-space: nowrap; }
+          body .item .itemHeader .text .host:before {
+            content: " ";
+            white-space: normal; }
         body .item .itemHeader .text .date {
+          white-space: nowrap;
           font-size: 16px;
           background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2.3px, transparent 2.3px);
           margin-right: 4px; }
+          body .item .itemHeader .text .date:before {
+            content: " ";
+            white-space: normal; }
         body .item .itemHeader .text .description {
           margin-top: 6px;
           color: #737373; }
@@ -175,8 +231,13 @@ body {
             font-size: 16px;
             padding: 3px 0px 1px 0px; }
             body .item .highlights .highlight.highlight .hl_content span.text {
-              text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+              transition: background-position .2s;
+              background-position: center 20px;
               background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
+              body .item .highlights .highlight.highlight .hl_content span.text.delete {
+                text-shadow: none;
+                background-position: center 14px;
+                background-image: linear-gradient(to top, transparent, transparent 2px, #FF3369 2px, #FF3369 3px, transparent 3px); }
             body .item .highlights .highlight.highlight .hl_content span.underline {
               display: none;
               border-bottom: 2px solid #fff540;
@@ -184,19 +245,26 @@ body {
               -webkit-user-select: none; }
         body .item .highlights .highlight.highlight .hl_tags {
           margin: 6px 0px -4px 0px; }
-          body .item .highlights .highlight.highlight .hl_tags span {
+          body .item .highlights .highlight.highlight .hl_tags div {
             cursor: pointer;
             color: #737373;
             font-size: 14px;
-            text-decoration: underline;
             white-space: pre-wrap;
             /*word-break: break-all;*/
             display: block;
             border-top: 1px solid #F2F2F2;
             margin: 0px -8px;
             padding: 5px 8px 3px; }
-            body .item .highlights .highlight.highlight .hl_tags span:hover {
+            body .item .highlights .highlight.highlight .hl_tags div:hover {
               color: #737373; }
+            body .item .highlights .highlight.highlight .hl_tags div.delete span {
+              text-shadow: none;
+              background-position: center 8px;
+              background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px); }
+            body .item .highlights .highlight.highlight .hl_tags div span {
+              transition: background-position .2s;
+              background-position: center 13px;
+              background-image: linear-gradient(to top, transparent, transparent 1px, #737373 1px, #737373 2px, transparent 2px); }
     body .item.focus {
       transform: scale(1);
       top: 64px;
