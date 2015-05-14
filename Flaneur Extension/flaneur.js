@@ -8,6 +8,7 @@ var snap
 var isLeftHeight;
 var isRightHeight;
 var drawLinksTimeout;
+var rerenderScents;
 var activeHighlight;
 var activeAnnotation;
 var snapLinks = [];
@@ -89,11 +90,13 @@ function handlers(){
 		if($(this).text()){
 			search($(this).html().replace(/&nbsp;/gi,' ').toLowerCase())
 			$("#content").addClass("opaque")
+			$("#scents").css("opacity","0")
 			$(this).addClass("active")
 			$("#search").addClass("active")
 			// $(".item").addClass("opaque")
 		} else {
 			$("#content").removeClass("opaque")
+			$("#scents").css("opacity","1")
 			$("#metahits").empty()
 			$("#articlehits").empty()
 			$(this).removeClass("active")
@@ -166,6 +169,12 @@ function handlers(){
 	})
 
 	$(window).resize(function(){
+		window.clearTimeout(rerenderScents)
+		$("#scents").css("opacity","0")
+		rerenderScents = window.setTimeout(function(){
+			createScents()
+		},400)
+
 		$.each(snapLinks, function(index, item){
 			
 			focusx = (window.innerWidth-336)/2
@@ -246,111 +255,112 @@ function handlers(){
 		$("#overlay").show()
 	})
 
-	dom.annotation.on("contextmenu",function(e){
-		window.getSelection().removeAllRanges()
-		e.preventDefault()
-		activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
-		activeAnnotation = $(this)
+dom.annotation.on("contextmenu",function(e){
+	window.getSelection().removeAllRanges()
+	e.preventDefault()
+	activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
+	activeAnnotation = $(this)
 
-		var del = $("<div id='delete'>Delete</div>")
-		del.click(function(){
-			removeAnnotation({hl_id: activeHighlight, an_id: activeAnnotation.attr("an_id")}, true)
-			$("#content").addClass("opaque")
-		})
-		del.on("mouseover", function(){
-			$([name="twitter:title"])
-			activeAnnotation.addClass("delete")
-		})
-		del.on("mouseout", function(){
-			activeAnnotation.removeClass("delete")
-		})
-
-		$("#overlay #contextmenu").empty()
-		$("#overlay #contextmenu").append([del])		
-
-		var x = e.clientX;
-		var y = e.clientY
-
-		if(x > window.innerWidth-112){
-			x-=112
-		}
-		if(y > window.innerHeight-20){
-			y-=20
-		}
-
-
-		$("#overlay #contextmenu").css({left: x, top: y})
-
-
-		$("#overlay").show()
+	var del = $("<div id='delete'>Delete</div>")
+	del.click(function(){
+		removeAnnotation({hl_id: activeHighlight, an_id: activeAnnotation.attr("an_id")}, true)
+		$("#content").addClass("opaque")
+	})
+	del.on("mouseover", function(){
+		$([name="twitter:title"])
+		activeAnnotation.addClass("delete")
+	})
+	del.on("mouseout", function(){
+		activeAnnotation.removeClass("delete")
 	})
 
-	$("#options").click(function(){
-		var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
-		var rate = $("<div id='rate'>Rate Extension</div>")
-		var help = $("<div id='help'>Show Tutorial</div>")
-		
+	$("#overlay #contextmenu").empty()
+	$("#overlay #contextmenu").append([del])		
 
-		$("#overlay #contextmenu").empty()
-		$("#overlay #contextmenu").append([help, rate, feedback])		
+	var x = e.clientX;
+	var y = e.clientY
 
-		$(this).addClass("active")
-		var x = $(this).offset().left
-		var y = 46
+	if(x > window.innerWidth-112){
+		x-=112
+	}
+	if(y > window.innerHeight-20){
+		y-=20
+	}
 
-		$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
 
-		$("#overlay").show()
+	$("#overlay #contextmenu").css({left: x, top: y})
+
+
+	$("#overlay").show()
+})
+
+$("#options").click(function(){
+	var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
+	var rate = $("<div id='rate'>Rate Extension</div>")
+	var help = $("<div id='help'>Show Tutorial</div>")
+
+
+	$("#overlay #contextmenu").empty()
+	$("#overlay #contextmenu").append([help, rate, feedback])		
+
+	$(this).addClass("active")
+	var x = $(this).offset().left
+	var y = 46
+
+	$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
+
+	$("#overlay").show()
+})
+
+$("#view").click(function(){
+	var scents = $("<div id='scent' class='view'>Scents (experimental)</div>").click(function(){
+		localStorage.setItem("showScents",(localStorage.getItem("showScents")=="0")*1)
+		$("#scents").css("opacity",(localStorage.getItem("showScents")=="1")*1)
+	})
+	var lAuthor = $("<div id='lAuthor' class='view'>Link via Author</div>").click(function(){
+		localStorage.setItem("linkAuthor",(localStorage.getItem("linkAuthor")=="0")*1)
+		location.reload()
+	})
+	var lSource = $("<div id='lSource' class='view'>Link via Source</div>").click(function(){
+		localStorage.setItem("linkSource",(localStorage.getItem("linkSource")=="0")*1)
+		location.reload()
+	})
+	var lAnnotation = $("<div id='lAnnotation' class='view'>Link via Annotation</div>").click(function(){
+		localStorage.setItem("linkAnnotation",(localStorage.getItem("linkAnnotation")=="0")*1)
+		location.reload()
+	})
+	var lTime = $("<div id='lTime' class='view'>Link via Time</div>").click(function(){
+		localStorage.setItem("linkTime",(localStorage.getItem("linkTime")=="0")*1)
+		location.reload()
 	})
 
-	$("#view").click(function(){
-		var scents = $("<div id='scent' class='view'>Show Scents</div>").click(function(){
-			localStorage.setItem("showScents",(localStorage.getItem("showScents")=="0")*1)
-		})
-		var lAuthor = $("<div id='lAuthor' class='view'>Link via Author</div>").click(function(){
-			localStorage.setItem("linkAuthor",(localStorage.getItem("linkAuthor")=="0")*1)
-			location.reload()
-		})
-		var lSource = $("<div id='lSource' class='view'>Link via Source</div>").click(function(){
-			localStorage.setItem("linkSource",(localStorage.getItem("linkSource")=="0")*1)
-			location.reload()
-		})
-		var lAnnotation = $("<div id='lAnnotation' class='view'>Link via Annotation</div>").click(function(){
-			localStorage.setItem("linkAnnotation",(localStorage.getItem("linkAnnotation")=="0")*1)
-			location.reload()
-		})
-		var lTime = $("<div id='lTime' class='view'>Link via Time</div>").click(function(){
-			localStorage.setItem("linkTime",(localStorage.getItem("linkTime")=="0")*1)
-			location.reload()
-		})
+	$("#overlay #contextmenu").empty()
+	$("#overlay #contextmenu").append([lAuthor, lSource, lTime, lAnnotation, scents])
 
-		$("#overlay #contextmenu").empty()
-		$("#overlay #contextmenu").append([lAuthor, lSource, lTime, lAnnotation, scents])
+	if (localStorage.getItem("linkTime")=="1") {
+		lTime.addClass("active")
+	};
+	if (localStorage.getItem("linkAnnotation")=="1") {
+		lAnnotation.addClass("active")
+	};
+	if (localStorage.getItem("linkSource")=="1") {
+		lSource.addClass("active")
+	};
+	if (localStorage.getItem("linkAuthor")=="1") {
+		lAuthor.addClass("active")
+	};
+	if (localStorage.getItem("showScents")=="1") {
+		scents.addClass("active")
+	};
 
-		if (localStorage.getItem("linkTime")=="1") {
-			lTime.addClass("active")
-		};
-		if (localStorage.getItem("linkAnnotation")=="1") {
-			lAnnotation.addClass("active")
-		};
-		if (localStorage.getItem("linkSource")=="1") {
-			lSource.addClass("active")
-		};
-		if (localStorage.getItem("linkAuthor")=="1") {
-			lAuthor.addClass("active")
-		};
-		if (localStorage.getItem("showScents")=="1") {
-			scents.addClass("active")
-		};
+	$(this).addClass("active")
+	var x = $(this).offset().left
+	var y = 46
 
-		$(this).addClass("active")
-		var x = $(this).offset().left
-		var y = 46
+	$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
 
-		$("#overlay #contextmenu").css({left: x, top: y, width: "152px"})
-
-		$("#overlay").show()
-	})
+	$("#overlay").show()
+})
 }
 
 function init(){
@@ -424,6 +434,8 @@ function update(){
 				stroke: "#FAFAFA"
 			},200,mina.easein)
 		})
+		$("#scents").css("opacity","0")
+
 		server.urls.query("ar_id").only(state.article).execute().then(function(results){
 			if(!$("#ar-"+state.article)[0]){
 				el.articles[state.article] = results[0]
@@ -441,6 +453,7 @@ function update(){
 
 			el.articles[state.article].dom.addClass("focus")
 
+			console.log(el.articles[state.article])
 			if(el.articles[state.article].img){
 				el.articles[state.article].dom.find(".itemHeader .img").css("background-image","url("+el.articles[state.article].img+")")
 			} else if(el.articles[state.article].color){
@@ -642,9 +655,10 @@ function update(){
 										item.dom.find(".itemHeader .text .description").empty()
 										item.dom.find(".itemHeader .text").append(description)
 									}
-
+									var itemHeight = item.dom.find(".itemHeader").height()
+									item.height=itemHeight
 									if(item.isLeft){
-										var itemHeight = item.dom.find(".itemHeader").height()
+										
 										item.dom.addClass("isLeft")
 										item.dom.css("height", itemHeight+"px")
 										if((itemHeight+isLeftHeight)*.75+54<window.innerHeight){
@@ -656,7 +670,7 @@ function update(){
 										}
 										isLeftHeight+=itemHeight+24
 									} else {
-										var itemHeight = item.dom.find(".itemHeader").height()
+										
 										item.dom.addClass("isRight")
 										item.dom.css("height", itemHeight+"px")
 										if((itemHeight+isRightHeight)*.75+54<window.innerHeight){
@@ -685,7 +699,14 @@ function update(){
 })
 							//
 							Promise.all(allItemPromise).then(function(){
+
+								
+
 								drawLinksTimeout = window.setTimeout(function(){
+
+									
+									createScents()
+									
 
 									$.each(snapLinks, function(index, item){
 										item.remove()
@@ -1058,6 +1079,110 @@ function search(value){
 })
 }
 
+function createScents(){
+	var scents = {}
+	var space = (window.innerWidth-840)/4
+
+	$.each(el.articles, function(index, article){
+
+		if (!article.isHidden) {
+			var used = []
+			$.each(article.highlights, function(index, highlight){
+				
+				$.each(highlight.annotations, function(index, annotation){
+					if (annotation.annotation.length<26) {
+						if($.inArray(annotation.an_id,used)==-1){
+							used.push(annotation.an_id)
+							if (!scents[annotation.an_id]) {
+								scents[annotation.an_id] = {focus:[],left:[],right:[]}
+								scents[annotation.an_id].annotation = annotation.annotation
+							}
+
+							var offset = article.dom.offset()
+							if(article.height){
+								offset.top-44
+							}
+
+							var key = ""
+							if (article.ar_id == state.article){
+								key = "focus"
+								offset.top = $("#hl-"+highlight.hl_id+" [an_id='"+annotation.an_id+"']").offset().top
+								offset.top += $("#hl-"+highlight.hl_id+" [an_id='"+annotation.an_id+"']").height()/2
+							} else if (article.isLeft){
+								key = "left"
+							} else  {
+								key = "right"
+							}
+							scents[annotation.an_id][key].push({x:offset.left,y:offset.top,height: article.height})
+						}
+					}
+				})
+			})
+		}
+	})
+
+	$("#scents").empty()
+
+	$.each(scents, function(index, scent){
+		if (scent.focus.length) {
+			
+			$.each(scent.left, function(index, item){
+				var scentEl = dom.scent.clone()
+				scentEl.text(scent.annotation)
+				.attr("h", item.height)
+				.attr("y", item.y)
+				scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
+				$("#scents").append(scentEl)
+			})
+
+			$.each(scent.right, function(index, item){
+				var scentEl = dom.scent.clone()
+				scentEl.text(scent.annotation)
+				.attr("h", item.height)
+				.attr("y", item.y)
+				scentEl.css({left: item.x-space+((Math.random()-.5)*space*.2), top: item.y})
+				$("#scents").append(scentEl)
+			})
+		} else {
+			$.each(scent.left, function(index, item){
+				var scentEl = dom.scent.clone()
+				scentEl.text(scent.annotation)
+				.attr("h", item.height)
+				.attr("y", item.y)
+				scentEl.css({left: 0+((Math.random()-.5)*space*.2), top: item.y})
+				$("#scents").append(scentEl)
+			})
+
+			$.each(scent.right, function(index, item){
+				var scentEl = dom.scent.clone()
+				scentEl.text(scent.annotation)
+				.attr("h", item.height)
+				.attr("y", item.y)
+				scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
+				$("#scents").append(scentEl)
+			})
+		}
+	})
+
+	$.each($("#scents div"), function(index, item){
+		var scale = (space/$(item).width())*(1+(Math.random()-.5)*.1)
+		if (scale > 2.3){
+			scale = 2.3
+		}
+
+		var y = ($(item).attr("h")-$(item).height()*scale-48)*Math.random()
+		y += parseFloat($(item).attr("y"))
+
+		var alpha = (1/scale)*.05+.07
+
+		$(item).css({"transform": "scale("+scale+")", top: y, color: "rgba(0,0,0,"+alpha+")"})
+	})
+
+	if(localStorage.getItem("showScents")=="1" && !$("#content").hasClass("opaque")){
+		$("#scents").css("opacity","1")
+	}
+}
+
 // HELPER
 function compare(a,b) {
 	if (a.linkStrength > b.linkStrength)
@@ -1120,3 +1245,4 @@ dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="t
 dom.annotation = $('<div><span></span></div>')
 dom.metahit = $('<div class="metahit"><span></span></div>')
 dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span><span class="date"></span></div></div></div>')
+dom.scent = $("<div></div>")

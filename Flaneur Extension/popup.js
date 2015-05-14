@@ -319,7 +319,7 @@ function handleData(){
 				result.description = data.description
 				server.urls.update(result)
 			}else{
-				server.urls.add({"ar_id": genId(), "description": data.description, "img": data.img, "img": data.color, "url":data.url, "title":data.title, "host":data.host, "author": data.author, "created":data.created, "updated":data.updated})
+				server.urls.add({"ar_id": genId(), "description": data.description, "img": data.img, "color": data.color, "url":data.url, "title":data.title, "host":data.host, "author": data.author, "created":data.created, "updated":data.updated})
 			}
 		})
 
