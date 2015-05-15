@@ -167,6 +167,76 @@ body {
 		}
 	}
 
+	#intro{
+		position: fixed;
+		width: 400px;
+		background: #fff;
+		box-shadow: rgba(166,166,166,.6) 0px 2px 10px;
+		border-radius: 2px;
+		left: 50%;
+		z-index: 1000;
+		margin-left: -200px;
+		top: 92px;
+		height: 432px;
+
+		display: none;
+
+		#iHeader{
+			position: absolute;
+			height: 124px;
+			background: #FFF540;
+			width: 100%;
+			font-size: 72px;
+			text-align: center;
+			padding-top: 44px;
+			border-radius: 2px 2px 0px 0px;
+		}
+
+		#iTitle{
+			font-size: 16px;
+			font-weight: 700;
+			position: absolute;
+			top: 176px;
+			left: 8px;
+		}
+
+		#iText{
+			position: absolute;
+			font-size: 14px;
+			top: 206px;
+			left: 8px;
+			width: 371px;
+
+			.author{
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 0px, $author-green 0px, $author-green 2px, rgba(0, 0, 0, 0) 2px);
+			}
+			.source{
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 0px, $soruce-blue 0px, $soruce-blue 2px, rgba(0, 0, 0, 0) 2px);
+			}
+			.time{
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 0px, $date-red 0px, $date-red 2px, rgba(0, 0, 0, 0) 2px);
+			}
+			.annotation{
+				background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 0px, $text-light 0px, $text-light 2px, rgba(0, 0, 0, 0) 2px);
+			}
+		}
+
+		#iClose{
+			position: absolute;
+			background: #FFF540;
+			bottom: 8px;
+			height: 26px;
+			width: 384px;
+			border-radius: 2px;
+			left: 8px;
+			font-weight: 700;
+			text-align: center;
+			padding-top: 6px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+	}
+
 	#content {
 		// display: none;
 		transition: opacity .4s;

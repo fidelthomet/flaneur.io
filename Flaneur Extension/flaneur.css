@@ -78,6 +78,60 @@ body {
             body header #icons .icon#options:hover #option_inner .option:hover span {
               text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
               background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
+  body #intro {
+    position: fixed;
+    width: 400px;
+    background: #fff;
+    box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 10px;
+    border-radius: 2px;
+    left: 50%;
+    z-index: 1000;
+    margin-left: -200px;
+    top: 92px;
+    height: 432px;
+    display: none; }
+    body #intro #iHeader {
+      position: absolute;
+      height: 124px;
+      background: #FFF540;
+      width: 100%;
+      font-size: 72px;
+      text-align: center;
+      padding-top: 44px;
+      border-radius: 2px 2px 0px 0px; }
+    body #intro #iTitle {
+      font-size: 16px;
+      font-weight: 700;
+      position: absolute;
+      top: 176px;
+      left: 8px; }
+    body #intro #iText {
+      position: absolute;
+      font-size: 14px;
+      top: 206px;
+      left: 8px;
+      width: 371px; }
+      body #intro #iText .author {
+        background-image: linear-gradient(to top, transparent, transparent 0px, #33FF99 0px, #33FF99 2px, transparent 2px); }
+      body #intro #iText .source {
+        background-image: linear-gradient(to top, transparent, transparent 0px, #33CCFF 0px, #33CCFF 2px, transparent 2px); }
+      body #intro #iText .time {
+        background-image: linear-gradient(to top, transparent, transparent 0px, #FF3369 0px, #FF3369 2px, transparent 2px); }
+      body #intro #iText .annotation {
+        background-image: linear-gradient(to top, transparent, transparent 0px, #737373 0px, #737373 2px, transparent 2px); }
+    body #intro #iClose {
+      position: absolute;
+      background: #FFF540;
+      bottom: 8px;
+      height: 26px;
+      width: 384px;
+      border-radius: 2px;
+      left: 8px;
+      font-weight: 700;
+      text-align: center;
+      padding-top: 6px;
+      font-size: 16px;
+      cursor: pointer; }
   body #content {
     transition: opacity .4s; }
     body #content.opaque {

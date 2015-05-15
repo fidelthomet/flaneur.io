@@ -14,6 +14,7 @@ var activeAnnotation;
 var snapLinks = [];
 var scrollY = 0;
 
+
 $(function () {
 	snap = Snap("#svg")
 
@@ -297,11 +298,14 @@ dom.annotation.on("contextmenu",function(e){
 $("#options").click(function(){
 	var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
 	var rate = $("<div id='rate'>Rate Extension</div>")
-	var help = $("<div id='help'>Show Tutorial</div>")
+	var help = $("<div id='help'>Show Intro</div>")
 
+	help.click(function(){
+		$("#intro").show()
+	})
 
 	$("#overlay #contextmenu").empty()
-	$("#overlay #contextmenu").append([help, rate, feedback])		
+	$("#overlay #contextmenu").append([help, feedback])		
 
 	$(this).addClass("active")
 	var x = $(this).offset().left
@@ -361,6 +365,11 @@ $("#view").click(function(){
 
 	$("#overlay").show()
 })
+
+	$("#iClose").click(function(){
+		$("#intro").hide()
+		localStorage.setItem("intro", 1)
+	})
 }
 
 function init(){
@@ -380,6 +389,10 @@ function init(){
 	};
 	if (localStorage.getItem("showScents")==null) {
 		localStorage.setItem("showScents", 1)
+	};
+
+	if (localStorage.getItem("intro")==null) {
+		$("#intro").show()
 	};
 
 }
