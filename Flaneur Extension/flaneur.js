@@ -225,7 +225,7 @@ function handlers(){
 		// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
 		var del = $("<div id='delete'>Delete</div>")
 		del.click(function(){
-			removeHighlight(activeHighlight,true)
+			removeHighlight(activeHighlight, el.articles[state.article].highlights[activeHighlight],true)
 			$("#content").addClass("opaque")
 		})
 		del.on("mouseover", function(){
@@ -453,7 +453,7 @@ function update(){
 
 			el.articles[state.article].dom.addClass("focus")
 
-			console.log(el.articles[state.article])
+			
 			if(el.articles[state.article].img){
 				el.articles[state.article].dom.find(".itemHeader .img").css("background-image","url("+el.articles[state.article].img+")")
 			} else if(el.articles[state.article].color){

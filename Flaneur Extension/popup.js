@@ -81,7 +81,7 @@ $(function(){
 		// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
 		var del = $("<div id='delete'>Delete</div>")
 		del.click(function(){
-			removeHighlight(activeHighlight)
+			removeHighlight(activeHighlight, data)
 			$("#hl-"+activeHighlight).remove()
 
 			if(!$(".highlight").length){
