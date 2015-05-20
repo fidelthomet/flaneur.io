@@ -62,7 +62,8 @@ $(function(){
 	})
 
 	$(document).on("contextmenu", function(e){
-		e.preventDefault();
+		if($(e.target).attr("contenteditable")!="plaintext-only")
+			e.preventDefault();
 	})
 
 	dom.highlight.find(".hl_content").on("contextmenu",function(e){
