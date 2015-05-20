@@ -105,7 +105,8 @@ $(function(){
 		if(x > window.innerWidth-112){
 			x-=112
 		}
-		if(y > window.innerHeight-61){
+		
+		if(y > window.innerHeight-96){
 			y-=61
 		}
 
@@ -387,8 +388,7 @@ function handleData(){
 }
 
 function finishRemovingHighlight(data){
-	console.log("wulf")
-	console.log(data)
+
 	removeHighlight(data)
 	$("#hl-"+data).remove()
 	if(!$(".highlight").length){
