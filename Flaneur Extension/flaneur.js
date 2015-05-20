@@ -1097,8 +1097,8 @@ function createScents(){
 	var space = (window.innerWidth-840)/4
 
 	$.each(el.articles, function(index, article){
-
-		if (!article.isHidden) {
+	
+		if (!article.isHidden && !article.dom.hasClass("remove")) {
 			var used = []
 			$.each(article.highlights, function(index, highlight){
 				
