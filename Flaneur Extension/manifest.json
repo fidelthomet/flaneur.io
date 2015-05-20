@@ -1,6 +1,6 @@
 {
   "name": "flaneur.io",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Save and explore text fragments.",
   "browser_action": {
     "default_title": "Flaneur.io",
