@@ -78,7 +78,7 @@ body {
             body header #icons .icon#options:hover #option_inner .option:hover span {
               text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
               background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
-  body #intro {
+  body #intro, body #exportpopup {
     position: fixed;
     width: 400px;
     background: #fff;
@@ -90,7 +90,14 @@ body {
     top: 92px;
     height: 432px;
     display: none; }
-    body #intro #iHeader {
+    body #intro#exportpopup, body #exportpopup#exportpopup {
+      height: 72px; }
+    body #intro a, body #exportpopup a {
+      color: #000;
+      text-decoration: none; }
+    body #intro a:visited, body #exportpopup a:visited {
+      color: #000; }
+    body #intro #iHeader, body #exportpopup #iHeader {
       position: absolute;
       height: 124px;
       background: #FFF540;
@@ -99,27 +106,30 @@ body {
       text-align: center;
       padding-top: 44px;
       border-radius: 2px 2px 0px 0px; }
-    body #intro #iTitle {
+    body #intro #iTitle, body #intro #expText, body #exportpopup #iTitle, body #exportpopup #expText {
       font-size: 16px;
       font-weight: 700;
       position: absolute;
       top: 176px;
       left: 8px; }
-    body #intro #iText {
+      body #intro #iTitle#expText, body #intro #expText#expText, body #exportpopup #iTitle#expText, body #exportpopup #expText#expText {
+        font-weight: 300;
+        top: 8px; }
+    body #intro #iText, body #exportpopup #iText {
       position: absolute;
       font-size: 14px;
       top: 206px;
       left: 8px;
       width: 371px; }
-      body #intro #iText .author {
+      body #intro #iText .author, body #exportpopup #iText .author {
         background-image: linear-gradient(to top, transparent, transparent 0px, #33FF99 0px, #33FF99 2px, transparent 2px); }
-      body #intro #iText .source {
+      body #intro #iText .source, body #exportpopup #iText .source {
         background-image: linear-gradient(to top, transparent, transparent 0px, #33CCFF 0px, #33CCFF 2px, transparent 2px); }
-      body #intro #iText .time {
+      body #intro #iText .time, body #exportpopup #iText .time {
         background-image: linear-gradient(to top, transparent, transparent 0px, #FF3369 0px, #FF3369 2px, transparent 2px); }
-      body #intro #iText .annotation {
+      body #intro #iText .annotation, body #exportpopup #iText .annotation {
         background-image: linear-gradient(to top, transparent, transparent 0px, #737373 0px, #737373 2px, transparent 2px); }
-    body #intro #iClose {
+    body #intro #iClose, body #intro #expDownload, body #exportpopup #iClose, body #exportpopup #expDownload {
       position: absolute;
       background: #FFF540;
       bottom: 8px;
@@ -132,6 +142,9 @@ body {
       padding-top: 6px;
       font-size: 16px;
       cursor: pointer; }
+      body #intro #iClose.disabled, body #intro #expDownload.disabled, body #exportpopup #iClose.disabled, body #exportpopup #expDownload.disabled {
+        background: #f0f0f0;
+        color: #737373; }
   body #content {
     transition: opacity .4s; }
     body #content.opaque {

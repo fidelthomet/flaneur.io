@@ -196,7 +196,7 @@ function removeHighlight(data, moreData, reload){
 	
 	server.highlights.get(data).then(function(result){
 		server.highlights.query("url").only(result.url).execute().then(function(results){
-	
+
 
 			var removeStuffPromise = []
 
@@ -225,7 +225,7 @@ function removeHighlight(data, moreData, reload){
 										})
 									})
 								})
-							)
+								)
 						}
 					})
 					
@@ -239,7 +239,7 @@ function removeHighlight(data, moreData, reload){
 				})
 			})
 		})	
-	})
+})
 }
 
 function removeUrl(data){
@@ -287,5 +287,50 @@ function getAnnotationsForHighlight(data){
 
 function genId(){
 	return $.now()+"-"+Math.floor((Math.random()*.9+.1)*1000000)
+}
+// EXPORT
+function exportDB(){
+	var exportData = {}
+	server.highlights.query().all().execute().then(function(highlights){
+		exportData.highlights=highlights;
+
+		server.annotations.query().all().execute().then(function(annotations){
+			exportData.annotations=annotations;
+
+			server.an_relations.query().all().execute().then(function(an_relations){
+				exportData.an_relations=an_relations;
+
+				server.hosts.query().all().execute().then(function(hosts){
+					exportData.hosts=hosts;
+
+					server.urls.query().all().execute().then(function(urls){
+						exportData.urls=urls;
+
+						server.authors.query().all().execute().then(function(authors){
+							exportData.authors=authors;
+
+							server.projects.query().all().execute().then(function(projects){
+								exportData.projects=projects;
+
+								server.projects.query().all().execute().then(function(projects){
+									exportData.projects=projects;
+									var data = JSON.stringify(exportData);
+									var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData));
+									$("#exportDB").attr("href", "data:"+data)
+									$("#expDownload").removeClass("disabled")
+									$("#expDownload").text("Download Data")
+									// window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(exportData)));
+									// $("#link").attr("href", "data:"+data)
+									//$("#link").trigger("click")
+									// $('<a id="link" href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#container');
+									// console.log(data)
+								})
+							})
+						})
+					})
+				})
+			})
+		})
+	})
 }
 

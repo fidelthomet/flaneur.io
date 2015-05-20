@@ -298,14 +298,22 @@ dom.annotation.on("contextmenu",function(e){
 $("#options").click(function(){
 	var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
 	var rate = $("<div id='rate'>Rate Extension</div>")
+	var exportData = $("<div id='export'>Export</div>")
 	var help = $("<div id='help'>Show Intro</div>")
 
 	help.click(function(){
 		$("#intro").show()
 	})
 
+	exportData.click(function(){
+		$("#exportpopup").show()
+		$("#expDownload").addClass("disabled")
+		$("#expDownload").text("Preparing Data")
+		exportDB();
+	})
+
 	$("#overlay #contextmenu").empty()
-	$("#overlay #contextmenu").append([help, feedback])		
+	$("#overlay #contextmenu").append([help, feedback, exportData])		
 
 	$(this).addClass("active")
 	var x = $(this).offset().left
