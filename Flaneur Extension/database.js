@@ -312,13 +312,19 @@ function exportDB(){
 							server.projects.query().all().execute().then(function(projects){
 								exportData.projects=projects;
 
-								server.projects.query().all().execute().then(function(projects){
-									exportData.projects=projects;
+								server.pr_relations.query().all().execute().then(function(pr_relations){
+									exportData.pr_relations=pr_relations;
+
+									exportData.flaneurVersion = chrome.runtime.getManifest().version
 									var data = JSON.stringify(exportData);
 									var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData));
 									$("#exportDB").attr("href", "data:"+data)
 									$("#expDownload").removeClass("disabled")
 									$("#expDownload").text("Download Data")
+									$("#expDownload").click(function(){
+										$("#expDownload").off("click")
+										$("#exportpopup").hide()
+									})
 									// window.open("data:text/json;charset=utf-8," + escape(JSON.stringify(exportData)));
 									// $("#link").attr("href", "data:"+data)
 									//$("#link").trigger("click")
@@ -331,6 +337,148 @@ function exportDB(){
 				})
 			})
 		})
+	})
+}
+
+function importJSON(data){
+	var importPromises = [];
+	$.each(data.highlights, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.highlights.get(item.hl_id).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.highlights.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.annotations, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.annotations.get(item.an_id).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.annotations.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.an_relations, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.an_relations.query().filter(
+					function(an_relation){ return (an_relation.an_id == item.an_id && an_relation.hl_id == item.hl_id) }).execute().then(function(results){
+					if(results.length){
+						resolve()
+					} else {
+						server.an_relations.add({an_id : item.an_id, hl_id : item.hl_id}).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.hosts, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.hosts.get(item.host).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.hosts.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.urls, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.urls.get(item.url).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.urls.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.authors, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.authors.get(item.author).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.authors.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	$.each(data.projects, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.projects.get(item.project).then(function(result){
+					if(result){
+						resolve()
+					} else {
+						server.projects.add(item).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+	if (data.pr_relations)
+	$.each(data.pr_relations, function(index, item){
+		importPromises.push(
+			new Promise(function(resolve, reject) {
+				server.pr_relations.query().filter(
+					function(pr_relation){ return (pr_relation.pr_id == item.pr_id && pr_relation.hl_id == item.hl_id) }).execute().then(function(results){
+					if(results.length){
+						resolve()
+					} else {
+						server.pr_relations.add({pr_id : item.pr_id, hl_id : item.hl_id}).then(function(){
+							resolve();
+						})
+					}
+				})
+			})
+		)
+	})
+
+
+
+
+	Promise.all(importPromises).then(function(){
+		console.log("all Done")
+		location.reload();
 	})
 }
 

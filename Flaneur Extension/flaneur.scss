@@ -167,7 +167,7 @@ body {
 		}
 	}
 
-	#intro, #exportpopup{
+	#intro, #exportpopup, #importpopup{
 		position: fixed;
 		width: 400px;
 		background: #fff;
@@ -181,7 +181,7 @@ body {
 
 		display: none;
 
-		&#exportpopup{
+		&#exportpopup, &#importpopup{
 			height: 72px;
 		}
 
@@ -204,13 +204,13 @@ body {
 			border-radius: 2px 2px 0px 0px;
 		}
 
-		#iTitle, #expText{
+		#iTitle, #expText, #impText{
 			font-size: 16px;
 			font-weight: 700;
 			position: absolute;
 			top: 176px;
 			left: 8px;
-			&#expText{
+			&#expText, &#impText{
 				font-weight: 300;
 				top: 8px;
 			}
@@ -255,6 +255,42 @@ body {
 				background: $light-grey;
 				color: $text-light;
 			}
+		}
+
+		input{
+			position: absolute;
+			left: 0px;
+			font-family: inherit;
+			font-size: inherit;
+			bottom: 0px;
+			color: transparent;
+			outline: none;
+		}
+
+		input::-webkit-file-upload-button {
+			visibility: hidden;
+		}
+
+		input::before {
+			content: attr(data-content);
+			position: absolute;
+			background: #FFF540;
+			color: $text;
+			bottom: 8px;
+			height: 26px;
+			width: 384px;
+			border-radius: 2px;
+			left: 8px;
+			font-weight: 700;
+			text-align: center;
+			padding-top: 6px;
+			font-size: 16px;
+			cursor: pointer;
+
+		}
+		input.disabled::before {
+			background: $light-grey;
+			color: $text-light;
 		}
 	}
 

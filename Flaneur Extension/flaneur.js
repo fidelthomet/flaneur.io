@@ -49,6 +49,9 @@ function handlers(){
 		$(".icon").removeClass("active")
 		$("#overlay #contextmenu").removeAttr('style');
 		$("#overlay #contextmenu").removeClass("show")
+		$("#overlay #contextmenu").show();
+		$("#importpopup").hide()
+		$("#exportpopup").hide()
 	})
 
 	$("#search").click(function(){
@@ -207,7 +210,7 @@ function handlers(){
 	})
 
 	$(document).on("contextmenu", function(e){
-		// e.preventDefault();
+		e.preventDefault();
 	})
 
 	dom.highlight.find(".hl_content").on("contextmenu",function(e){
@@ -298,22 +301,37 @@ dom.annotation.on("contextmenu",function(e){
 $("#options").click(function(){
 	var feedback = $("<a id='feedbacklink' href='mailto:flaneurio@fidelthomet.com'><div id='feedback'>Send Feedback</div></a>")
 	var rate = $("<div id='rate'>Rate Extension</div>")
-	var exportData = $("<div id='export'>Export</div>")
+	var exportData = $("<div id='export'>Export Data</div>")
+	var importData = $("<div id='import'>Import Data</div>")
 	var help = $("<div id='help'>Show Intro</div>")
 
 	help.click(function(){
 		$("#intro").show()
 	})
 
-	exportData.click(function(){
+	exportData.click(function(e){
+		e.stopPropagation();
 		$("#exportpopup").show()
 		$("#expDownload").addClass("disabled")
 		$("#expDownload").text("Preparing Data")
+		$("#overlay").show()
 		exportDB();
+		$("#overlay #contextmenu").hide();
+		$(".icon").removeClass("active")
+	})
+
+	importData.click(function(e){
+		e.stopPropagation();	
+		$("#uploadJSON").attr("data-content", "Select File")
+		$("#overlay").show()
+		$("#uploadJSON").removeClass("disabled")
+		$("#importpopup").show()
+		$("#overlay #contextmenu").hide();
+		$(".icon").removeClass("active")
 	})
 
 	$("#overlay #contextmenu").empty()
-	$("#overlay #contextmenu").append([help, feedback, exportData])		
+	$("#overlay #contextmenu").append([help, feedback, exportData, importData])		
 
 	$(this).addClass("active")
 	var x = $(this).offset().left
@@ -378,6 +396,22 @@ $("#view").click(function(){
 		$("#intro").hide()
 		localStorage.setItem("intro", 1)
 	})
+
+	$( "#uploadJSON" ).change(function( event ) {
+	    var fr = new FileReader();
+	    fr.onload = function(){
+	    	var data = JSON.parse(this.result)
+	    	if(data.flaneurVersion){
+	    		importJSON(data)
+	    		$("#uploadJSON").attr("data-content","Updating Database")
+	    		$("#uploadJSON").addClass("disabled")
+	    	} else {
+	    		$("#uploadJSON").attr("data-content","File Not Supported! Select New File")
+	    	}
+	    }
+	    if(this.files[0])
+		   	fr.readAsText(this.files[0])
+	});
 }
 
 function init(){

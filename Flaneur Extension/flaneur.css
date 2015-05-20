@@ -78,7 +78,7 @@ body {
             body header #icons .icon#options:hover #option_inner .option:hover span {
               text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
               background-image: linear-gradient(to top, transparent, transparent 2px, #fff540 2px, #fff540 3px, transparent 3px); }
-  body #intro, body #exportpopup {
+  body #intro, body #exportpopup, body #importpopup {
     position: fixed;
     width: 400px;
     background: #fff;
@@ -90,14 +90,14 @@ body {
     top: 92px;
     height: 432px;
     display: none; }
-    body #intro#exportpopup, body #exportpopup#exportpopup {
+    body #intro#exportpopup, body #intro#importpopup, body #exportpopup#exportpopup, body #exportpopup#importpopup, body #importpopup#exportpopup, body #importpopup#importpopup {
       height: 72px; }
-    body #intro a, body #exportpopup a {
+    body #intro a, body #exportpopup a, body #importpopup a {
       color: #000;
       text-decoration: none; }
-    body #intro a:visited, body #exportpopup a:visited {
+    body #intro a:visited, body #exportpopup a:visited, body #importpopup a:visited {
       color: #000; }
-    body #intro #iHeader, body #exportpopup #iHeader {
+    body #intro #iHeader, body #exportpopup #iHeader, body #importpopup #iHeader {
       position: absolute;
       height: 124px;
       background: #FFF540;
@@ -106,30 +106,30 @@ body {
       text-align: center;
       padding-top: 44px;
       border-radius: 2px 2px 0px 0px; }
-    body #intro #iTitle, body #intro #expText, body #exportpopup #iTitle, body #exportpopup #expText {
+    body #intro #iTitle, body #intro #expText, body #intro #impText, body #exportpopup #iTitle, body #exportpopup #expText, body #exportpopup #impText, body #importpopup #iTitle, body #importpopup #expText, body #importpopup #impText {
       font-size: 16px;
       font-weight: 700;
       position: absolute;
       top: 176px;
       left: 8px; }
-      body #intro #iTitle#expText, body #intro #expText#expText, body #exportpopup #iTitle#expText, body #exportpopup #expText#expText {
+      body #intro #iTitle#expText, body #intro #iTitle#impText, body #intro #expText#expText, body #intro #expText#impText, body #intro #impText#expText, body #intro #impText#impText, body #exportpopup #iTitle#expText, body #exportpopup #iTitle#impText, body #exportpopup #expText#expText, body #exportpopup #expText#impText, body #exportpopup #impText#expText, body #exportpopup #impText#impText, body #importpopup #iTitle#expText, body #importpopup #iTitle#impText, body #importpopup #expText#expText, body #importpopup #expText#impText, body #importpopup #impText#expText, body #importpopup #impText#impText {
         font-weight: 300;
         top: 8px; }
-    body #intro #iText, body #exportpopup #iText {
+    body #intro #iText, body #exportpopup #iText, body #importpopup #iText {
       position: absolute;
       font-size: 14px;
       top: 206px;
       left: 8px;
       width: 371px; }
-      body #intro #iText .author, body #exportpopup #iText .author {
+      body #intro #iText .author, body #exportpopup #iText .author, body #importpopup #iText .author {
         background-image: linear-gradient(to top, transparent, transparent 0px, #33FF99 0px, #33FF99 2px, transparent 2px); }
-      body #intro #iText .source, body #exportpopup #iText .source {
+      body #intro #iText .source, body #exportpopup #iText .source, body #importpopup #iText .source {
         background-image: linear-gradient(to top, transparent, transparent 0px, #33CCFF 0px, #33CCFF 2px, transparent 2px); }
-      body #intro #iText .time, body #exportpopup #iText .time {
+      body #intro #iText .time, body #exportpopup #iText .time, body #importpopup #iText .time {
         background-image: linear-gradient(to top, transparent, transparent 0px, #FF3369 0px, #FF3369 2px, transparent 2px); }
-      body #intro #iText .annotation, body #exportpopup #iText .annotation {
+      body #intro #iText .annotation, body #exportpopup #iText .annotation, body #importpopup #iText .annotation {
         background-image: linear-gradient(to top, transparent, transparent 0px, #737373 0px, #737373 2px, transparent 2px); }
-    body #intro #iClose, body #intro #expDownload, body #exportpopup #iClose, body #exportpopup #expDownload {
+    body #intro #iClose, body #intro #expDownload, body #exportpopup #iClose, body #exportpopup #expDownload, body #importpopup #iClose, body #importpopup #expDownload {
       position: absolute;
       background: #FFF540;
       bottom: 8px;
@@ -142,9 +142,37 @@ body {
       padding-top: 6px;
       font-size: 16px;
       cursor: pointer; }
-      body #intro #iClose.disabled, body #intro #expDownload.disabled, body #exportpopup #iClose.disabled, body #exportpopup #expDownload.disabled {
+      body #intro #iClose.disabled, body #intro #expDownload.disabled, body #exportpopup #iClose.disabled, body #exportpopup #expDownload.disabled, body #importpopup #iClose.disabled, body #importpopup #expDownload.disabled {
         background: #f0f0f0;
         color: #737373; }
+    body #intro input, body #exportpopup input, body #importpopup input {
+      position: absolute;
+      left: 0px;
+      font-family: inherit;
+      font-size: inherit;
+      bottom: 0px;
+      color: transparent;
+      outline: none; }
+    body #intro input::-webkit-file-upload-button, body #exportpopup input::-webkit-file-upload-button, body #importpopup input::-webkit-file-upload-button {
+      visibility: hidden; }
+    body #intro input::before, body #exportpopup input::before, body #importpopup input::before {
+      content: attr(data-content);
+      position: absolute;
+      background: #FFF540;
+      color: #000;
+      bottom: 8px;
+      height: 26px;
+      width: 384px;
+      border-radius: 2px;
+      left: 8px;
+      font-weight: 700;
+      text-align: center;
+      padding-top: 6px;
+      font-size: 16px;
+      cursor: pointer; }
+    body #intro input.disabled::before, body #exportpopup input.disabled::before, body #importpopup input.disabled::before {
+      background: #f0f0f0;
+      color: #737373; }
   body #content {
     transition: opacity .4s; }
     body #content.opaque {
