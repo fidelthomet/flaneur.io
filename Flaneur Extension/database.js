@@ -232,7 +232,7 @@ function removeHighlight(data, moreData, reload){
 					Promise.all(removeRelationsP).then(function(){
 						server.highlights.remove(data).then(function(results){
 							if(reload){
-								// location.reload()
+								location.reload()
 							}
 						})
 					})
