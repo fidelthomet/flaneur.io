@@ -597,17 +597,24 @@ body {
 									color: $text-light;
 								}
 
-								&.delete span{
+								&.delete .an{
 
 									text-shadow: none;
 									background-position: center 8px;
 									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $date-red 1px, $date-red 2px, rgba(0, 0, 0, 0) 2px);
 								}
 
-								span{
+								.an{
 									transition: background-position .2s;
 									background-position: center 13px;
 									background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, $text-light 1px, $text-light 2px, rgba(0, 0, 0, 0) 2px);
+
+									
+								}
+								.ancounter{
+									font-style: italic;
+									color: #BBB;
+
 								}
 							}
 						}

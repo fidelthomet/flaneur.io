@@ -141,7 +141,7 @@ function handlers(){
 	})
 
 	dom.annotation.on("click", function(){
-		$("#searchfield").text($(this).text())
+		$("#searchfield").text($(this).find(".an").text())
 		$("#searchfield").trigger("keyup")
 	})
 
@@ -392,26 +392,26 @@ $("#view").click(function(){
 	$("#overlay").show()
 })
 
-	$("#iClose").click(function(){
-		$("#intro").hide()
-		localStorage.setItem("intro", 1)
-	})
+$("#iClose").click(function(){
+	$("#intro").hide()
+	localStorage.setItem("intro", 1)
+})
 
-	$( "#uploadJSON" ).change(function( event ) {
-	    var fr = new FileReader();
-	    fr.onload = function(){
-	    	var data = JSON.parse(this.result)
-	    	if(data.flaneurVersion){
-	    		importJSON(data)
-	    		$("#uploadJSON").attr("data-content","Updating Database")
-	    		$("#uploadJSON").addClass("disabled")
-	    	} else {
-	    		$("#uploadJSON").attr("data-content","File Not Supported! Select New File")
-	    	}
-	    }
-	    if(this.files[0])
-		   	fr.readAsText(this.files[0])
-	});
+$( "#uploadJSON" ).change(function( event ) {
+	var fr = new FileReader();
+	fr.onload = function(){
+		var data = JSON.parse(this.result)
+		if(data.flaneurVersion){
+			importJSON(data)
+			$("#uploadJSON").attr("data-content","Updating Database")
+			$("#uploadJSON").addClass("disabled")
+		} else {
+			$("#uploadJSON").attr("data-content","File Not Supported! Select New File")
+		}
+	}
+	if(this.files[0])
+		fr.readAsText(this.files[0])
+});
 }
 
 function init(){
@@ -574,8 +574,18 @@ function update(){
 							return ($.inArray(relation.an_id,annotations)>-1)
 						}).execute().then(function(results){
 							var highlights = []
+							var anCounter = {}
 							$.each(results, function(index, item){
+								if(anCounter[item.an_id]){
+									anCounter[item.an_id]++;
+								} else {
+									anCounter[item.an_id] = 1;
+								}
 								highlights.push(item.hl_id)
+							})
+							$.each(anCounter, function(index, item){
+								console.log($(".focus .an-"+index+" .ancounter"))
+								$(".focus .an-"+index+" .ancounter").text(" ("+item+")")
 							})
 
 							server.highlights.query().filter(function(highlight){
@@ -690,6 +700,9 @@ function update(){
 
 									if(item.img){
 										item.dom.find(".itemHeader .img").css("background-image","url("+item.img+")")
+
+									} else if(item.color){
+										item.dom.find(".itemHeader .img").css("background-color","hsl("+item.color+",90%,80%)")
 									} else {
 										item.dom.find(".itemHeader .img").css("background-color","hsl("+item.hue+",90%,80%)")
 									}
@@ -901,7 +914,7 @@ function getAnnotationsByHl(ar_id, hl_id){
 							var annotation = dom.annotation.clone(true)
 							.addClass("an-"+result.an_id)
 							.attr("an_id",result.an_id)
-							annotation.find("span").text(result.annotation)
+							annotation.find("span.an").text(result.annotation)
 							$("#hl-"+hl_id +" .hl_tags").append(annotation)
 						}
 					})
@@ -1139,7 +1152,7 @@ function createScents(){
 	var space = (window.innerWidth-840)/4
 
 	$.each(el.articles, function(index, article){
-	
+
 		if (!article.isHidden && !article.dom.hasClass("remove")) {
 			var used = []
 			$.each(article.highlights, function(index, highlight){
@@ -1173,69 +1186,69 @@ function createScents(){
 					}
 				})
 			})
-		}
-	})
+}
+})
 
-	$("#scents").empty()
+$("#scents").empty()
 
-	$.each(scents, function(index, scent){
-		if (scent.focus.length) {
-			
-			$.each(scent.left, function(index, item){
-				var scentEl = dom.scent.clone()
-				scentEl.text(scent.annotation)
-				.attr("h", item.height)
-				.attr("y", item.y)
-				scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
-				$("#scents").append(scentEl)
-			})
+$.each(scents, function(index, scent){
+	if (scent.focus.length) {
 
-			$.each(scent.right, function(index, item){
-				var scentEl = dom.scent.clone()
-				scentEl.text(scent.annotation)
-				.attr("h", item.height)
-				.attr("y", item.y)
-				scentEl.css({left: item.x-space+((Math.random()-.5)*space*.2), top: item.y})
-				$("#scents").append(scentEl)
-			})
-		} else {
-			$.each(scent.left, function(index, item){
-				var scentEl = dom.scent.clone()
-				scentEl.text(scent.annotation)
-				.attr("h", item.height)
-				.attr("y", item.y)
-				scentEl.css({left: 0+((Math.random()-.5)*space*.2), top: item.y})
-				$("#scents").append(scentEl)
-			})
+		$.each(scent.left, function(index, item){
+			var scentEl = dom.scent.clone()
+			scentEl.text(scent.annotation)
+			.attr("h", item.height)
+			.attr("y", item.y)
+			scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
+			$("#scents").append(scentEl)
+		})
 
-			$.each(scent.right, function(index, item){
-				var scentEl = dom.scent.clone()
-				scentEl.text(scent.annotation)
-				.attr("h", item.height)
-				.attr("y", item.y)
-				scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
-				$("#scents").append(scentEl)
-			})
-		}
-	})
+		$.each(scent.right, function(index, item){
+			var scentEl = dom.scent.clone()
+			scentEl.text(scent.annotation)
+			.attr("h", item.height)
+			.attr("y", item.y)
+			scentEl.css({left: item.x-space+((Math.random()-.5)*space*.2), top: item.y})
+			$("#scents").append(scentEl)
+		})
+	} else {
+		$.each(scent.left, function(index, item){
+			var scentEl = dom.scent.clone()
+			scentEl.text(scent.annotation)
+			.attr("h", item.height)
+			.attr("y", item.y)
+			scentEl.css({left: 0+((Math.random()-.5)*space*.2), top: item.y})
+			$("#scents").append(scentEl)
+		})
 
-	$.each($("#scents div"), function(index, item){
-		var scale = (space/$(item).width())*(1+(Math.random()-.5)*.1)
-		if (scale > 2.3){
-			scale = 2.3
-		}
-
-		var y = ($(item).attr("h")-$(item).height()*scale-48)*Math.random()
-		y += parseFloat($(item).attr("y"))
-
-		var alpha = (1/scale)*.05+.07
-
-		$(item).css({"transform": "scale("+scale+")", top: y, color: "rgba(0,0,0,"+alpha+")"})
-	})
-
-	if(localStorage.getItem("showScents")=="1" && !$("#content").hasClass("opaque")){
-		$("#scents").css("opacity","1")
+		$.each(scent.right, function(index, item){
+			var scentEl = dom.scent.clone()
+			scentEl.text(scent.annotation)
+			.attr("h", item.height)
+			.attr("y", item.y)
+			scentEl.css({left: item.x+252+((Math.random()-.5)*space*.2), top: item.y})
+			$("#scents").append(scentEl)
+		})
 	}
+})
+
+$.each($("#scents div"), function(index, item){
+	var scale = (space/$(item).width())*(1+(Math.random()-.5)*.1)
+	if (scale > 2.3){
+		scale = 2.3
+	}
+
+	var y = ($(item).attr("h")-$(item).height()*scale-48)*Math.random()
+	y += parseFloat($(item).attr("y"))
+
+	var alpha = (1/scale)*.05+.07
+
+	$(item).css({"transform": "scale("+scale+")", top: y, color: "rgba(0,0,0,"+alpha+")"})
+})
+
+if(localStorage.getItem("showScents")=="1" && !$("#content").hasClass("opaque")){
+	$("#scents").css("opacity","1")
+}
 }
 
 // HELPER
@@ -1297,7 +1310,7 @@ DOM ELEMENTS
 dom.article = $('<div class="article item"><div class="itemHeader"><div class="img"></div><div class="text"><a target="_blank"><div class="title"></div></a><span class="author"></span><span class="host"></span><span class="date"></span></div></div><div class="highlights"></div></div>')
 dom.description = $('<div class="description"></div>')
 dom.highlight = $('<div class="highlight"><div class="hl_content"><span class="text"></span></div><div class="hl_tags"></div></div>')
-dom.annotation = $('<div><span></span></div>')
+dom.annotation = $('<div><span class="an"></span><span class="ancounter"></span></div>')
 dom.metahit = $('<div class="metahit"><span></span></div>')
 dom.sarticle = $('<div class="sarticle item focus"><div class="itemHeader"><div class="img"></div><div class="text"><div class="title"></div><span class="author"></span><span class="host"></span><span class="date"></span></div></div></div>')
 dom.scent = $("<div></div>")

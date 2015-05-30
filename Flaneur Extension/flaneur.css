@@ -369,14 +369,17 @@ body {
             padding: 5px 8px 3px; }
             body .item .highlights .highlight.highlight .hl_tags div:hover {
               color: #737373; }
-            body .item .highlights .highlight.highlight .hl_tags div.delete span {
+            body .item .highlights .highlight.highlight .hl_tags div.delete .an {
               text-shadow: none;
               background-position: center 8px;
               background-image: linear-gradient(to top, transparent, transparent 1px, #FF3369 1px, #FF3369 2px, transparent 2px); }
-            body .item .highlights .highlight.highlight .hl_tags div span {
+            body .item .highlights .highlight.highlight .hl_tags div .an {
               transition: background-position .2s;
               background-position: center 13px;
               background-image: linear-gradient(to top, transparent, transparent 1px, #737373 1px, #737373 2px, transparent 2px); }
+            body .item .highlights .highlight.highlight .hl_tags div .ancounter {
+              font-style: italic;
+              color: #BBB; }
     body .item.focus {
       transform: scale(1);
       top: 64px;
