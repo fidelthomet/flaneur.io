@@ -720,10 +720,11 @@ function update(){
 									if(item.description){
 										var description = dom.description.clone(true)
 										.text(item.description)
-										item.dom.find(".itemHeader .text .description").empty()
+										item.dom.find(".itemHeader .text .description").remove()
 										item.dom.find(".itemHeader .text").append(description)
 									}
-									var itemHeight = item.dom.find(".itemHeader").height()
+									var itemHeight = item.dom.find(".itemHeader").height()-item.dom.find(".description").height()-7
+
 									item.height=itemHeight
 									if(item.isLeft){
 										
@@ -1131,6 +1132,7 @@ function search(value){
 						.attr("id","sar-"+item.ar_id)
 
 						item.dom.find(".itemHeader .img").css("background-image", "url("+item.img+")")
+						item.dom.find(".itemHeader .img").css("background-color","hsl("+item.color+",90%,80%)")
 						item.dom.find(".itemHeader .text .title").text(item.title)
 						if(item.author!="Unknown"){
 							item.dom.find(".itemHeader .text .author").text(item.author)
