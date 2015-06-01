@@ -8,6 +8,7 @@ $text-light: #737373;
 $white: #fff;
 $black: #000;
 $shadow: rgba(166,166,166,.6) 0px 2px 4px;
+$shadow-wide: rgba(100,100,100,.6) 0px 0px 12px;
 $author-green: #33FF99;
 $soruce-blue: #33CCFF;
 $date-red: #FF3369;
@@ -22,6 +23,10 @@ body {
 	color: $text;
 	background: $background;
 	font-size: $font-size;
+
+	.noTransition{
+		transition: none !important;
+	}
 
 
 	header{
@@ -419,7 +424,7 @@ body {
 		transform-origin: center top;
 		position: absolute;
 		transform: scale(.75) translateY(-256px);
-		transition: transform .8s, left .8s, height .6s, opacity .6s;
+		transition: transform .8s, left .8s, height .6s, opacity .6s, box-shadow .4s, z-index .6s .0s;
 		top: 64px;
 		width: 336px;
 		left: 75%;
@@ -432,6 +437,9 @@ body {
 			// font-size: 14px;
 			position: fixed;
 
+			&.passive {
+				opacity: .5;
+			}
 
 			&.isLeft {
 				left: 25%;
@@ -451,6 +459,13 @@ body {
 					// opacity: 0;
 					left: calc(100% + 50px);
 				}
+			}
+
+			&.isLeft:hover, &.isRight:hover{
+				box-shadow: $shadow-wide;
+				// height: auto !important;
+				transition: transform .8s, left .8s, height .6s, opacity .6s, box-shadow .4s, z-index .0s .0s;
+				z-index: 300;
 			}
 
 			.itemHeader {

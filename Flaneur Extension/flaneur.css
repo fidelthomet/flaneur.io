@@ -3,6 +3,8 @@ body {
   color: #000;
   background: #FAFAFA;
   font-size: 14px; }
+  body .noTransition {
+    transition: none !important; }
   body header {
     position: fixed;
     left: 0px;
@@ -259,7 +261,7 @@ body {
     transform-origin: center top;
     position: absolute;
     transform: scale(0.75) translateY(-256px);
-    transition: transform .8s, left .8s, height .6s, opacity .6s;
+    transition: transform .8s, left .8s, height .6s, opacity .6s, box-shadow .4s, z-index .6s .0s;
     top: 64px;
     width: 336px;
     left: 75%;
@@ -270,6 +272,8 @@ body {
     box-shadow: rgba(166, 166, 166, 0.6) 0px 2px 4px;
     border-radius: 3px;
     position: fixed; }
+    body .item.passive {
+      opacity: .5; }
     body .item.isLeft {
       left: 25%;
       margin-left: -252px; }
@@ -280,6 +284,10 @@ body {
       margin-left: -84px; }
       body .item.isRight.remove {
         left: calc(100% + 50px); }
+    body .item.isLeft:hover, body .item.isRight:hover {
+      box-shadow: rgba(100, 100, 100, 0.6) 0px 0px 12px;
+      transition: transform .8s, left .8s, height .6s, opacity .6s, box-shadow .4s, z-index .0s .0s;
+      z-index: 300; }
     body .item .itemHeader {
       width: 336px;
       background-size: 100% auto;
