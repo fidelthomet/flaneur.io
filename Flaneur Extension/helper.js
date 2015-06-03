@@ -31,5 +31,25 @@ function transform(el, values) {
 		matrix[6] = values.y
 	}
 
-	$(el).css("transform", "matrix("+matrix[1]+", "+matrix[2]+", "+matrix[3]+", "+matrix[4]+", "+matrix[5]+", "+matrix[6]+")")
+	$(el).css("transform", "matrix(" + matrix[1] + ", " + matrix[2] + ", " + matrix[3] + ", " + matrix[4] + ", " + matrix[5] + ", " + matrix[6] + ")")
+}
+
+function transformAdd(el, values) {
+	// console.log(values.y)
+	matrix = $(el).css("transform").split(/, |\(|\)/)
+
+	if (matrix.length < 7) {
+		matrix = ["matrix", 1, 0, 0, 1, 0, 0, ""]
+	};
+	if (values.scale != undefined) {
+		matrix[1] = matrix[4] = parseFloat(matrix[1]) + values.scale
+	}
+	if (values.x != undefined) {
+		matrix[5] = parseFloat(matrix[5]) + values.x
+	}
+	if (values.y != undefined) {
+		matrix[6] = parseFloat(matrix[6]) + values.y
+	}
+
+	$(el).css("transform", "matrix(" + matrix[1] + ", " + matrix[2] + ", " + matrix[3] + ", " + matrix[4] + ", " + matrix[5] + ", " + matrix[6] + ")")
 }

@@ -134,16 +134,19 @@ function drawRelArticles(relArticles) {
 
 		positionArticle(appendArticle(elArticle), relArticle, offset)
 		if (elArticle.offsetY < 0) {
+			elArticle.dom.addClass("outOfFrame")
 			arOnScreen[side].before++
 		} else if (elArticle.headerHeight * .75 + elArticle.offsetY > screenHeight) {
 			arOnScreen[side].next++
+				elArticle.dom.addClass("outOfFrame")
 		} else {
 			arOnScreen[side].now++
+				elArticle.dom.removeClass("outOfFrame")
 		}
 
 	})
 	drawRelations(relArticles)
-
+	createScents()
 	drawScrollers()
 }
 
@@ -177,6 +180,13 @@ function drawRelations(relArticles) {
 			focusDock.x = xPos.ra
 			articleDock.x = xPos.rb
 		}
+
+		if (articleDock.y > window.innerHeight - 84 || articleDock.y < 64) {
+			var elClass = "outOfFrame"
+		} else {
+			var elClass = "inFrame"
+		}
+
 		$.each(relArticle.links, function(index, link) {
 			switch (link.type) {
 				case "af":
@@ -192,7 +202,7 @@ function drawRelations(relArticles) {
 						posFocusY: focusDock.y,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).addClass("lar-" + relArticle.ar_id).animate({
+					}).addClass("lar-" + relArticle.ar_id).addClass(elClass).animate({
 						stroke: "#FF3369"
 					}, 1200, mina.easeinout))
 					break;
@@ -215,7 +225,7 @@ function drawRelations(relArticles) {
 						posFocusY: focusDock.y + 4,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).addClass("lar-" + relArticle.ar_id).animate({
+					}).addClass("lar-" + relArticle.ar_id).addClass(elClass).addClass("lho").animate({
 						stroke: "#33CCFF"
 					}, 1200, mina.easeinout))
 					break;
@@ -237,12 +247,13 @@ function drawRelations(relArticles) {
 						posFocusY: focusDock.y - 4,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).addClass("lar-" + relArticle.ar_id).animate({
+					}).addClass("lar-" + relArticle.ar_id).addClass(elClass).addClass("lau").animate({
 						stroke: "#33FF99"
 					}, 1200, mina.easeinout))
 					break;
 				case "an":
 					link.an_id
+					console.log("lan-" + link.an_id)
 					var y = parseFloat(elem.articles[state.article].dom.find(".an-" + link.an_id).attr("yPos")) * (4 / 3) + 145
 					snapLinks.push(snap.path(createCurve({
 						x: articleDock.x,
@@ -262,11 +273,14 @@ function drawRelations(relArticles) {
 						an_id: link.an_id,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).addClass("lar-" + relArticle.ar_id).animate({
+					}).addClass("lar-" + relArticle.ar_id).addClass(elClass).addClass("lan-" + link.an_id).animate({
 						stroke: "#737373"
 					}, 1200, mina.easeinout))
 					break;
 			}
+
+
+
 		})
 	})
 }
@@ -287,6 +301,7 @@ function drawTagCounts() {
 }
 
 function drawScrollers(isLeft) {
+	$(window).trigger("scroll")
 	if (arOnScreen.left.next) {
 		$("#scrollerBottomLeft").addClass("active").text(arOnScreen.left.next)
 	} else {
@@ -322,12 +337,12 @@ function scrollArticles(up, left) {
 					offset = elArticle.offsetY
 				}
 			} else {
-				if (elArticle.offsetY>-screenHeight && !isDone){
+				if (elArticle.offsetY > -screenHeight && !isDone) {
 					offset = elArticle.offsetY
 					isDone = true
 					console.log(elArticle.offsetY)
 				} else {
-					
+
 				}
 			}
 			counter++
@@ -338,7 +353,7 @@ function scrollArticles(up, left) {
 					offset = elArticle.offsetY
 				}
 			} else {
-				if (elArticle.offsetY>-screenHeight && !isDone){
+				if (elArticle.offsetY > -screenHeight && !isDone) {
 					offset = elArticle.offsetY
 					isDone = true
 				}
@@ -348,8 +363,6 @@ function scrollArticles(up, left) {
 	})
 
 
-
-	
 
 	arOnScreen = {
 		left: {
@@ -375,36 +388,52 @@ function scrollArticles(up, left) {
 
 
 		if (left) {
-			// if (up) {
-				if (elArticle.isLeft) {
+			if (elArticle.isLeft) {
 
-					elArticle.offsetY -= offset
-					transform(elArticle.dom, {
-						y: elArticle.offsetY
-					})
-				}
-			// }
+				elArticle.offsetY -= offset
+				transform(elArticle.dom, {
+					y: elArticle.offsetY
+				})
+			}
 		} else {
+			if (!elArticle.isLeft) {
 
-			// if (up) {
-				if (!elArticle.isLeft) {
-
-					elArticle.offsetY -= offset
-					transform(elArticle.dom, {
-						y: elArticle.offsetY
-					})
-				}
-			// }
+				elArticle.offsetY -= offset
+				transform(elArticle.dom, {
+					y: elArticle.offsetY
+				})
+			}
 		}
 		if (elArticle.offsetY < 0) {
+			elArticle.dom.addClass("outOfFrame")
 			arOnScreen[side].before++
 		} else if (elArticle.headerHeight * .75 + elArticle.offsetY > screenHeight) {
 			arOnScreen[side].next++
+				elArticle.dom.addClass("outOfFrame")
 		} else {
 			arOnScreen[side].now++
+				elArticle.dom.removeClass("outOfFrame")
 		}
 	})
 
-	drawScrollers()
+	if (left) {
+		$.each($(".scentLeft"), function(index, scent) {
+			
+			var scentTop = parseFloat($(scent).css("top").split("px")[0])
+			//$(scent).css("top", (scentTop-offset)+"px")
+			transformAdd($(scent), {y: -offset})
+
+		})
+
+	} else {
+		$.each($(".scentRight"), function(index, scent) {
+			var scentTop = parseFloat($(scent).css("top").split("px")[0])
+			//$(scent).css("top", (scentTop-offset)+"px")
+			transformAdd($(scent), {y: -offset})
+		})
+	}
+
 	drawRelations(activeRelArticles)
+	drawScrollers()
+
 }

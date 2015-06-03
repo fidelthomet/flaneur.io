@@ -300,14 +300,32 @@ function hanSearch() {
 
 function hanArticle() {
 	dom.article.click(function() {
-		console.log("cicked")
-		updateHash({
-			article: this.id.split("ar-")[1]
-		}, true)
+		if (!$(this).hasClass("outOfFrame")) {
+			updateHash({
+				article: this.id.split("ar-")[1]
+			}, true)
+		} else {
+			if ($(this).hasClass("isLeft")) {
+				// console.log($(this).offset().y)
+				if ($(this).offset().top < 64) {
+					scrollArticles(false, true)
+				} else {
+					scrollArticles(true, true)
+				}
+			} else {
+				if ($(this).offset().top < 64) {
+					scrollArticles(false, false)
+				} else {
+					scrollArticles(true, false)
+				}
+			}
+		}
 	})
 
 	dom.article.on("mouseover", function() {
-		if (!$(this).hasClass("focus")) {
+		if (!$(this).hasClass("focus") && !$(this).hasClass("outOfFrame")) {
+			$(".isLeft,.isRight").addClass("faded")
+			$(this).removeClass("faded")
 			var ar_id = $(this).attr("id").split("ar-")[1];
 			$("path").css("opacity", ".2")
 
@@ -330,7 +348,7 @@ function hanArticle() {
 					} else {
 						var offsetX = -8.4
 					}
-					posY = (y + 52 + elem.articles[ar_id].headerHeight * .8)
+					posY = (y + 64 + elem.articles[ar_id].headerHeight * .8)
 
 					if (snapLink.attr("strokeColor") == "#33CCFF") {
 						posY += 4
@@ -340,7 +358,7 @@ function hanArticle() {
 					}
 					if (snapLink.attr("strokeColor") == "#737373") {
 
-						posY = parseFloat(elem.articles[ar_id].dom.find(".an-" + snapLink.attr("an_id")).attr("yPos")) * (4 / 3) * .8 + 75 + y
+						posY = parseFloat(elem.articles[ar_id].dom.find(".an-" + snapLink.attr("an_id")).attr("yPos")) * (4 / 3) * .8 + 87 + y
 							// posY -= 4
 					}
 					var newD = createCurve({
@@ -373,8 +391,9 @@ function hanArticle() {
 	})
 
 	dom.article.on("mouseout", function() {
-		if (!$(this).hasClass("focus")) {
-			$("path").css("opacity", "1")
+		if (!$(this).hasClass("focus") && !$(this).hasClass("outOfFrame")) {
+			$(".isLeft,.isRight").removeClass("faded")
+			$("path").css("opacity", "")
 
 
 
@@ -423,6 +442,62 @@ function hanArticle() {
 	dom.annotation.on("click", function() {
 		$("#searchfield").text($(this).find(".an").text())
 		$("#searchfield").trigger("keyup")
+	})
+
+	dom.annotation.on("mouseover", function() {
+		$("path").css("opacity", ".2")
+		$(".isLeft,.isRight").addClass("faded")
+		console.log($(this).attr("an_id"))
+		$(".lan-"+$(this).attr("an_id")).css("opacity", "1")
+		$(".lan-"+$(this).attr("an_id")).addClass("overwrite")
+		$(".an-"+$(this).attr("an_id")).closest(".article").removeClass("faded")
+	})
+
+	dom.annotation.on("mouseout", function() {
+		$("path").css("opacity", "")
+		$("path").removeClass("overwrite")
+		$(".isLeft,.isRight").removeClass("faded")
+	})
+
+	dom.article.find(".author").on("mouseover", function() {
+		$("path").css("opacity", ".2")
+		$(".isLeft,.isRight").addClass("faded")
+		var text = $(this).text()
+		$.each(activeRelArticles, function(index, relArticle) {
+			console.log(text)
+			if (relArticle.author == text){
+				
+				elem.articles[relArticle.ar_id].dom.removeClass("faded")
+			}
+		})
+		$(".lau").css("opacity", "1")
+		$(".lau").addClass("overwrite")
+	})
+
+	dom.article.find(".author").on("mouseout", function() {
+		$("path").css("opacity", "")
+		$("path").removeClass("overwrite")
+		$(".isLeft,.isRight").removeClass("faded")
+	})
+
+	dom.article.find(".host").on("mouseover", function() {
+		$("path").css("opacity", ".2")
+		$(".isLeft,.isRight").addClass("faded")
+		var text = $(this).text()
+		$.each(activeRelArticles, function(index, relArticle) {
+			if (relArticle.host.split("www.")[relArticle.host.split("www.").length - 1] == text){
+				
+				elem.articles[relArticle.ar_id].dom.removeClass("faded")
+			}
+		})
+		$(".lho").css("opacity", "1")
+		$(".lho").addClass("overwrite")
+	})
+
+	dom.article.find(".host").on("mouseout", function() {
+		$("path").css("opacity", "")
+		$("path").removeClass("overwrite")
+		$(".isLeft,.isRight").removeClass("faded")
 	})
 
 	dom.highlight.find(".hl_content").on("contextmenu", function(e) {

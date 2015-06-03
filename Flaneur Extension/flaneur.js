@@ -16,17 +16,19 @@ var elem = {
 }
 
 var activeArticles = []
+var activeElArticles = []
+var activeRelArticles = []
 
 var arOnScreen = {
-	left : {
-		before : 0,
-		now : 0,
-		next : 0
+	left: {
+		before: 0,
+		now: 0,
+		next: 0
 	},
-	right : {
-		before : 0,
-		now : 0,
-		next : 0
+	right: {
+		before: 0,
+		now: 0,
+		next: 0
 	}
 }
 
@@ -143,12 +145,15 @@ function newFocus() {
 			prepCanvas()
 
 			focusArticle = appendArticle(drawArticle(article))
-
+			$(".faded").removeClass("faded")
 			getRelations(article).then(function(results) {
 				drawRelArticles(prepRelArticles(results.relArticles, article, results.lTime, results.highlightUrls))
 				positionArticleFocus(focusArticle)
 				cleanUpCanvas()
 				drawTagCounts()
+				// window.setTimeout(function(){
+					// createScents()
+				// }, 1000)
 			})
 		})
 	}
@@ -426,56 +431,57 @@ function search(value) {
 function createScents() {
 	var scents = {}
 	var space = (window.innerWidth - 840) / 4
+	$.each(activeRelArticles, function(index, relArticle) {
+		var used = []
+		$.each(relArticle.highlights, function(index, highlight) {
 
-	$.each(el.articles, function(index, article) {
-
-		if (!article.isHidden && !article.dom.hasClass("remove")) {
-			var used = []
-			$.each(article.highlights, function(index, highlight) {
-
-				$.each(highlight.annotations, function(index, annotation) {
-					if (annotation.annotation.length < 26) {
-						if ($.inArray(annotation.an_id, used) == -1) {
-							used.push(annotation.an_id)
-							if (!scents[annotation.an_id]) {
-								scents[annotation.an_id] = {
-									focus: [],
-									left: [],
-									right: []
-								}
-								scents[annotation.an_id].annotation = annotation.annotation
+			$.each(highlight.annotations, function(index, annotation) {
+				if (annotation.annotation.length < 26) {
+					if ($.inArray(annotation.an_id, used) == -1) {
+						used.push(annotation.an_id)
+						if (!scents[annotation.an_id]) {
+							scents[annotation.an_id] = {
+								focus: [],
+								left: [],
+								right: []
 							}
-
-							var offset = article.dom.offset()
-							if (article.height) {
-								offset.top - 44
-							}
-
-							var key = ""
-							if (article.ar_id == state.article) {
-								key = "focus"
-								offset.top = $("#hl-" + highlight.hl_id + " [an_id='" + annotation.an_id + "']").offset().top
-								offset.top += $("#hl-" + highlight.hl_id + " [an_id='" + annotation.an_id + "']").height() / 2
-							} else if (article.isLeft) {
-								key = "left"
-							} else {
-								key = "right"
-							}
-							scents[annotation.an_id][key].push({
-								x: offset.left,
-								y: offset.top,
-								height: article.height
-							})
+							scents[annotation.an_id].annotation = annotation.annotation
 						}
+
+						var offset = elem.articles[relArticle.ar_id].dom.offset()
+						console.log(elem.articles[relArticle.ar_id])
+						offset.top = elem.articles[relArticle.ar_id].offsetY + 72
+						// if (elem.articles[relArticle.ar_id].headerHeight) {
+						// 	offset.top - 44
+						// }
+
+						var key = ""
+						if (relArticle.ar_id == state.article) {
+							console.log("HERE")
+							key = "focus"
+							offset.top = $("#hl-" + highlight.hl_id + " [an_id='" + annotation.an_id + "']").offset().top
+							offset.top += $("#hl-" + highlight.hl_id + " [an_id='" + annotation.an_id + "']").height() / 2
+						} else if (relArticle.isLeft) {
+							key = "left"
+						} else {
+							key = "right"
+						}
+						scents[annotation.an_id][key].push({
+							x: offset.left,
+							y: offset.top,
+							height: elem.articles[relArticle.ar_id].headerHeight
+						})
 					}
-				})
+				}
 			})
-		}
+		})
+
 	})
 
 	$("#scents").empty()
-
+	console.log(scents)
 	$.each(scents, function(index, scent) {
+
 		if (scent.focus.length) {
 
 			$.each(scent.left, function(index, item) {
@@ -507,6 +513,7 @@ function createScents() {
 				scentEl.text(scent.annotation)
 					.attr("h", item.height)
 					.attr("y", item.y)
+					.addClass("scentLeft")
 				scentEl.css({
 					left: 0 + ((Math.random() - .5) * space * .2),
 					top: item.y
@@ -519,6 +526,7 @@ function createScents() {
 				scentEl.text(scent.annotation)
 					.attr("h", item.height)
 					.attr("y", item.y)
+					.addClass("scentRight")
 				scentEl.css({
 					left: item.x + 252 + ((Math.random() - .5) * space * .2),
 					top: item.y
@@ -537,7 +545,7 @@ function createScents() {
 		var y = ($(item).attr("h") - $(item).height() * scale - 48) * Math.random()
 		y += parseFloat($(item).attr("y"))
 
-		var alpha = (1 / scale) * .05 + .07
+		var alpha = (1 / scale) * .04
 
 		$(item).css({
 			"transform": "scale(" + scale + ")",
@@ -549,6 +557,11 @@ function createScents() {
 	if (localStorage.getItem("showScents") == "1" && !$("#content").hasClass("opaque")) {
 		$("#scents").css("opacity", "1")
 	}
+	window.setTimeout(function(){
+		$("#scents div").css({transition: "transform .8s"})	
+	},10)
+	
+	
 }
 
 // HELPER
