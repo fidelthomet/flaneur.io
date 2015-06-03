@@ -15,6 +15,21 @@ var elem = {
 	articles: {}
 }
 
+var activeArticles = []
+
+var arOnScreen = {
+	left : {
+		before : 0,
+		now : 0,
+		next : 0
+	},
+	right : {
+		before : 0,
+		now : 0,
+		next : 0
+	}
+}
+
 var links = {}
 var linkedElements = []
 var snap
@@ -124,6 +139,7 @@ function newFocus() {
 
 		getArticle(state.article).then(function(article) {
 
+			activeArticles = []
 			prepCanvas()
 
 			focusArticle = appendArticle(drawArticle(article))
@@ -132,6 +148,7 @@ function newFocus() {
 				drawRelArticles(prepRelArticles(results.relArticles, article, results.lTime, results.highlightUrls))
 				positionArticleFocus(focusArticle)
 				cleanUpCanvas()
+				drawTagCounts()
 			})
 		})
 	}

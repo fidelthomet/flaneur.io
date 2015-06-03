@@ -15,6 +15,7 @@ function compare(a, b) {
 }
 
 function transform(el, values) {
+	// console.log(values.y)
 	matrix = $(el).css("transform").split(/, |\(|\)/)
 
 	if (matrix.length < 7) {

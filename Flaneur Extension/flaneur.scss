@@ -306,6 +306,49 @@ body {
 		&.opaque{
 			opacity: 0;
 			pointer-events: none;
+		}
+
+		.scroller{
+			background-color: $yellow;
+			width: 32px;
+			position: absolute;
+			box-shadow: $shadow;
+			height: 20px;
+			border-radius: 2px;
+			text-align: center;
+			padding-top: 2px;
+			height: 18px;
+			opacity: 0;
+			font-style: italic;
+			transition: opacity .4s;
+
+			&.active{
+				opacity: 1;
+			}
+
+			&#scrollerTopLeft{
+				left: 25%;
+				margin-left: -262px;
+				top: 64px;
+			}
+
+			&#scrollerTopRight{
+				left: 75%;
+				margin-left: 230px;
+				top: 64px;
+			}
+
+			&#scrollerBottomLeft{
+				left: 25%;
+				margin-left: -262px;
+				bottom: 20px;
+			}
+
+			&#scrollerBottomRight{
+				left: 75%;
+				margin-left: 230px;
+				bottom: 20px;
+			}
 		}	
 	}
 
@@ -419,13 +462,17 @@ body {
 		height: 100%;
 		top: 0px;
 		left: 0px;
+
+		path{
+			transition: opacity .4s;         
+		}
 	}
 	.item {
 		transform-origin: center top;
 		position: absolute;
 		transform: scale(.75) translateY(-256px);
 		transition: transform .8s, left .8s, height .6s, opacity .6s, box-shadow .4s, z-index .6s .0s;
-		top: 64px;
+		top: 76px;
 		width: 336px;
 		left: 75%;
 		margin-left: -84px;

@@ -59,9 +59,9 @@ function appendArticle(elArticle) {
 				elArticle.dom.find(".an-" + annotation.an_id).attr("yPos", elArticle.dom.find(".an-" + annotation.an_id).position().top)
 			})
 		})
-		
+
 		elArticle.headerHeight = (elArticle.dom.find(".itemHeader").height() - elArticle.dom.find(".description").height() - 7)
-		elArticle.fullHeight = elArticle.dom.find(".itemHeader").height()
+		elArticle.fullHeight = elArticle.dom.find(".itemHeader").height() + elArticle.dom.find(".highlights").height()
 		elArticle.focusHeight = elArticle.dom.find(".itemHeader").height() + elArticle.dom.find(".highlights").height() + 72
 	}
 	elArticle.dom.removeClass("kill")
@@ -98,20 +98,53 @@ function drawRelArticles(relArticles) {
 		right: 0
 	}
 
+	arOnScreen = {
+		left: {
+			before: 0,
+			now: 0,
+			next: 0
+		},
+		right: {
+			before: 0,
+			now: 0,
+			next: 0
+		}
+	}
+
+	var screenHeight = window.innerHeight - 72
+	activeElArticles = []
+	activeRelArticles = []
+
 	$.each(relArticles, function(index, relArticle) {
+
 		var elArticle = drawArticle(relArticle)
+		elArticle.isLeft = relArticle.isLeft
+		activeRelArticles.push(relArticle)
+		activeElArticles.push(elArticle)
+		var side = "left"
+
 		if (relArticle.isLeft) {
 			elArticle.dom.addClass("isLeft")
 			elArticle.dom.removeClass("isRight")
 		} else {
 			elArticle.dom.addClass("isRight")
 			elArticle.dom.removeClass("isLeft")
+			side = "right"
 		}
 
 		positionArticle(appendArticle(elArticle), relArticle, offset)
-	})
+		if (elArticle.offsetY < 0) {
+			arOnScreen[side].before++
+		} else if (elArticle.headerHeight * .75 + elArticle.offsetY > screenHeight) {
+			arOnScreen[side].next++
+		} else {
+			arOnScreen[side].now++
+		}
 
+	})
 	drawRelations(relArticles)
+
+	drawScrollers()
 }
 
 function drawRelations(relArticles) {
@@ -135,7 +168,7 @@ function drawRelations(relArticles) {
 		var focusDock = {}
 		var articleDock = {}
 		focusDock.y = yPos
-		articleDock.y = (elArticle.offsetY) + 108
+		articleDock.y = (elArticle.offsetY) + 120
 
 		if (relArticle.isLeft) {
 			focusDock.x = xPos.la
@@ -151,10 +184,15 @@ function drawRelations(relArticles) {
 					snapLinks.push(snap.path(createCurve(articleDock, focusDock)).attr({
 						fill: "none",
 						stroke: "#FAFAFA",
+						strokeColor: "#FF3369",
 						originY: focusDock.y,
+						posArticleX: articleDock.x,
+						posArticleY: articleDock.y,
+						posFocusX: focusDock.x,
+						posFocusY: focusDock.y,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).animate({
+					}).addClass("lar-" + relArticle.ar_id).animate({
 						stroke: "#FF3369"
 					}, 1200, mina.easeinout))
 					break;
@@ -169,10 +207,15 @@ function drawRelations(relArticles) {
 					})).attr({
 						fill: "none",
 						stroke: "#FAFAFA",
+						strokeColor: "#33CCFF",
 						originY: focusDock.y + 4,
+						posArticleX: articleDock.x,
+						posArticleY: articleDock.y + 4,
+						posFocusX: focusDock.x,
+						posFocusY: focusDock.y + 4,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).animate({
+					}).addClass("lar-" + relArticle.ar_id).animate({
 						stroke: "#33CCFF"
 					}, 1200, mina.easeinout))
 					break;
@@ -186,10 +229,15 @@ function drawRelations(relArticles) {
 					})).attr({
 						fill: "none",
 						stroke: "#FAFAFA",
+						strokeColor: "#33FF99",
 						originY: focusDock.y - 4,
+						posArticleX: articleDock.x,
+						posArticleY: articleDock.y - 4,
+						posFocusX: focusDock.x,
+						posFocusY: focusDock.y - 4,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).animate({
+					}).addClass("lar-" + relArticle.ar_id).animate({
 						stroke: "#33FF99"
 					}, 1200, mina.easeinout))
 					break;
@@ -205,10 +253,16 @@ function drawRelations(relArticles) {
 					})).attr({
 						fill: "none",
 						stroke: "#FAFAFA",
+						strokeColor: "#737373",
 						originY: y,
+						posArticleX: articleDock.x,
+						posArticleY: articleDock.y - 4,
+						posFocusX: focusDock.x,
+						posFocusY: y,
+						an_id: link.an_id,
 						strokeWidth: 2,
 						isLeft: relArticle.isLeft
-					}).animate({
+					}).addClass("lar-" + relArticle.ar_id).animate({
 						stroke: "#737373"
 					}, 1200, mina.easeinout))
 					break;
@@ -223,4 +277,134 @@ function prepCanvas() {
 
 function cleanUpCanvas() {
 	$(".kill").remove()
+}
+
+function drawTagCounts() {
+	$.each($(".focus .hl_tags div"), function(index, tag) {
+		// console.log($(tag).attr("an_id"))
+		$(tag).find(".ancounter").text(" " + $(".an-" + $(tag).attr("an_id")).length)
+	})
+}
+
+function drawScrollers(isLeft) {
+	if (arOnScreen.left.next) {
+		$("#scrollerBottomLeft").addClass("active").text(arOnScreen.left.next)
+	} else {
+		$("#scrollerBottomLeft").removeClass("active")
+	}
+	if (arOnScreen.right.next) {
+		$("#scrollerBottomRight").addClass("active").text(arOnScreen.right.next)
+	} else {
+		$("#scrollerBottomRight").removeClass("active")
+	}
+	if (arOnScreen.left.before) {
+		$("#scrollerTopLeft").addClass("active").text(arOnScreen.left.before)
+	} else {
+		$("#scrollerTopLeft").removeClass("active")
+	}
+	if (arOnScreen.right.before) {
+		$("#scrollerTopRight").addClass("active").text(arOnScreen.right.before)
+	} else {
+		$("#scrollerTopRight").removeClass("active")
+	}
+}
+
+function scrollArticles(up, left) {
+	var offset = 0
+	var counter = 0
+	var screenHeight = window.innerHeight - 72
+	var isDone = false
+
+	$.each(activeElArticles, function(index, elArticle) {
+		if (left && elArticle.isLeft) {
+			if (up) {
+				if (counter == arOnScreen.left.before + arOnScreen.left.now) {
+					offset = elArticle.offsetY
+				}
+			} else {
+				if (elArticle.offsetY>-screenHeight && !isDone){
+					offset = elArticle.offsetY
+					isDone = true
+					console.log(elArticle.offsetY)
+				} else {
+					
+				}
+			}
+			counter++
+		}
+		if (!left && !elArticle.isLeft) {
+			if (up) {
+				if (counter == arOnScreen.right.before + arOnScreen.right.now) {
+					offset = elArticle.offsetY
+				}
+			} else {
+				if (elArticle.offsetY>-screenHeight && !isDone){
+					offset = elArticle.offsetY
+					isDone = true
+				}
+			}
+			counter++
+		}
+	})
+
+
+
+	
+
+	arOnScreen = {
+		left: {
+			before: 0,
+			now: 0,
+			next: 0
+		},
+		right: {
+			before: 0,
+			now: 0,
+			next: 0
+		}
+	}
+
+
+
+	$.each(activeElArticles, function(index, elArticle) {
+
+		var side = "left"
+		if (!elArticle.isLeft) {
+			side = "right"
+		}
+
+
+		if (left) {
+			// if (up) {
+				if (elArticle.isLeft) {
+
+					elArticle.offsetY -= offset
+					transform(elArticle.dom, {
+						y: elArticle.offsetY
+					})
+				}
+			// }
+		} else {
+
+			// if (up) {
+				if (!elArticle.isLeft) {
+
+					elArticle.offsetY -= offset
+					transform(elArticle.dom, {
+						y: elArticle.offsetY
+					})
+				}
+			// }
+		}
+		if (elArticle.offsetY < 0) {
+			arOnScreen[side].before++
+		} else if (elArticle.headerHeight * .75 + elArticle.offsetY > screenHeight) {
+			arOnScreen[side].next++
+		} else {
+			arOnScreen[side].now++
+		}
+	})
+
+	drawScrollers()
+	drawRelations(activeRelArticles)
 }

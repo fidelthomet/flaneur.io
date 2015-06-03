@@ -5,6 +5,7 @@ function handlers() {
 	hanSearch();
 	hanArticle();
 	hanModal();
+	hanScrollers();
 }
 
 function hanWindow() {
@@ -24,15 +25,21 @@ function hanWindow() {
 		newFocus()
 	})
 
-	$(window).scroll(function() {
+	$(window).scroll(function(e) {
 		$.each(snapLinks, function(index, item) {
 
 			var vals = item.attr("d").split(" ")
 
 			if (item.attr("isLeft") == "true") {
 				vals[8] = vals[6] = parseFloat(item.attr("originY")) - $(window).scrollTop()
+				item.attr({
+					posFocusY: vals[8]
+				})
 			} else {
 				vals[1] = vals[4] = parseFloat(item.attr("originY")) - $(window).scrollTop()
+				item.attr({
+					posFocusY: vals[1]
+				})
 			}
 
 			var newD = vals[0] + " " + vals[1] + " " + vals[2] + " " + vals[3] + " " + vals[4] + " " + vals[5] + " " + vals[6] + " " + vals[7] + " " + vals[8]
@@ -302,16 +309,104 @@ function hanArticle() {
 	dom.article.on("mouseover", function() {
 		if (!$(this).hasClass("focus")) {
 			var ar_id = $(this).attr("id").split("ar-")[1];
-			$(this).css("height", elem.articles[ar_id].fullHeight + $(this).find(".highlights").height())
-			transform($(this),{scale: .8})
+			$("path").css("opacity", ".2")
+
+			$("path.lar-" + ar_id).css("opacity", "1")
+				// $("path.lar-"+ar_id).css("opacity","0").on("transitionend", function(){
+				// 	console.log("bu")
+				// })
+			var y = elem.articles[ar_id].offsetY
+			if (elem.articles[ar_id].offsetY + elem.articles[ar_id].fullHeight * .8 > window.innerHeight - 96) {
+				y = window.innerHeight - 96 - elem.articles[ar_id].fullHeight * .8
+				if (y < 0) {
+					y = 0
+				}
+			}
+
+			$.each(snapLinks, function(index, snapLink) {
+				if (snapLink.hasClass("lar-" + ar_id)) {
+					if (snapLink.attr("isLeft") == "true") {
+						var offsetX = 8.4
+					} else {
+						var offsetX = -8.4
+					}
+					posY = (y + 52 + elem.articles[ar_id].headerHeight * .8)
+
+					if (snapLink.attr("strokeColor") == "#33CCFF") {
+						posY += 4
+					}
+					if (snapLink.attr("strokeColor") == "#33FF99") {
+						posY -= 4
+					}
+					if (snapLink.attr("strokeColor") == "#737373") {
+
+						posY = parseFloat(elem.articles[ar_id].dom.find(".an-" + snapLink.attr("an_id")).attr("yPos")) * (4 / 3) * .8 + 75 + y
+							// posY -= 4
+					}
+					var newD = createCurve({
+						x: parseFloat(snapLink.attr("posArticleX")) + offsetX,
+						y: posY
+					}, {
+						x: parseFloat(snapLink.attr("posFocusX")),
+						y: parseFloat(snapLink.attr("posFocusY"))
+					})
+
+					snapLink.animate({
+						stroke: "#FAFAFA"
+					}, 400, mina.easein, function() {
+						snapLink.attr("d", newD).attr({
+							fill: "none"
+						})
+						snapLink.animate({
+							stroke: snapLink.attr("strokeColor")
+						}, 400, mina.easeout)
+					})
+				}
+			})
+
+			$(this).css("height", elem.articles[ar_id].fullHeight)
+			transform($(this), {
+				scale: .8,
+				y: y
+			})
 		}
 	})
 
 	dom.article.on("mouseout", function() {
 		if (!$(this).hasClass("focus")) {
+			$("path").css("opacity", "1")
+
+
+
 			var ar_id = $(this).attr("id").split("ar-")[1];
+			$.each(snapLinks, function(index, snapLink) {
+				if (snapLink.hasClass("lar-" + ar_id)) {
+					var newD = createCurve({
+						x: parseFloat(snapLink.attr("posArticleX")),
+						y: parseFloat(snapLink.attr("posArticleY"))
+					}, {
+						x: parseFloat(snapLink.attr("posFocusX")),
+						y: parseFloat(snapLink.attr("posFocusY"))
+					})
+
+					snapLink.animate({
+						stroke: "#FAFAFA"
+					}, 400, mina.easein, function() {
+
+						snapLink.attr("d", newD).attr({
+							fill: "none"
+						})
+						snapLink.animate({
+							stroke: snapLink.attr("strokeColor")
+						}, 400, mina.easeout)
+					})
+				}
+			})
 			$(this).css("height", elem.articles[ar_id].headerHeight)
-			transform($(this),{scale: .75})
+			transform($(this), {
+				scale: .75,
+				y: elem.articles[ar_id].offsetY
+			})
 		}
 	})
 
@@ -446,4 +541,25 @@ function hanModal() {
 		if (this.files[0])
 			fr.readAsText(this.files[0])
 	});
+}
+
+function hanScrollers() {
+	$(".scroller").click(function() {
+		if ($(this).hasClass("active")) {
+			switch ($(this).attr("id")) {
+				case "scrollerBottomLeft":
+					scrollArticles(true, true)
+					break;
+				case "scrollerBottomRight":
+					scrollArticles(true, false)
+					break;
+				case "scrollerTopLeft":
+					scrollArticles(false, true)
+					break;
+				case "scrollerTopRight":
+					scrollArticles(false, false)
+					break;
+			}
+		}
+	})
 }
