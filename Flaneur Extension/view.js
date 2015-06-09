@@ -11,7 +11,7 @@ function drawArticle(article) {
 		elArticle.dom.find(".itemHeader .img").css("background-color", "hsl(" + article.color + ",90%,80%)")
 
 		elArticle.dom.find(".itemHeader .text .title").text(article.title)
-		elArticle.dom.find(".itemHeader .text a").attr("href", article.url)
+		// elArticle.dom.find(".itemHeader .text a").attr("href", article.url)
 
 		if (article.author != "Unknown") {
 			elArticle.dom.find(".itemHeader .text .author").text(article.author)

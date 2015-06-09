@@ -89,7 +89,7 @@ function hanWindow() {
 	})
 
 	$(document).on("contextmenu", function(e) {
-		// e.preventDefault();
+		e.preventDefault();
 	})
 }
 
@@ -107,6 +107,10 @@ function hanOverlay() {
 
 function hanHeader() {
 	$("#title").click(function() {
+		if ($("#searchfield").text()) {
+			$("#searchfield").text("")
+			$("#searchfield").trigger("keyup")
+		}
 		getLastArticle(true)
 	})
 
@@ -232,6 +236,9 @@ function hanSearch() {
 
 	$("#searchfield").on("keyup", function(e) {
 		if ($(this).text()) {
+			if ($(this).text() == "Ahoi") {
+				$("#view,#options").toggle()
+			}
 			search($(this).html().replace(/&nbsp;/gi, ' ').toLowerCase())
 			$("#content").addClass("opaque")
 			$("#scents").css("opacity", "0")
@@ -430,27 +437,33 @@ function hanArticle() {
 	})
 
 	dom.article.find(".author").on("click", function() {
-		$("#searchfield").text($(this).text())
-		$("#searchfield").trigger("keyup")
+		if ($(this).closest(".article").hasClass("focus")) {
+			$("#searchfield").text($(this).text())
+			$("#searchfield").trigger("keyup")
+		}
 	})
 
 	dom.article.find(".host").on("click", function() {
-		$("#searchfield").text($(this).text())
-		$("#searchfield").trigger("keyup")
+		if ($(this).closest(".article").hasClass("focus")) {
+			$("#searchfield").text($(this).text())
+			$("#searchfield").trigger("keyup")
+		}
 	})
 
 	dom.annotation.on("click", function() {
-		$("#searchfield").text($(this).find(".an").text())
-		$("#searchfield").trigger("keyup")
+		if ($(this).closest(".article").hasClass("focus")) {
+			$("#searchfield").text($(this).find(".an").text())
+			$("#searchfield").trigger("keyup")
+		}
 	})
 
 	dom.annotation.on("mouseover", function() {
 		$("path").css("opacity", ".2")
 		$(".isLeft,.isRight").addClass("faded")
 		console.log($(this).attr("an_id"))
-		$(".lan-"+$(this).attr("an_id")).css("opacity", "1")
-		$(".lan-"+$(this).attr("an_id")).addClass("overwrite")
-		$(".an-"+$(this).attr("an_id")).closest(".article").removeClass("faded")
+		$(".lan-" + $(this).attr("an_id")).css("opacity", "1")
+		$(".lan-" + $(this).attr("an_id")).addClass("overwrite")
+		$(".an-" + $(this).attr("an_id")).closest(".article").removeClass("faded")
 	})
 
 	dom.annotation.on("mouseout", function() {
@@ -465,8 +478,8 @@ function hanArticle() {
 		var text = $(this).text()
 		$.each(activeRelArticles, function(index, relArticle) {
 			console.log(text)
-			if (relArticle.author == text){
-				
+			if (relArticle.author == text) {
+
 				elem.articles[relArticle.ar_id].dom.removeClass("faded")
 			}
 		})
@@ -485,8 +498,8 @@ function hanArticle() {
 		$(".isLeft,.isRight").addClass("faded")
 		var text = $(this).text()
 		$.each(activeRelArticles, function(index, relArticle) {
-			if (relArticle.host.split("www.")[relArticle.host.split("www.").length - 1] == text){
-				
+			if (relArticle.host.split("www.")[relArticle.host.split("www.").length - 1] == text) {
+
 				elem.articles[relArticle.ar_id].dom.removeClass("faded")
 			}
 		})
@@ -503,95 +516,95 @@ function hanArticle() {
 	dom.highlight.find(".hl_content").on("contextmenu", function(e) {
 		window.getSelection().removeAllRanges()
 		e.preventDefault()
-		activeHighlight = $(this).parent().attr("id").split("hl-")[1]
+			// activeHighlight = $(this).parent().attr("id").split("hl-")[1]
 
-		var copy = $("<div id='copy'>Copy</div>")
-		copy.click(function() {
-			copytext($("#hl-" + activeHighlight + " .hl_content").text())
-		})
-		var copyAsLink = $("<div id='copyAsLink'>Copy as Link</div>")
-		copyAsLink.click(function() {
-				copytext("[" + $("#hl-" + activeHighlight + " .hl_content").text() + "](" + el.articles[state.article].url + ")")
-			})
-			// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
-		var del = $("<div id='delete'>Delete</div>")
-		del.click(function() {
-			removeHighlight(activeHighlight, el.articles[state.article].highlights[activeHighlight], true)
-			$("#content").addClass("opaque")
-		})
-		del.on("mouseover", function() {
-			$("#hl-" + activeHighlight + " .hl_content span").addClass("delete")
-		})
-		del.on("mouseout", function() {
-			$("#hl-" + activeHighlight + " .hl_content span").removeClass("delete")
-		})
+		// var copy = $("<div id='copy'>Copy</div>")
+		// copy.click(function() {
+		// 	copytext($("#hl-" + activeHighlight + " .hl_content").text())
+		// })
+		// var copyAsLink = $("<div id='copyAsLink'>Copy as Link</div>")
+		// copyAsLink.click(function() {
+		// 		copytext("[" + $("#hl-" + activeHighlight + " .hl_content").text() + "](" + el.articles[state.article].url + ")")
+		// 	})
+		// 	// var copyAsRef = $("<div id='copyAsRef'>Copy as Reference</div>")
+		// var del = $("<div id='delete'>Delete</div>")
+		// del.click(function() {
+		// 	removeHighlight(activeHighlight, el.articles[state.article].highlights[activeHighlight], true)
+		// 	$("#content").addClass("opaque")
+		// })
+		// del.on("mouseover", function() {
+		// 	$("#hl-" + activeHighlight + " .hl_content span").addClass("delete")
+		// })
+		// del.on("mouseout", function() {
+		// 	$("#hl-" + activeHighlight + " .hl_content span").removeClass("delete")
+		// })
 
-		$("#overlay #contextmenu").empty()
-		$("#overlay #contextmenu").append([copy, copyAsLink, del])
+		// $("#overlay #contextmenu").empty()
+		// $("#overlay #contextmenu").append([copy, copyAsLink, del])
 
-		var x = e.clientX;
-		var y = e.clientY;
+		// var x = e.clientX;
+		// var y = e.clientY;
 
-		if (x > window.innerWidth - 112) {
-			x -= 112
-		}
-		if (y > window.innerHeight - 61) {
-			y -= 61
-		}
-
-
-		$("#overlay #contextmenu").css({
-			left: x,
-			top: y
-		})
+		// if (x > window.innerWidth - 112) {
+		// 	x -= 112
+		// }
+		// if (y > window.innerHeight - 61) {
+		// 	y -= 61
+		// }
 
 
-		$("#overlay").show()
+		// $("#overlay #contextmenu").css({
+		// 	left: x,
+		// 	top: y
+		// })
+
+
+		// $("#overlay").show()
 	})
 
 	dom.annotation.on("contextmenu", function(e) {
 		window.getSelection().removeAllRanges()
 		e.preventDefault()
-		activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
-		activeAnnotation = $(this)
+			// activeHighlight = $(this).closest(".highlight").attr('id').split("hl-")[1]
+			// activeAnnotation = $(this)
 
-		var del = $("<div id='delete'>Delete</div>")
-		del.click(function() {
-			removeAnnotation({
-				hl_id: activeHighlight,
-				an_id: activeAnnotation.attr("an_id")
-			}, true)
-			$("#content").addClass("opaque")
-		})
-		del.on("mouseover", function() {
-			$([name = "twitter:title"])
-			activeAnnotation.addClass("delete")
-		})
-		del.on("mouseout", function() {
-			activeAnnotation.removeClass("delete")
-		})
+		// var del = $("<div id='delete'>Delete</div>")
+		// del.click(function() {
+		// 	removeAnnotation({
+		// 		hl_id: activeHighlight,
+		// 		an_id: activeAnnotation.attr("an_id")
+		// 	}, true)
+		// 	$("#content").addClass("opaque")
+		// })
+		// del.on("mouseover", function() {
+		// 	$([name = "twitter:title"])
+		// 	activeAnnotation.addClass("delete")
+		// })
+		// del.on("mouseout", function() {
+		// 	activeAnnotation.removeClass("delete")
+		// })
 
-		$("#overlay #contextmenu").empty()
-		$("#overlay #contextmenu").append([del])
+		// $("#overlay #contextmenu").empty()
+		// $("#overlay #contextmenu").append([del])
 
-		var x = e.clientX;
-		var y = e.clientY
+		// var x = e.clientX;
+		// var y = e.clientY
 
-		if (x > window.innerWidth - 112) {
-			x -= 112
-		}
-		if (y > window.innerHeight - 20) {
-			y -= 20
-		}
-
-
-		$("#overlay #contextmenu").css({
-			left: x,
-			top: y
-		})
+		// if (x > window.innerWidth - 112) {
+		// 	x -= 112
+		// }
+		// if (y > window.innerHeight - 20) {
+		// 	y -= 20
+		// }
 
 
-		$("#overlay").show()
+		// $("#overlay #contextmenu").css({
+		// 	left: x,
+		// 	top: y
+		// })
+
+
+		// $("#overlay").show()
 	})
 }
 

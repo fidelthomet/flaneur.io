@@ -58,6 +58,7 @@ $(function() {
 
 
 function init() {
+	$("#view,#options").hide()
 	getLastArticle()
 
 	if (localStorage.getItem("linkTime") == null) {
